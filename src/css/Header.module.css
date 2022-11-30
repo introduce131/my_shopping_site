@@ -1,0 +1,42 @@
+/*Open Sans*/
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap");
+/*Source Sans Pro*/
+@import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400&display=swap");
+html {
+  font-size: 16px;
+  font-family: "Source Sans Pro", sans-serif;
+}
+#logo {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 1000;
+  font-family: "Open Sans", sans-serif;
+}
+#insta_img {
+  width: 25px;
+  height: 25px;
+}
+.menu_container {
+  margin-top: 10px;
+  height: 37px;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  background-color: rgb(255, 255, 255);
+  border: 1.5px solid rgb(192, 192, 192);
+}
+.menu_item {
+  flex: 0 1 10%;
+  height: 37px;
+  text-align: center;
+  margin-left: 7px;
+  /* 하나의 item도 컨테이너처럼 flex를 해준다*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.menu_item:hover {
+  color: rgb(161, 161, 161);
+  border-bottom: 1px solid black;
+}
