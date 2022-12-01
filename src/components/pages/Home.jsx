@@ -1,11 +1,11 @@
 import Header from "../Header";
+import Main from "../Main";
 
 function Home() {
   return (
     <div>
       <Header />
-      <h1>nav</h1>
-      <h1>main</h1>
+      <Main />
       <h1>footer</h1>
     </div>
   );

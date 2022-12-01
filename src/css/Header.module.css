@@ -3,7 +3,7 @@
 /*Source Sans Pro*/
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400&display=swap");
 html {
-  font-size: 16px;
+  font-size: 14px;
   font-family: "Source Sans Pro", sans-serif;
 }
 /*2022-12-01 움직이는 메뉴 아이콘 css 적용 
@@ -25,7 +25,7 @@ input[id="menu_icon"] + label span {
   height: 3px;
   border-radius: 10px;
   background: rgb(0, 0, 0);
-  transition: all 0.15s;
+  transition: all 0.2s;
 }
 /*{ 3개의 가로실선과 2개의 세로실선으로 이루어진 메뉴아이콘 생성 }*/
 input[id="menu_icon"] + label span:nth-child(1) {
@@ -51,17 +51,26 @@ input[id="menu_icon"] + label span:nth-child(5) {
   transform: translateY(-50%);
   width: 6.5%;
   height: 8px;
-  left: 28px;
+  left: 27.7px;
 }
 /*{ 마우스를 올려놓으면 1번째줄은 살짝 내려오고 2~3번째줄은 박스모양으로 변경 }*/
 input[id="menu_icon"]:hover + label span:nth-child(1) {
   top: 10%;
+  background-color: white;
+}
+input[id="menu_icon"]:hover + label span:nth-child(2) {
+  background-color: white;
+}
+input[id="menu_icon"]:hover + label span:nth-child(3) {
+  background-color: white;
 }
 input[id="menu_icon"]:hover + label span:nth-child(4) {
   opacity: 1;
+  background-color: white;
 }
 input[id="menu_icon"]:hover + label span:nth-child(5) {
   opacity: 1;
+  background-color: white;
 }
 /*{ ////////// 여기까지 //////////}*/
 #logo {
@@ -77,7 +86,7 @@ input[id="menu_icon"]:hover + label span:nth-child(5) {
 }
 .menu_container {
   margin-top: 10px;
-  height: 37px;
+  height: 34px;
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-around;
@@ -85,16 +94,22 @@ input[id="menu_icon"]:hover + label span:nth-child(5) {
   border: 1.5px solid rgb(192, 192, 192);
 }
 .menu_item {
-  flex: 0;
-  height: 37px;
+  flex-grow: 0;
+  height: 34px;
   padding-left: 15px;
   padding-right: 15px;
-  text-align: center;
   cursor: pointer;
   /* 하나의 item도 컨테이너처럼 flex를 해준다*/
   display: flex;
   justify-content: center;
   align-items: center;
+}
+/*{ 전체보기 아이콘입니더. with MouseOnEvent }*/
+.menu_item:nth-child(1) {
+  /*메뉴 아이콘 오른쪽 여백 줄이는거 position으로 해결하기*/
+}
+.menu_item:nth-child(1):hover {
+  background-color: rgb(63, 63, 63);
 }
 .menu_item:hover {
   color: rgb(161, 161, 161);
