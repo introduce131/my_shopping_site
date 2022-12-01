@@ -6,6 +6,64 @@ html {
   font-size: 16px;
   font-family: "Source Sans Pro", sans-serif;
 }
+/*2022-12-01 움직이는 메뉴 아이콘 css 적용 
+(https://www.youtube.com/watch?v=IvXuk5Sh4GE) */
+input[id="menu_icon"] {
+  display: none;
+}
+input[id="menu_icon"] + label {
+  display: block;
+  width: 38px;
+  height: 18px;
+  position: relative;
+  cursor: pointer;
+}
+input[id="menu_icon"] + label span {
+  display: block;
+  position: absolute;
+  width: 80%;
+  height: 3px;
+  border-radius: 10px;
+  background: rgb(0, 0, 0);
+  transition: all 0.15s;
+}
+/*{ 3개의 가로실선과 2개의 세로실선으로 이루어진 메뉴아이콘 생성 }*/
+input[id="menu_icon"] + label span:nth-child(1) {
+  top: 0;
+}
+input[id="menu_icon"] + label span:nth-child(2) {
+  top: 50%;
+  transform: translateY(-50%);
+}
+input[id="menu_icon"] + label span:nth-child(3) {
+  bottom: 0;
+}
+input[id="menu_icon"] + label span:nth-child(4) {
+  opacity: 0;
+  top: 72%;
+  transform: translateY(-50%);
+  width: 6.5%;
+  height: 8px;
+}
+input[id="menu_icon"] + label span:nth-child(5) {
+  opacity: 0;
+  top: 72%;
+  transform: translateY(-50%);
+  width: 6.5%;
+  height: 8px;
+  left: 28px;
+}
+/*{ 마우스를 올려놓으면 1번째줄은 살짝 내려오고 2~3번째줄은 박스모양으로 변경 }*/
+input[id="menu_icon"]:hover + label span:nth-child(1) {
+  top: 10%;
+}
+input[id="menu_icon"]:hover + label span:nth-child(4) {
+  opacity: 1;
+}
+input[id="menu_icon"]:hover + label span:nth-child(5) {
+  opacity: 1;
+}
+/*{ ////////// 여기까지 //////////}*/
 #logo {
   margin-top: 30px;
   text-align: center;
@@ -27,10 +85,12 @@ html {
   border: 1.5px solid rgb(192, 192, 192);
 }
 .menu_item {
-  flex: 0 1 10%;
+  flex: 0;
   height: 37px;
+  padding-left: 15px;
+  padding-right: 15px;
   text-align: center;
-  margin-left: 7px;
+  cursor: pointer;
   /* 하나의 item도 컨테이너처럼 flex를 해준다*/
   display: flex;
   justify-content: center;

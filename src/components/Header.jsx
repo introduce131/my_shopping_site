@@ -1,4 +1,19 @@
 import styles from "../css/Header.module.css";
+
+function MenuButton() {
+  return (
+    <div>
+      <input type="checkbox" id="menu_icon" />
+      <label for="menu_icon">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+    </div>
+  );
+}
 function Header() {
   return (
     <div>
@@ -6,8 +21,12 @@ function Header() {
       <img
         id={styles.insta_img}
         src="https://www.freepnglogos.com/uploads/logo-ig-png/logo-ig-instagram-icon-download-icons-12.png"
+        alt=""
       />
       <div className={styles.menu_container}>
+        <div className={styles.menu_item}>
+          <MenuButton />
+        </div>
         <div className={styles.menu_item}>TOP</div>
         <div className={styles.menu_item}>BOTTOM</div>
         <div className={styles.menu_item}>OUTER</div>
