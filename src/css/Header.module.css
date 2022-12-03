@@ -1,10 +1,17 @@
-/*Open Sans*/
+/* Font ? Open Sans */
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap");
-/*Source Sans Pro*/
+/* Font ? Source Sans Pro */
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400&display=swap");
 html {
+  height: 100%;
   font-size: 14px;
   font-family: "Source Sans Pro", sans-serif;
+}
+body {
+  height: 100%;
+}
+/* 추천상품 이미지 컨테이너*/
+#rcmd_img_container {
 }
 /*2022-12-01 움직이는 메뉴 아이콘 css 적용 
 (https://www.youtube.com/watch?v=IvXuk5Sh4GE) */
@@ -14,18 +21,19 @@ input[id="menu_icon"] {
 input[id="menu_icon"] + label {
   display: block;
   width: 38px;
-  height: 18px;
+  height: 20px;
   position: relative;
   cursor: pointer;
 }
 input[id="menu_icon"] + label span {
   display: block;
   position: absolute;
+  left: 3.3px;
   width: 80%;
   height: 3px;
   border-radius: 10px;
   background: rgb(0, 0, 0);
-  transition: all 0.2s;
+  transition: all 0.25s;
 }
 /*{ 3개의 가로실선과 2개의 세로실선으로 이루어진 메뉴아이콘 생성 }*/
 input[id="menu_icon"] + label span:nth-child(1) {
@@ -51,11 +59,11 @@ input[id="menu_icon"] + label span:nth-child(5) {
   transform: translateY(-50%);
   width: 6.5%;
   height: 8px;
-  left: 27.7px;
+  left: 31.2px;
 }
 /*{ 마우스를 올려놓으면 1번째줄은 살짝 내려오고 2~3번째줄은 박스모양으로 변경 }*/
 input[id="menu_icon"]:hover + label span:nth-child(1) {
-  top: 10%;
+  top: 8%;
   background-color: white;
 }
 input[id="menu_icon"]:hover + label span:nth-child(2) {
@@ -73,26 +81,36 @@ input[id="menu_icon"]:hover + label span:nth-child(5) {
   background-color: white;
 }
 /*{ ////////// 여기까지 //////////}*/
+/* { 최상단 로고를 나타냄 img로 수정해야함 } */
 #logo {
-  margin-top: 30px;
+  margin-top: 33px;
   text-align: center;
   font-size: 2rem;
   font-weight: 1000;
   font-family: "Open Sans", sans-serif;
 }
+/*{ 인스타 바로가기 img }*/
 #insta_img {
   width: 25px;
   height: 25px;
 }
+/*{ 상단 메뉴아이템 선택 flex container }*/
 .menu_container {
-  margin-top: 10px;
-  height: 34px;
   display: flex;
+  /* 메뉴 컨테이너 최소/최대크기 지정 */
+  margin: auto;
+  max-width: 1000px;
+  min-width: 700px;
+  /* End .. */
+  /* sticky in flexbox */
+  /* End .. */
+  height: 34px;
   flex-flow: row nowrap;
   justify-content: space-around;
   background-color: rgb(255, 255, 255);
   border: 1.5px solid rgb(192, 192, 192);
 }
+/*{ 상단 메뉴아이템 선택 flex container의 items }*/
 .menu_item {
   flex-grow: 0;
   height: 34px;
@@ -104,13 +122,11 @@ input[id="menu_icon"]:hover + label span:nth-child(5) {
   justify-content: center;
   align-items: center;
 }
-/*{ 전체보기 아이콘입니더. with MouseOnEvent }*/
-.menu_item:nth-child(1) {
-  /*메뉴 아이콘 오른쪽 여백 줄이는거 position으로 해결하기*/
-}
+/*{ 아이템의 1번째인 전체보기(아이콘)을 MouseOnEvent }*/
 .menu_item:nth-child(1):hover {
   background-color: rgb(63, 63, 63);
 }
+/*{ 해당 아이템 MouseOnEvent  }*/
 .menu_item:hover {
   color: rgb(161, 161, 161);
   border-bottom: 1px solid black;
