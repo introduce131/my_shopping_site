@@ -23,7 +23,7 @@ function Header() {
       <div id={styles.logo}>c h a r l o t t e</div> {/*로고*/}
       <img
         id={styles.insta_img}
-        src="https://www.freepnglogos.com/uploads/logo-ig-png/logo-ig-instagram-icon-download-icons-12.png"
+        src="https://www.freepnglogos.com/uploads/instagram-icon-png/black-hd-instagram-icon-simple-black-design-9.png"
         alt=""
       />
       {/* 상단 상품 카테고리 선택 flex container */}
