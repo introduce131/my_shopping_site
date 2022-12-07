@@ -1,7 +1,8 @@
 import styles from "../css/MainSlideImage.module.css";
 
 function MainSlideImage() {
-  let MainImageCnt = 7;
+  const MainImageCnt = 7;
+  let imgsrc = "";
 
   // section
   //  └ <div> class(slidewrap)
@@ -55,7 +56,8 @@ function MainSlideImage() {
     }
 
     //현재 순서에 해당하는 이미지 표기
-    img_ele_default.setAttribute("src", `../../img/image0${cnt + 1}.jpg`);
+    imgsrc = `/images/image0${cnt + 1}.jpg`;
+    img_ele_default.setAttribute("src", "https://source.unsplash.com/random");
 
     //다음 이미지(오른쪽)로 이동
     label_ele_right.className = "right";

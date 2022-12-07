@@ -25,8 +25,8 @@
 }
 
 .section .slidelist > li > a img {
-  width: 300px;
-  height: 300px;
+  width: 900px;
+  height: 500px;
 }
 
 .section .slidelist label {
@@ -50,6 +50,7 @@
     center center / 100% no-repeat;
 }
 
+/* 2022-12-07 슬라이드이미지 화면전환*/
 .section [id="slide01"]:checked ~ .slidewrap .slidelist > li {
   transform: translate(0%);
 }
@@ -61,4 +62,13 @@
 }
 .section [id="slide04"]:checked ~ .slidewrap .slidelist > li {
   transform: translate(-300%);
+}
+.section [id="slide05"]:checked ~ .slidewrap .slidelist > li {
+  transform: translate(-400%);
+}
+.section [id="slide06"]:checked ~ .slidewrap .slidelist > li {
+  transform: translate(-500%);
+}
+.section [id="slide07"]:checked ~ .slidewrap .slidelist > li {
+  transform: translate(-500%);
 }
