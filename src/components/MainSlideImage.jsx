@@ -56,8 +56,8 @@ function MainSlideImage() {
     }
 
     //현재 순서에 해당하는 이미지 표기
-    imgsrc = `/images/image0${cnt + 1}.jpg`;
-    img_ele_default.setAttribute("src", "https://source.unsplash.com/random");
+    imgsrc = `${process.env.PUBLIC_URL}/images/image0${cnt + 1}.jpg`;
+    img_ele_default.src = imgsrc;
 
     //다음 이미지(오른쪽)로 이동
     label_ele_right.className = "right";

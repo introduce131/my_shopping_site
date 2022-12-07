@@ -25,8 +25,12 @@
 }
 
 .section .slidelist > li > a img {
-  width: 900px;
-  height: 500px;
+  display: block;
+  margin: auto;
+}
+
+#img_container {
+  text-align: center;
 }
 
 .section .slidelist label {
@@ -40,13 +44,13 @@
 
 .section .slidelist .left {
   left: 30px;
-  background: url("https://www.freepnglogos.com/uploads/logo-ig-png/logo-ig-instagram-icon-download-icons-12.png")
+  background: url("https://www.freepnglogos.com/uploads/instagram-icon-png/black-hd-instagram-icon-simple-black-design-9.png")
     center center / 100% no-repeat;
 }
 
 .section .slidelist .right {
   right: 30px;
-  background: url("https://www.freepnglogos.com/uploads/logo-ig-png/logo-ig-instagram-icon-download-icons-12.png")
+  background: url("https://www.freepnglogos.com/uploads/instagram-icon-png/black-hd-instagram-icon-simple-black-design-9.png")
     center center / 100% no-repeat;
 }
 
