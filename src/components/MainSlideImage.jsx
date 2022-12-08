@@ -46,27 +46,26 @@ function MainSlideImage() {
     let label_ele_right = document.createElement("label");
 
     //이전 이미지(왼쪽)로 이동
-    label_ele_left.className = "left";
-
     if (cnt === 0) {
       //첫번째 이미지일때 처리방법
       label_ele_left.setAttribute("for", `slide0${MainImageCnt}`); //왼쪽(아이콘)을 누르면 맨 마지막 이미지로 이동
     } else {
       label_ele_left.setAttribute("for", `slide0${cnt}`); //첫번째 이미지가 아니라면 그냥 이전 이미지를 보여준다.
     }
+    label_ele_left.className = styles.left;
 
     //현재 순서에 해당하는 이미지 표기
     imgsrc = `${process.env.PUBLIC_URL}/images/image0${cnt + 1}.jpg`;
     img_ele_default.src = imgsrc;
 
     //다음 이미지(오른쪽)로 이동
-    label_ele_right.className = "right";
     if (cnt === 6) {
       //마지막 이미지일때 처리방법
       label_ele_right.setAttribute("for", `slide0${MainImageCnt - cnt}`); //오른쪽(아이콘)을 누르면 다시 첫번째 이미지로 이동한다.
     } else {
       label_ele_right.setAttribute("for", `slide0${cnt + 2}`); //마지막 이미지가 아니라면 ? 그냥 다음 이미지를 보여준다.
     }
+    label_ele_right.className = styles.right;
 
     //a 태그에 자식요소 (이전, 현재, 다음) 슬라이드 추가
     a_ele_default.appendChild(label_ele_left);

@@ -27,6 +27,7 @@
 .section .slidelist > li > a img {
   display: block;
   margin: auto;
+  width: 50%;
 }
 
 #img_container {
@@ -43,15 +44,14 @@
 }
 
 .section .slidelist .left {
-  left: 30px;
-  background: url("https://www.freepnglogos.com/uploads/instagram-icon-png/black-hd-instagram-icon-simple-black-design-9.png")
-    center center / 100% no-repeat;
+  left: 50px;
+  background: url("/public/images/left-arrow.png") center center / 70% no-repeat;
 }
 
 .section .slidelist .right {
-  right: 30px;
-  background: url("https://www.freepnglogos.com/uploads/instagram-icon-png/black-hd-instagram-icon-simple-black-design-9.png")
-    center center / 100% no-repeat;
+  right: 50px;
+  background: url("/public/images/right-arrow.png") center center / 70%
+    no-repeat;
 }
 
 /* 2022-12-07 슬라이드이미지 화면전환*/
@@ -74,5 +74,5 @@
   transform: translate(-500%);
 }
 .section [id="slide07"]:checked ~ .slidewrap .slidelist > li {
-  transform: translate(-500%);
+  transform: translate(-600%);
 }
