@@ -1,4 +1,5 @@
 import styles from "../css/Header.module.css";
+import MainSlideImage from "./MainSlideImage";
 
 //작대기 3개로 이루어진 전체보기 메뉴 버튼입니더. by Component
 function MenuButton() {
@@ -39,8 +40,6 @@ function Header() {
         <div className={styles.menu_item}>ACC</div>
         <div className={styles.menu_item}>SALE</div>
       </div>
-      {/* 추천 상품 7개 상품*/}
-      <div id="rcmd_img_container"></div>
     </div>
   );
 }

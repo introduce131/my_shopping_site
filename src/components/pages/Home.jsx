@@ -6,7 +6,6 @@ function Home() {
     <div>
       <Header />
       <Main />
-      <h1>footer</h1>
     </div>
   );
 }

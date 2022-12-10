@@ -7,12 +7,6 @@ html {
   font-size: 14px;
   font-family: "Source Sans Pro", sans-serif;
 }
-body {
-  height: 100%;
-}
-/* 추천상품 이미지 컨테이너*/
-#rcmd_img_container {
-}
 /*2022-12-01 움직이는 메뉴 아이콘 css 적용 
 (https://www.youtube.com/watch?v=IvXuk5Sh4GE) */
 input[id="menu_icon"] {
@@ -99,14 +93,13 @@ input[id="menu_icon"]:hover + label span:nth-child(5) {
   display: flex;
   /* 메뉴 컨테이너 최소/최대크기 지정 */
   margin: auto;
-  max-width: 1000px;
-  min-width: 700px;
-  /* End .. */
-  /* sticky in flexbox */
+  max-width: 1100px;
+  min-width: 900px;
   /* End .. */
   height: 34px;
   flex-flow: row nowrap;
   justify-content: space-around;
+  align-items: flex-start;
   background-color: rgb(255, 255, 255);
   border: 1.5px solid rgb(192, 192, 192);
 }
