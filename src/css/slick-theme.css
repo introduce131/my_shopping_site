@@ -116,7 +116,7 @@
 
 .slick-dots {
   position: absolute;
-  bottom: -25px;
+  bottom: 15px;
 
   display: block;
 
@@ -179,6 +179,7 @@
   height: 20px;
 
   content: "•";
+  background-size: 10px 10px;
   text-align: center;
 
   opacity: 0.25;
