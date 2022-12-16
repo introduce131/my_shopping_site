@@ -1,12 +1,12 @@
-import styles from "../css/Header.module.css";
-import MainSlideImage from "./MainSlideImage";
+import React from 'react';
+import styles from '../css/Header.module.css';
 
 //작대기 3개로 이루어진 전체보기 메뉴 버튼입니더. by Component
 function MenuButton() {
   return (
     <div>
       <input type="checkbox" id="menu_icon" />
-      <label for="menu_icon">
+      <label htmlFor="menu_icon">
         <span></span>
         <span></span>
         <span></span>

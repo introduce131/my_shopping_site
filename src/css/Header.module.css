@@ -2,7 +2,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap");
 /* Font ? Source Sans Pro */
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400&display=swap");
-html {
+body {
   height: 100%;
   font-size: 14px;
   font-family: "Source Sans Pro", sans-serif;
@@ -105,7 +105,7 @@ input[id="menu_icon"]:hover + label span:nth-child(5) {
 }
 /*{ 상단 메뉴아이템 선택 flex container의 items }*/
 .menu_item {
-  flex-grow: 0;
+  flex-grow: 0; /* 이거 기본값인디..뭘한거지?*/
   height: 34px;
   padding-left: 15px;
   padding-right: 15px;
