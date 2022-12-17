@@ -62,6 +62,16 @@ const ItemWeeklyShowDiv = styled.div`
   }
 `;
 
+const showWeeklyItems = (cnt) => {
+  for (let i = 0; i < cnt; i++) {
+    <ItemWeeklyShowDiv>
+      <img
+        src={`${process.env.PUBLIC_URL}/images/image0${i + 1}.jpg`}
+      />
+    </ItemWeeklyShowDiv>;
+  }
+};
+
 const Main = () => {
   return (
     <div>
@@ -124,30 +134,7 @@ const Main = () => {
       </p>
       {/*1-1 End..*/}
       <ContainerWeeklyShowDiv>
-        <ItemWeeklyShowDiv>
-          <img src={`${process.env.PUBLIC_URL}/images/image01.jpg`} />
-        </ItemWeeklyShowDiv>
-        <ItemWeeklyShowDiv>
-          <img src={`${process.env.PUBLIC_URL}/images/image02.jpg`} />
-        </ItemWeeklyShowDiv>
-        <ItemWeeklyShowDiv>
-          <img src={`${process.env.PUBLIC_URL}/images/image03.jpg`} />
-        </ItemWeeklyShowDiv>
-        <ItemWeeklyShowDiv>
-          <img src={`${process.env.PUBLIC_URL}/images/image04.jpg`} />
-        </ItemWeeklyShowDiv>
-        <ItemWeeklyShowDiv>
-          <img src={`${process.env.PUBLIC_URL}/images/image05.jpg`} />
-        </ItemWeeklyShowDiv>
-        <ItemWeeklyShowDiv>
-          <img src={`${process.env.PUBLIC_URL}/images/image06.jpg`} />
-        </ItemWeeklyShowDiv>
-        <ItemWeeklyShowDiv>
-          <img src={`${process.env.PUBLIC_URL}/images/image07.jpg`} />
-        </ItemWeeklyShowDiv>
-        <ItemWeeklyShowDiv>
-          <img src={`${process.env.PUBLIC_URL}/images/image08.jpg`} />
-        </ItemWeeklyShowDiv>
+        {showWeeklyItems(8)}
       </ContainerWeeklyShowDiv>
     </div>
   );
