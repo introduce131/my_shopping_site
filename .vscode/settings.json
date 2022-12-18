@@ -2,7 +2,7 @@
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "prettier.singleQuote": true,
-  "prettier.printWidth": 70,
+  "prettier.printWidth": 100,
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -13,5 +13,7 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "eslint.validate": ["javascript"]
+  "eslint.validate": [
+    "javascript"
+  ]
 }

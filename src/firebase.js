@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -14,5 +15,8 @@ const firebaseConfig = {
 /** 위에 config내용으로 firebase 변수에 저장 */
 const firebase = initializeApp(firebaseConfig);
 
-/** 내보내기 << 다른 곳에서 불러올때 firestore로 불러와야 함!! */
+/** fireStore 내보내기 << 다른 곳에서 불러올때 fireStore로 불러와야 함!! */
 export const fireStore = getFirestore(firebase);
+
+/** storage 내보내기 <<  다른 곳에서 불러올때 storage 불러와야 함!! */
+export const storage = getStorage(firebase);
