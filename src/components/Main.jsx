@@ -1,7 +1,15 @@
 import React from 'react';
 import Slider from 'react-slick';
+import { Link } from 'react-router-dom';
 import MainSlideImage from './MainSlideImage';
 import styled from 'styled-components';
+import { fireStore } from '../../src/firebase'; //firebase.js에서 내보낸 fireStore
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
 
 //사이트 소개 Box Contatiner Div (styledComponent)
 const ContainerIntroDiv = styled.div`
@@ -61,16 +69,6 @@ const ItemWeeklyShowDiv = styled.div`
     height: 300px;
   }
 `;
-
-const showWeeklyItems = (cnt) => {
-  for (let i = 0; i < cnt; i++) {
-    <ItemWeeklyShowDiv>
-      <img
-        src={`${process.env.PUBLIC_URL}/images/image0${i + 1}.jpg`}
-      />
-    </ItemWeeklyShowDiv>;
-  }
-};
 
 const Main = () => {
   return (
@@ -134,7 +132,13 @@ const Main = () => {
       </p>
       {/*1-1 End..*/}
       <ContainerWeeklyShowDiv>
-        {showWeeklyItems(8)}
+        <Link to="/products">
+          <ItemWeeklyShowDiv>
+            <img
+              src={`${process.env.PUBLIC_URL}/images/image01.jpg`}
+            />
+          </ItemWeeklyShowDiv>
+        </Link>
       </ContainerWeeklyShowDiv>
     </div>
   );

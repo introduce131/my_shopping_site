@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import Home from './components/pages/Home';
+import Products from './components/pages/Products';
+import { Routes, Route } from 'react-router-dom';
 import { fireStore } from './firebase'; //firebase.js에서 내보낸 fireStore
 import {
   collection,
@@ -25,9 +27,13 @@ function App() {
 
     getItems();
   }, []);
+
   return (
     <div>
-      <Home />
+      <Routes>
+        <Route path="/" element={<Home />}></Route>
+        <Route path="/products" element={<Products />}></Route>
+      </Routes>
     </div>
   );
 }
