@@ -11,8 +11,8 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
+/** 위에 config내용으로 firebase 변수에 저장 */
 const firebase = initializeApp(firebaseConfig);
 
-const fireStore = getFirestore(firebase);
-
-export { fireStore };
+/** 내보내기 << 다른 곳에서 불러올때 firestore로 불러와야 함!! */
+export const fireStore = getFirestore(firebase);
