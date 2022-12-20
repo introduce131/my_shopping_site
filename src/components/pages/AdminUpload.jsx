@@ -53,20 +53,21 @@ const AdminUpload = () => {
     );
   }
 
+  // 상품추가하기
   const addItems = async () => {
+    const ItemChkShowMain = document.querySelector('input[name=ITEMS_SHOWMAIN]').value;
     const ItemName = document.querySelector('#ITEMS_NAME').value;
     const ItemPrice = document.querySelector('#ITEMS_PRICE').value;
     const ItemFabric = document.querySelector('#ITEMS_FABRIC').value;
-    const ItemSize = document.querySelector('#ITEMS_SIZE').value;
+    const ItemSizeList = document.querySelectorAll('input[name=ITEM_SIZE]:checked');
+    let ItemSize = '';
+    ItemSizeList.forEach((chk) => {
+      ItemSize += chk.value + '^'; //구분자 ^ -> S^M^L^XL^
+    });
     const ItemColor = document.querySelector('#ITEMS_COLOR').value;
     const ItemMadein = document.querySelector('#ITEMS_MADEIN').value;
     const ItemContent = document.querySelector('#ITEMS_CONTENTS').value;
     const ItemImgURL = imgURL;
-
-    //imgURL이 ERR거나 공백이라면 ERR를 return한다
-    if (imgURL === 'ERR' && imgURL === '') {
-      return 'ERR';
-    }
 
     try {
       //addDoc("컬렉션에 대한 참조", "데이터가 포함된 Object")
@@ -78,6 +79,7 @@ const AdminUpload = () => {
         ITEMS_COLOR: ItemColor,
         ITEMS_MADEIN: ItemMadein,
         ITEMS_CONTENTS: ItemContent,
+        ITEMS_SHOWMAIN: ItemChkShowMain,
         ITEMS_IMGURL: ItemImgURL,
       });
       console.log(res);
@@ -87,6 +89,11 @@ const AdminUpload = () => {
   };
   return (
     <div>
+      <label htmlFor="ITEMS_SHOWMAIN">
+        <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
+        메인화면 추천상품 적용
+      </label>
+      <br />
       <label htmlFor="ITEMS_NAME">상품명</label>
       <input type="text" id="ITEMS_NAME" />
       <br />
@@ -96,11 +103,23 @@ const AdminUpload = () => {
       <label htmlFor="ITEMS_FABRIC">재질</label>
       <textarea id="ITEMS_FABRIC" />
       <br />
-      <label htmlFor="ITEMS_SIZE">사이즈</label>
-      <input type="text" id="ITEMS_SIZE" />
+      <label>사이즈</label>
+      <label>
+        <input type="checkbox" name="ITEM_SIZE" value="S" />S
+      </label>
+      <label>
+        <input type="checkbox" name="ITEM_SIZE" value="M" />M
+      </label>
+      <label>
+        <input type="checkbox" name="ITEM_SIZE" value="L" />L
+      </label>
+      <label>
+        <input type="checkbox" name="ITEM_SIZE" value="XL" />
+        XL
+      </label>
       <br />
-      <label htmlFor="ITEMS_COLOR">색상</label>
-      <input type="text" id="ITEMS_COLOR" />
+      <label htmlFor="ITEMS_COLOR">상품 색상</label>
+      <input type="color" id="ITEMS_COLOR" />
       <br />
       <label htmlFor="ITEMS_MADEIN">MADE IN</label>
       <input type="text" id="ITEMS_MADEIN" />
