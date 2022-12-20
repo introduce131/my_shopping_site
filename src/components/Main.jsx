@@ -4,12 +4,8 @@ import { Link } from 'react-router-dom';
 import MainSlideImage from './MainSlideImage';
 import styled from 'styled-components';
 import { fireStore } from '../../src/firebase'; //firebase.js에서 내보낸 fireStore
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-} from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useEffect } from 'react';
 
 //사이트 소개 Box Contatiner Div (styledComponent)
 const ContainerIntroDiv = styled.div`
@@ -71,6 +67,26 @@ const ItemWeeklyShowDiv = styled.div`
 `;
 
 const Main = () => {
+  /** fireStore의 collection에서 "shopping_itmes" 라는 document를 찾아서 저장된 값 */
+  const itemsRef = collection(fireStore, 'shopping_items');
+  /** query메서드를 사용할 때, 인수 1번째는 document, 2번째는 where절
+   *  한주간의 인기상품만 보이게 조건 적용 */
+  const resultQuery = query(itemsRef, where('ITEMS_SHOWMAIN', '==', 'O'));
+  let ItemsList = [];
+
+  // 첫 Loading시에만 적용
+  useEffect(() => {
+    const getItems = async () => {
+      const data = await getDocs(resultQuery);
+      data.forEach((doc) => {
+        ItemsList.push(doc.data());
+      });
+      console.log(ItemsList);
+    };
+
+    getItems();
+  }, []);
+
   return (
     <div>
       <MainSlideImage /> {/*추천상품 7개 Slide 표시*/}
@@ -134,9 +150,7 @@ const Main = () => {
       <ContainerWeeklyShowDiv>
         <Link to="/products">
           <ItemWeeklyShowDiv>
-            <img
-              src={`${process.env.PUBLIC_URL}/images/image01.jpg`}
-            />
+            <img src={`${process.env.PUBLIC_URL}/images/image01.jpg`} />
           </ItemWeeklyShowDiv>
         </Link>
       </ContainerWeeklyShowDiv>
