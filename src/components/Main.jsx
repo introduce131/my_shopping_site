@@ -1,11 +1,12 @@
 import React from 'react';
 import Slider from 'react-slick';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import MainSlideImage from './MainSlideImage';
 import styled from 'styled-components';
 import { fireStore } from '../../src/firebase'; //firebase.js에서 내보낸 fireStore
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { useEffect } from 'react';
+import { useState } from 'react';
 
 //사이트 소개 Box Contatiner Div (styledComponent)
 const ContainerIntroDiv = styled.div`
@@ -50,19 +51,24 @@ const ItemIntroDiv = styled.div`
 
 //한주 인기상품 Container Div
 const ContainerWeeklyShowDiv = styled.div`
+  max-width: 1100px;
+  min-width: 900px;
+  width: 1100px;
+  height: 315px;
+  margin: auto;
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-around;
-  border 1px solid black;
+  justify-content: flex-start;
 `;
 
-//한주 인기상품 Item Div
+//한주 인기상품 Item Div + img는 후손선택자이다.
 const ItemWeeklyShowDiv = styled.div`
   flex: 1 1 25%;
+  margin-bottom: 10px;
 
-  & > img {
-    width: 235px;
-    height: 300px;
+  & img {
+    width: 230px;
+    height: 315px;
   }
 `;
 
@@ -72,18 +78,18 @@ const Main = () => {
   /** query메서드를 사용할 때, 인수 1번째는 document, 2번째는 where절
    *  한주간의 인기상품만 보이게 조건 적용 */
   const resultQuery = query(itemsRef, where('ITEMS_SHOWMAIN', '==', 'O'));
-  let ItemsList = [];
+  const [ItemsList, setItemsList] = useState([]);
 
   // 첫 Loading시에만 적용
   useEffect(() => {
+    const TmpItemList = [];
     const getItems = async () => {
       const data = await getDocs(resultQuery);
       data.forEach((doc) => {
-        ItemsList.push(doc.data());
+        TmpItemList.push(doc.data());
+        setItemsList(TmpItemList);
       });
-      console.log(ItemsList);
     };
-
     getItems();
   }, []);
 
@@ -148,11 +154,13 @@ const Main = () => {
       </p>
       {/*1-1 End..*/}
       <ContainerWeeklyShowDiv>
-        <Link to="/products">
-          <ItemWeeklyShowDiv>
-            <img src={`${process.env.PUBLIC_URL}/images/image01.jpg`} />
+        {ItemsList.map((ele, idx) => (
+          <ItemWeeklyShowDiv key={idx}>
+            <Link to="/product">
+              <img src={ele['ITEMS_IMGURL']} alt="" />
+            </Link>
           </ItemWeeklyShowDiv>
-        </Link>
+        ))}
       </ContainerWeeklyShowDiv>
     </div>
   );

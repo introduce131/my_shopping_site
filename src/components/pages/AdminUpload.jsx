@@ -27,9 +27,9 @@ const AdminUpload = () => {
     const uploadTask = uploadBytesResumable(storageRef, file);
 
     /** state_changed 이벤트에는 3가지 콜백함수가 있다
-     *  1번째 함수 : 업로드 진행 상황 추적, 진행 상태 업로드
-     *  2번째 함수 : 업로드 실패 시 오류를 처리
-     *  3번째 함수 : 업로드가 완료되면 실행되고, 다운로드 URL을 가져오고 콘솔에 표시
+     *  1번째 콜백함수 : 업로드 진행 상황 추적, 진행 상태 업로드
+     *  2번째 콜백함수 : 업로드 실패 시 오류를 처리
+     *  3번째 콜백함수 : 업로드가 완료되면 실행되고, 다운로드 URL을 가져오고 콘솔에 표시
      *              실무에서는 데이터베이스에 저장해도 됨.
      */
     uploadTask.on(
@@ -41,8 +41,7 @@ const AdminUpload = () => {
         setPercent(percent);
       },
       (err) => {
-        setImgURL('ERR');
-        console.log(err);
+        setImgURL(err.code);
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((url) => {
@@ -62,7 +61,8 @@ const AdminUpload = () => {
     const ItemSizeList = document.querySelectorAll('input[name=ITEM_SIZE]:checked');
     let ItemSize = '';
     ItemSizeList.forEach((chk) => {
-      ItemSize += chk.value + '^'; //구분자 ^ -> S^M^L^XL^
+      // 사이즈가 2종류 이상이면, "^" 구분자 추가
+      ItemSizeList > 1 ? (ItemSize += chk.value + '^') : (ItemSize += chk.value);
     });
     const ItemColor = document.querySelector('#ITEMS_COLOR').value;
     const ItemMadein = document.querySelector('#ITEMS_MADEIN').value;
@@ -116,6 +116,10 @@ const AdminUpload = () => {
       <label>
         <input type="checkbox" name="ITEM_SIZE" value="XL" />
         XL
+      </label>
+      <label>
+        <input type="checkbox" name="ITEM_SIZE" value="FREE" />
+        FREE
       </label>
       <br />
       <label htmlFor="ITEMS_COLOR">상품 색상</label>
