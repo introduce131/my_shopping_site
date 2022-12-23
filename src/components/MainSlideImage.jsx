@@ -22,12 +22,8 @@ const MainSlideImage = () => {
     autoplaySpeed: 10000, //자동 스크롤 시 다음 슬라이드 뜨는 시간(ms)
     vertical: false, //세로 방향 옵션 true:세로, false:가로
     arrows: true, //옆으로 이동하는 화살표 표시 여부
-    prevArrow: (
-      <img src={`${process.env.PUBLIC_URL}/images/left-arrow.png`} />
-    ),
-    nextArrow: (
-      <img src={`${process.env.PUBLIC_URL}/images/right-arrow.png`} />
-    ),
+    prevArrow: <img src={`${process.env.PUBLIC_URL}/images/left-arrow.png`} />,
+    nextArrow: <img src={`${process.env.PUBLIC_URL}/images/right-arrow.png`} />,
     dotsClass: 'slick-dots', //아래 나오는 점(페이지네이션) css class 지정
     dragable: 'true', //드래그 가능 여부
   };
@@ -36,19 +32,13 @@ const MainSlideImage = () => {
     <div>
       <Slider {...settings}>
         <div>
-          <Image
-            src={process.env.PUBLIC_URL + '/images/image01.png'}
-          />
+          <Image src={process.env.PUBLIC_URL + '/images/sale.jpg'} />
         </div>
         <div>
-          <Image
-            src={process.env.PUBLIC_URL + '/images/image02.jpg'}
-          />
+          <Image src={process.env.PUBLIC_URL + '/images/image02.jpg'} />
         </div>
         <div>
-          <Image
-            src={process.env.PUBLIC_URL + '/images/image03.jpg'}
-          />
+          <Image src={process.env.PUBLIC_URL + '/images/image03.jpg'} />
         </div>
       </Slider>
     </div>
