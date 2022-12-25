@@ -75,6 +75,15 @@ const StyledSlider = styled(Slider)`
     height: 315px;
     margin: 0 auto 15px auto;
   }
+
+  & img:hover {
+    opacity: 0.7;
+    cursor: pointer;
+  }
+
+  .slick-dots {
+    bottom: -25px;
+  }
 `;
 
 const SiteIntroBox = () => {
@@ -168,7 +177,7 @@ const Main = () => {
       <StyledSlider {...settings}>
         {ItemsList.map((ele, idx) => (
           <div key={idx}>
-            <Link to={`/product/id/${ele['DOCUMENT_ID']}`}>
+            <Link to={`/products/${ele['DOCUMENT_ID']}`}>
               <img src={ele['ITEMS_IMGURL']} alt="" />
             </Link>
           </div>
