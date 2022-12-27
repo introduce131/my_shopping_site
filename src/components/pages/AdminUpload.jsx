@@ -61,8 +61,8 @@ const AdminUpload = () => {
     const ItemSizeList = document.querySelectorAll('input[name=ITEM_SIZE]:checked');
     let ItemSize = '';
     ItemSizeList.forEach((chk) => {
-      // 사이즈가 2종류 이상이면, "^" 구분자 추가
-      ItemSizeList > 1 ? (ItemSize += chk.value + '^') : (ItemSize += chk.value);
+      // 사이즈가 2종류 이상이면, "," 구분자 추가
+      ItemSizeList > 1 ? (ItemSize += chk.value + ', ') : (ItemSize += chk.value);
     });
     const ItemColor = document.querySelector('#ITEMS_COLOR').value;
     const ItemMadein = document.querySelector('#ITEMS_MADEIN').value;
@@ -82,7 +82,8 @@ const AdminUpload = () => {
         ITEMS_SHOWMAIN: ItemChkShowMain,
         ITEMS_IMGURL: ItemImgURL,
       });
-      console.log(res);
+      console.log('콘텐츠내용', ItemContent);
+      throw new Error('에러발생');
     } catch (e) {
       console.log(e);
     }
