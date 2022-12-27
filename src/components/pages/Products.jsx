@@ -51,8 +51,8 @@ const ItemDetailContentDiv = styled.div`
     align-items: center;
     flex-flow: row wrap;
     width: 95%;
-    margin-top: 10px;
     padding-left: 20px;
+    margin-bottom: 20px;
 
     & > label {
       flex: 1 1 50%;
@@ -62,7 +62,14 @@ const ItemDetailContentDiv = styled.div`
   }
 
   & > .ITEM_CONTENT_INFO {
-    margin-top: 20px;
+    border-top: 1px solid lightgray;
+    padding-left: 15px;
+    padding-top: 20px;
+    & > label {
+      white-space: pre-wrap;
+      line-height: 150%;
+      color: rgb(110, 110, 110);
+    }
   }
 
   & > img {
@@ -117,7 +124,7 @@ function Products() {
               &nbsp;(1%)
             </label>
             <label className="label_title">fabric</label>
-            <label>{Item.ITEMS_FABRIC}</label>
+            <label style={{ 'white-space': 'pre-wrap' }}>{Item.ITEMS_FABRIC}</label>
             <label className="label_title">size</label>
             <label>{Item.ITEMS_SIZE}</label>
             <label className="label_title">color</label>

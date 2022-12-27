@@ -11,6 +11,7 @@ const AdminUpload = () => {
   const [file, setFile] = useState('');
   const [percent, setPercent] = useState(0);
   const [imgURL, setImgURL] = useState('');
+  const [Content, setContent] = useState('');
 
   // 업로드 함수
   function handleUpload() {
@@ -54,6 +55,7 @@ const AdminUpload = () => {
 
   // 상품추가하기
   const addItems = async () => {
+    //이부분 수정해야됨. ITEMS_SHOWMAIN이 전부 O로 나옴 2022-12-27
     const ItemChkShowMain = document.querySelector('input[name=ITEMS_SHOWMAIN]').value;
     const ItemName = document.querySelector('#ITEMS_NAME').value;
     const ItemPrice = document.querySelector('#ITEMS_PRICE').value;
@@ -66,8 +68,8 @@ const AdminUpload = () => {
     });
     const ItemColor = document.querySelector('#ITEMS_COLOR').value;
     const ItemMadein = document.querySelector('#ITEMS_MADEIN').value;
-    const ItemContent = document.querySelector('#ITEMS_CONTENTS').value;
-    const ItemImgURL = imgURL;
+    const ItemContent = Content; //useState 변수 Content
+    const ItemImgURL = imgURL; //useState 변수 imgURL
 
     try {
       //addDoc("컬렉션에 대한 참조", "데이터가 포함된 Object")
@@ -83,7 +85,7 @@ const AdminUpload = () => {
         ITEMS_IMGURL: ItemImgURL,
       });
       console.log('콘텐츠내용', ItemContent);
-      throw new Error('에러발생');
+      //throw new Error('에러발생');
     } catch (e) {
       console.log(e);
     }
@@ -102,7 +104,7 @@ const AdminUpload = () => {
       <input type="text" id="ITEMS_PRICE" />
       <br />
       <label htmlFor="ITEMS_FABRIC">재질</label>
-      <textarea id="ITEMS_FABRIC" />
+      <textarea id="ITEMS_FABRIC" rows="3" cols="30" wrap="hard" />
       <br />
       <label>사이즈</label>
       <label>
@@ -130,7 +132,15 @@ const AdminUpload = () => {
       <input type="text" id="ITEMS_MADEIN" />
       <br />
       <label htmlFor="ITEMS_CONTENTS">상품 설명</label>
-      <textarea id="ITEMS_CONTENTS" />
+      <textarea
+        onChange={(e) => {
+          let contents = e.target.value;
+          setContent(contents);
+        }}
+        id="ITEMS_CONTENTS"
+        rows="5"
+        cols="20"
+      />
       <br />
       <div>
         <input
