@@ -2,9 +2,53 @@
 /* 컴포넌트 이름이 긴 것은 어쩔 수 없습니다 ^^ */
 
 import React, { useState } from 'react';
+import styled from 'styled-components';
 import { fireStore, storage } from '../../firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
+import { useRef } from 'react';
+
+const CustomLabel = styled.label`
+  font-family: 'GmarketSans', sans-serif;
+  color: rgb(100, 100, 100);
+  font-size: 14.5px;
+  font-weight: 400;
+`;
+
+const CustomLabelEng = styled(CustomLabel)`
+  font-size: 12.5px;
+`;
+
+const InputTextArea = styled.textarea`
+  font-family: 'GmarketSans', sans-serif;
+  outline-style: none;
+  background-color: white;
+  rows: ${(props) => props.rows};
+  cols: ${(props) => props.cols};
+  border: 2px solid #999;
+  resize: none;
+  margin-top: 7px;
+`;
+
+const InputText = styled.input.attrs({ type: 'text' })`
+  font-family: 'GmarketSans', sans-serif;
+  height: auto;
+  width: ${(props) => props.width};
+  line-height: normal;
+  padding: 0.5em 0.5em;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 2px solid #999;
+  outline-style: none;
+  background-color: white;
+`;
+
+const price_input_style = {
+  borderBottom: '2px solid #999',
+  width: '250px',
+  marginBottom: '-5px',
+};
 
 const AdminUpload = () => {
   const itemsCollectionRef = collection(fireStore, 'shopping_items');
@@ -31,7 +75,7 @@ const AdminUpload = () => {
      *  1번째 콜백함수 : 업로드 진행 상황 추적, 진행 상태 업로드
      *  2번째 콜백함수 : 업로드 실패 시 오류를 처리
      *  3번째 콜백함수 : 업로드가 완료되면 실행되고, 다운로드 URL을 가져오고 콘솔에 표시
-     *              실무에서는 데이터베이스에 저장해도 됨.
+     *                  fireStore 데이터베이스에 저장해도 됨.
      */
     uploadTask.on(
       'state_changed',
@@ -92,55 +136,64 @@ const AdminUpload = () => {
   };
   return (
     <div>
-      <label htmlFor="ITEMS_SHOWMAIN">
-        <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
-        메인화면 추천상품 적용
-      </label>
+      {/* 상품명, 상품 요약설명 section */}
+      <div className="item_info_section">
+        <br />
+        <CustomLabel htmlFor="ITEMS_NAME">상품명</CustomLabel>
+        <br />
+        <InputText id="ITEMS_NAME" width="300px" placeholder="상품명은 2~20자입니다" />
+        <br />
+        <br />
+        <CustomLabel htmlFor="ITEMS_CONTENTS">상품 요약 설명</CustomLabel>
+        <br />
+        <InputTextArea
+          onChange={(e) => {
+            let contents = e.target.value;
+            setContent(contents);
+          }}
+          placeholder="요약 설명은 최대 8줄입니다."
+          id="ITEMS_CONTENTS"
+          rows="8"
+          cols="34"
+        />
+      </div>
+
+      <CustomLabel htmlFor="ITEMS_PRICE">상품 가격</CustomLabel>
+      <CustomLabelEng> (KRW)</CustomLabelEng>
+
+      <div style={price_input_style}>
+        <CustomLabelEng>(KRW)</CustomLabelEng>
+        <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
+      </div>
       <br />
-      <label htmlFor="ITEMS_NAME">상품명</label>
-      <input type="text" id="ITEMS_NAME" />
+      <CustomLabel htmlFor="ITEMS_FABRIC">재질</CustomLabel>
+      <InputTextArea id="ITEMS_FABRIC" rows="5" cols="30" />
       <br />
-      <label htmlFor="ITEMS_PRICE">가격</label>
-      <input type="text" id="ITEMS_PRICE" />
-      <br />
-      <label htmlFor="ITEMS_FABRIC">재질</label>
-      <textarea id="ITEMS_FABRIC" rows="3" cols="30" wrap="hard" />
-      <br />
-      <label>사이즈</label>
-      <label>
+      <CustomLabel>사이즈</CustomLabel>
+      <CustomLabel>
         <input type="checkbox" name="ITEM_SIZE" value="S" />S
-      </label>
-      <label>
+      </CustomLabel>
+      <CustomLabel>
         <input type="checkbox" name="ITEM_SIZE" value="M" />M
-      </label>
-      <label>
+      </CustomLabel>
+      <CustomLabel>
         <input type="checkbox" name="ITEM_SIZE" value="L" />L
-      </label>
-      <label>
+      </CustomLabel>
+      <CustomLabel>
         <input type="checkbox" name="ITEM_SIZE" value="XL" />
         XL
-      </label>
-      <label>
+      </CustomLabel>
+      <CustomLabel>
         <input type="checkbox" name="ITEM_SIZE" value="FREE" />
         FREE
-      </label>
+      </CustomLabel>
       <br />
-      <label htmlFor="ITEMS_COLOR">상품 색상</label>
+      <CustomLabel htmlFor="ITEMS_COLOR">상품 색상</CustomLabel>
       <input type="color" id="ITEMS_COLOR" />
       <br />
-      <label htmlFor="ITEMS_MADEIN">MADE IN</label>
-      <input type="text" id="ITEMS_MADEIN" />
+      <CustomLabel htmlFor="ITEMS_MADEIN">MADE IN</CustomLabel>
+      <InputText id="ITEMS_MADEIN" />
       <br />
-      <label htmlFor="ITEMS_CONTENTS">상품 설명</label>
-      <textarea
-        onChange={(e) => {
-          let contents = e.target.value;
-          setContent(contents);
-        }}
-        id="ITEMS_CONTENTS"
-        rows="5"
-        cols="20"
-      />
       <br />
       <div>
         <input
@@ -151,9 +204,15 @@ const AdminUpload = () => {
           }}
         />
         <br />
+        <img src={imgURL} alt="error" />
+        <br />
         <button onClick={handleUpload}>사진 업로드</button>
         <p>{percent}% 완료</p>
       </div>
+      <CustomLabel htmlFor="ITEMS_SHOWMAIN">
+        <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
+        메인화면 추천상품 적용
+      </CustomLabel>
       <br />
       <br />
       <button onClick={addItems}>추가하기</button>

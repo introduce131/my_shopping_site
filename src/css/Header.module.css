@@ -7,6 +7,10 @@
   font-family: 'Roboto';
   src: url('../../public/font/Roboto.ttf');
 }
+@font-face {
+  font-family: 'GmarketSans';
+  src: url('../../public/font/GmarketSans.ttf');
+}
 body {
   height: 100%;
   font-size: 14px;

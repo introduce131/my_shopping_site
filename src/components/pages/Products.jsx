@@ -79,7 +79,7 @@ const ItemDetailContentDiv = styled.div`
   }
 `;
 
-function Products() {
+const Products = () => {
   const param = useParams();
   const [Item, setItem] = useState({});
 
@@ -140,6 +140,6 @@ function Products() {
       </ItemDetailContainerDiv>
     </div>
   );
-}
+};
 
 export default Products;
