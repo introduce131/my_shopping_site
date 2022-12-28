@@ -60,7 +60,7 @@ const AdminUpload = () => {
   // 이미지 상대경로 저장
   const handleAddImages = (event) => {
     const imageList = event.target.files;
-    let imageUrlLists = [...showImages];
+    let imageUrlLists = []; //초기화 해주자
 
     // createObjectURL로 url을 호출하면 revoke를 통해 제거해야함
     // 아니면 시스템 상 메모리 누수된다는데..
@@ -71,10 +71,16 @@ const AdminUpload = () => {
 
     // 파일 2개이상 선택 시 배열에서 제거해버림
     if (imageUrlLists.length > 2) {
+      alert('파일은 2개까지 선택 가능합니다. 순서대로 선택한 2개파일만 적용됩니다.');
       imageUrlLists = imageUrlLists.slice(0, 2);
     }
 
     setShowImages(imageUrlLists);
+
+    //createObjectURL 파기해버렸읍니다..
+    for (let i = 0; i < imageList.length; i++) {
+      URL.revokeObjectURL(imageList[i]);
+    }
   };
 
   //이미지 옆 삭제버튼 클릭
@@ -84,6 +90,7 @@ const AdminUpload = () => {
 
   // fireStore/Storage 이미지 업로드 함수
   function handleUpload() {
+    const MAX_FILES_COUNT = 2;
     //파일이 비어있지 않은지 먼저 확인
     if (!file[0]) {
       alert('이미지 파일을 먼저 선택해주세요');
@@ -93,8 +100,8 @@ const AdminUpload = () => {
      *  firebase/storage에서 ref함수를 가져오고 파라미터로
      *  (저장소 서비스), (파일경로)를 인수로 전달함 */
 
-    // 업로드한 이미지 파일 수 만큼만 반복 돌림.
-    for (let i = 0; i < file.length; i++) {
+    // MAX_FILES_COUNT 만큼 돌림, 2장으로 한정했음
+    for (let i = 0; i < MAX_FILES_COUNT; i++) {
       const storageRef = ref(storage, `files/${file[i].name}`);
       /**  uploadBytesResumable()에 인스턴스를 전달하여 업로드 작업을 만듬.*/
       const uploadTask = uploadBytesResumable(storageRef, file[i]);
