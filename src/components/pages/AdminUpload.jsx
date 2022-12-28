@@ -62,14 +62,16 @@ const AdminUpload = () => {
     const imageList = event.target.files;
     let imageUrlLists = [...showImages];
 
+    // createObjectURL로 url을 호출하면 revoke를 통해 제거해야함
+    // 아니면 시스템 상 메모리 누수된다는데..
     for (let i = 0; i < imageList.length; i++) {
       const currentImageUrl = URL.createObjectURL(imageList[i]);
       imageUrlLists.push(currentImageUrl);
-      window.URL.revokeObjectURL(imageList[i]);
     }
 
+    // 파일 2개이상 선택 시 배열에서 제거해버림
     if (imageUrlLists.length > 2) {
-      imageUrlLists = imageUrlLists.slice(0, 10);
+      imageUrlLists = imageUrlLists.slice(0, 2);
     }
 
     setShowImages(imageUrlLists);
@@ -91,6 +93,7 @@ const AdminUpload = () => {
      *  firebase/storage에서 ref함수를 가져오고 파라미터로
      *  (저장소 서비스), (파일경로)를 인수로 전달함 */
 
+    // 업로드한 이미지 파일 수 만큼만 반복 돌림.
     for (let i = 0; i < file.length; i++) {
       const storageRef = ref(storage, `files/${file[i].name}`);
       /**  uploadBytesResumable()에 인스턴스를 전달하여 업로드 작업을 만듬.*/
