@@ -6,7 +6,6 @@ import styled from 'styled-components';
 import { fireStore, storage } from '../../firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
-import { useRef } from 'react';
 
 const CustomLabel = styled.label`
   font-family: 'GmarketSans', sans-serif;
@@ -52,49 +51,76 @@ const price_input_style = {
 
 const AdminUpload = () => {
   const itemsCollectionRef = collection(fireStore, 'shopping_items');
-  const [file, setFile] = useState('');
   const [percent, setPercent] = useState(0);
   const [imgURL, setImgURL] = useState('');
   const [Content, setContent] = useState('');
+  const [file, setFile] = useState([]);
+  const [showImages, setShowImages] = useState([]);
 
-  // 업로드 함수
+  // 이미지 상대경로 저장
+  const handleAddImages = (event) => {
+    const imageList = event.target.files;
+    let imageUrlLists = [...showImages];
+
+    for (let i = 0; i < imageList.length; i++) {
+      const currentImageUrl = URL.createObjectURL(imageList[i]);
+      imageUrlLists.push(currentImageUrl);
+      window.URL.revokeObjectURL(imageList[i]);
+    }
+
+    if (imageUrlLists.length > 2) {
+      imageUrlLists = imageUrlLists.slice(0, 10);
+    }
+
+    setShowImages(imageUrlLists);
+  };
+
+  //이미지 옆 삭제버튼 클릭
+  const handleDeleteImage = (id) => {
+    setShowImages(showImages.filter((_, index) => index !== id));
+  };
+
+  // fireStore/Storage 이미지 업로드 함수
   function handleUpload() {
     //파일이 비어있지 않은지 먼저 확인
-    if (!file) {
+    if (!file[0]) {
       alert('이미지 파일을 먼저 선택해주세요');
     }
 
     /** <스토리지(저장소) 참조 생성 => 작업하려는 클라우드 파일에 대한 포인터 역할>
      *  firebase/storage에서 ref함수를 가져오고 파라미터로
      *  (저장소 서비스), (파일경로)를 인수로 전달함 */
-    const storageRef = ref(storage, `files/${file.name}`);
-    /**  uploadBytesResumable()에 인스턴스를 전달하여 업로드 작업을 만듬.*/
-    const uploadTask = uploadBytesResumable(storageRef, file);
 
-    /** state_changed 이벤트에는 3가지 콜백함수가 있다
-     *  1번째 콜백함수 : 업로드 진행 상황 추적, 진행 상태 업로드
-     *  2번째 콜백함수 : 업로드 실패 시 오류를 처리
-     *  3번째 콜백함수 : 업로드가 완료되면 실행되고, 다운로드 URL을 가져오고 콘솔에 표시
-     *                  fireStore 데이터베이스에 저장해도 됨.
-     */
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        //퍼센트 값 = 반올림(지금까지 성공적으로 업로드된 byte 수 / 업로드할 총 byte 수)
-        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+    for (let i = 0; i < file.length; i++) {
+      const storageRef = ref(storage, `files/${file[i].name}`);
+      /**  uploadBytesResumable()에 인스턴스를 전달하여 업로드 작업을 만듬.*/
+      const uploadTask = uploadBytesResumable(storageRef, file[i]);
 
-        setPercent(percent);
-      },
-      (err) => {
-        setImgURL(err.code);
-      },
-      () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-          setImgURL(url); //imgURL state에 저장
-          console.log('이미지 경로', url);
-        });
-      }
-    );
+      /** state_changed 이벤트에는 3가지 콜백함수가 있다
+       *  1번째 콜백함수 : 업로드 진행 상황 추적, 진행 상태 업로드
+       *  2번째 콜백함수 : 업로드 실패 시 오류를 처리
+       *  3번째 콜백함수 : 업로드가 완료되면 실행되고, 다운로드 URL을 가져오고 콘솔에 표시
+       *                  fireStore 데이터베이스에 저장해도 됨.
+       */
+      uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          //퍼센트 값 = 반올림(지금까지 성공적으로 업로드된 byte 수 / 업로드할 총 byte 수)
+          const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+
+          setPercent(percent);
+        },
+        (err) => {
+          setImgURL(err.code);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            setImgURL(url); //imgURL state에 저장
+            console.log('이미지 경로', url);
+          });
+        }
+      );
+    }
   }
 
   // 상품추가하기
@@ -166,6 +192,7 @@ const AdminUpload = () => {
         <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
       </div>
       <br />
+
       <CustomLabel htmlFor="ITEMS_FABRIC">재질</CustomLabel>
       <InputTextArea id="ITEMS_FABRIC" rows="5" cols="30" />
       <br />
@@ -196,15 +223,20 @@ const AdminUpload = () => {
       <br />
       <br />
       <div>
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            setFile(e.target.files[0]);
-          }}
-        />
-        <br />
-        <img src={imgURL} alt="error" />
+        <label htmlFor="input-file" onChange={handleAddImages}>
+          <input
+            id="input-file"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              setFile(e.target.files);
+            }}
+            multiple
+          />
+        </label>
+        {showImages.map((image, id) => (
+          <img key={id} src={image} style={{ width: '130px', height: '130px' }} />
+        ))}
         <br />
         <button onClick={handleUpload}>사진 업로드</button>
         <p>{percent}% 완료</p>
