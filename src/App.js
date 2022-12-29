@@ -3,6 +3,7 @@ import Home from './components/pages/Home';
 import Products from './components/pages/Products';
 import AdminUpload from './components/pages/AdminUpload';
 import { Routes, Route } from 'react-router-dom';
+import './css/App.css';
 
 function App() {
   return (

@@ -17,7 +17,6 @@ const CustomLabel = styled.label`
 // "이미지 추가" label
 const AddImageLabel = styled(CustomLabel)`
   color: rgb(61, 210, 186);
-  margin-left: 187px;
   &:hover {
     color: rgb(80, 230, 206);
   }
@@ -211,6 +210,68 @@ const AdminUpload = () => {
       <CustomLabel htmlFor="ITEMS_FABRIC">재질</CustomLabel>
       <InputTextArea id="ITEMS_FABRIC" rows="5" cols="30" />
       <br />
+      <div
+        style={{ position: 'relative', border: '2px solid #999', width: '303px', height: '300px' }}
+      >
+        <CustomLabel style={{ position: 'absolute', top: '10px', left: '10px' }}>
+          대표 이미지
+        </CustomLabel>
+        <AddImageLabel
+          style={{ position: 'absolute', top: '10px', right: '10px' }}
+          htmlFor="input-file"
+          onChange={handleAddImages}
+        >
+          <input
+            id="input-file"
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              setFile(e.target.files);
+            }}
+            multiple
+            style={{ display: 'none' }}
+          />
+          이미지 추가
+        </AddImageLabel>
+        {showImages.map((image, id) => (
+          <div
+            key={id}
+            style={{
+              position: 'relative',
+              height: '130px',
+              border: '2px solid black',
+              marginLeft: '11.5px',
+              marginTop: '55px',
+              display: 'inline-block',
+            }}
+          >
+            <img src={image} style={{ width: '130px', height: '130px' }} />
+            <img
+              src={process.env.PUBLIC_URL + '/images/delete-image.png'}
+              style={{
+                position: 'absolute',
+                top: '0px',
+                right: '0px',
+                width: '20px',
+                height: '20px',
+              }}
+            />
+          </div>
+        ))}
+        <br />
+        <CustomLabel style={{ marginTop: '5px', display: 'block', textAlign: 'center' }}>
+          미리보기 사진은 최대 2장까지 가능합니다.
+        </CustomLabel>
+        <br />
+        <button onClick={handleUpload}>사진 업로드</button>
+        <p>{percent}% 완료</p>
+      </div>
+      <CustomLabel htmlFor="ITEMS_SHOWMAIN">
+        <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
+        메인화면 추천상품 적용
+      </CustomLabel>
+      <br />
+      <br />
       <CustomLabel>사이즈</CustomLabel>
       <CustomLabel>
         <input type="checkbox" name="ITEM_SIZE" value="S" />S
@@ -235,36 +296,6 @@ const AdminUpload = () => {
       <br />
       <CustomLabel htmlFor="ITEMS_MADEIN">MADE IN</CustomLabel>
       <InputText id="ITEMS_MADEIN" />
-      <br />
-      <br />
-      <div style={{ border: '2px solid #999', width: '310px', height: '300px' }}>
-        <CustomLabel style={{ paddingTop: '10px' }}>이미지</CustomLabel>
-        <AddImageLabel htmlFor="input-file" onChange={handleAddImages}>
-          <input
-            id="input-file"
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              setFile(e.target.files);
-            }}
-            multiple
-            style={{ display: 'none' }}
-          />
-          이미지 추가
-        </AddImageLabel>
-        <br />
-        <br />
-        {showImages.map((image, id) => (
-          <img key={id} src={image} style={{ width: '130px', height: '130px' }} />
-        ))}
-        <br />
-        <button onClick={handleUpload}>사진 업로드</button>
-        <p>{percent}% 완료</p>
-      </div>
-      <CustomLabel htmlFor="ITEMS_SHOWMAIN">
-        <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
-        메인화면 추천상품 적용
-      </CustomLabel>
       <br />
       <br />
       <button onClick={addItems}>추가하기</button>
