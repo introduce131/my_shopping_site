@@ -102,6 +102,7 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
   display: flex;
   /* 메뉴 컨테이너 최소/최대크기 지정 */
   margin: auto;
+  width: 1100px;
   max-width: 1100px;
   min-width: 900px;
   /* End .. */
@@ -114,7 +115,6 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
 }
 /*{ 상단 메뉴아이템 선택 flex container의 items }*/
 .menu_item {
-  flex-grow: 0; /* 이거 기본값인디..뭘한거지?*/
   height: 34px;
   padding-left: 15px;
   padding-right: 15px;
@@ -123,6 +123,7 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 0 1 6%;
 }
 /*{ 아이템의 1번째인 전체보기(아이콘)을 MouseOnEvent }*/
 .menu_item:nth-child(1):hover {
@@ -131,5 +132,5 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
 /*{ 해당 아이템 MouseOnEvent  }*/
 .menu_item:hover {
   color: rgb(161, 161, 161);
-  border-bottom: 1px solid black;
+  border-bottom: 2px solid black;
 }

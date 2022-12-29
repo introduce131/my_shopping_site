@@ -4,8 +4,12 @@ import styled from 'styled-components';
 import '../css/slick.css';
 import '../css/slick-theme.css';
 
-const Image = styled.img`
+const CustomSlider = styled(Slider)`
+  width: 1103px;
+  height: 612px;
   margin: auto;
+`;
+const Image = styled.img`
   width: 1103px;
   height: 612px;
 `;
@@ -15,7 +19,7 @@ const MainSlideImage = () => {
     slide: 'div', //슬라이드 되어야 할 태그 ex) div, li
     dots: true, //슬라이드 밑에 점 보이게(페이지네이션 여부)
     infinite: true, //무한 반복 옵션
-    speed: 500, //다음 버튼 누르고 다음 슬라이드 뜨는 시간(ms)
+    speed: 800, //다음 버튼 누르고 다음 슬라이드 뜨는 시간(ms)
     slidesToShow: 1, //한 화면에 보여질 컨텐츠 개수
     slidesToScroll: 1, //스크롤 한번에 움직일 컨텐츠 개수
     autoplay: true, //자동 스크롤 사용 여부
@@ -30,7 +34,7 @@ const MainSlideImage = () => {
 
   return (
     <div>
-      <Slider {...settings}>
+      <CustomSlider {...settings}>
         <div>
           <Image src={process.env.PUBLIC_URL + '/images/sale.jpg'} />
         </div>
@@ -40,7 +44,7 @@ const MainSlideImage = () => {
         <div>
           <Image src={process.env.PUBLIC_URL + '/images/image03.jpg'} />
         </div>
-      </Slider>
+      </CustomSlider>
     </div>
   );
 };

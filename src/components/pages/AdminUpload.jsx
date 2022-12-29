@@ -14,8 +14,13 @@ const CustomLabel = styled.label`
   font-weight: 400;
 `;
 
-const CustomLabelEng = styled(CustomLabel)`
-  font-size: 12.5px;
+// "이미지 추가" label
+const AddImageLabel = styled(CustomLabel)`
+  color: rgb(61, 210, 186);
+  margin-left: 187px;
+  &:hover {
+    color: rgb(80, 230, 206);
+  }
 `;
 
 const InputTextArea = styled.textarea`
@@ -183,22 +188,22 @@ const AdminUpload = () => {
         <CustomLabel htmlFor="ITEMS_CONTENTS">상품 요약 설명</CustomLabel>
         <br />
         <InputTextArea
+          id="ITEMS_CONTENTS"
           onChange={(e) => {
             let contents = e.target.value;
             setContent(contents);
           }}
           placeholder="요약 설명은 최대 8줄입니다."
-          id="ITEMS_CONTENTS"
           rows="8"
           cols="34"
         />
       </div>
 
-      <CustomLabel htmlFor="ITEMS_PRICE">상품 가격</CustomLabel>
-      <CustomLabelEng> (KRW)</CustomLabelEng>
-
       <div style={price_input_style}>
-        <CustomLabelEng>(KRW)</CustomLabelEng>
+        <CustomLabel htmlFor="ITEMS_PRICE">상품 가격</CustomLabel>
+        <CustomLabel style={{ fontSize: '12.5px' }}> (KRW)</CustomLabel>
+        <br />
+        <CustomLabel style={{ fontSize: '12.5px' }}>(KRW)</CustomLabel>
         <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
       </div>
       <br />
@@ -232,8 +237,9 @@ const AdminUpload = () => {
       <InputText id="ITEMS_MADEIN" />
       <br />
       <br />
-      <div>
-        <label htmlFor="input-file" onChange={handleAddImages}>
+      <div style={{ border: '2px solid #999', width: '310px', height: '300px' }}>
+        <CustomLabel style={{ paddingTop: '10px' }}>이미지</CustomLabel>
+        <AddImageLabel htmlFor="input-file" onChange={handleAddImages}>
           <input
             id="input-file"
             type="file"
@@ -242,8 +248,12 @@ const AdminUpload = () => {
               setFile(e.target.files);
             }}
             multiple
+            style={{ display: 'none' }}
           />
-        </label>
+          이미지 추가
+        </AddImageLabel>
+        <br />
+        <br />
         {showImages.map((image, id) => (
           <img key={id} src={image} style={{ width: '130px', height: '130px' }} />
         ))}
