@@ -1,4 +1,4 @@
-/* 이 파일은 Admin(관리자) 전용 화면입니다. */
+/* 이 파일은 /admin 화면입니다. */
 /* 컴포넌트 이름이 긴 것은 어쩔 수 없습니다 ^^ */
 
 import React, { useState } from 'react';
@@ -6,6 +6,8 @@ import styled from 'styled-components';
 import { fireStore, storage } from '../../firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
+import Editor from '../Editor.jsx';
+import LeftMenuBar from '../LeftMenuBar.jsx';
 
 // 커스텀 Label
 const CustomLabel = styled.label`
@@ -55,7 +57,8 @@ const FlexContainer = styled.div`
   justify-content: space-around;
   flex-flow: row nowrap;
   align-items: center;
-  width: 85%;
+  width: 70%;
+  min-width: 700px;
   margin: 0 auto;
 `;
 
@@ -189,6 +192,7 @@ const AdminUpload = () => {
   };
   return (
     <div>
+      <LeftMenuBar />
       <FlexContainer>
         {/* 상품명, 상품 요약설명 div */}
         <div className="item_info_section">
@@ -283,10 +287,17 @@ const AdminUpload = () => {
             value={percent}
             min="0"
             max="100"
-            style={{ position: 'absolute', bottom: '11px', left: '20px', width: '55%' }}
+            style={{
+              position: 'absolute',
+              bottom: '11px',
+              left: '20px',
+              width: '55%',
+            }}
           />
         </div>
       </FlexContainer>
+
+      <Editor />
 
       {/* 상품 가격 입력 div*/}
       <div style={price_input_style}>
