@@ -9,6 +9,10 @@ const MenuContatinerDiv = styled.div`
   width: 165px;
   height: 100%;
   background-color: #999;
+
+  @media screen and (max-width: 1100px) {
+    display: none;
+  }
 `;
 
 const MenuItemDiv = styled.div`

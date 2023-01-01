@@ -2,12 +2,19 @@
 /* 컴포넌트 이름이 긴 것은 어쩔 수 없습니다 ^^ */
 
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { fireStore, storage } from '../../firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
 import Editor from '../Editor.jsx';
 import LeftMenuBar from '../LeftMenuBar.jsx';
+
+// 전역 스타일링
+const GlobalStyle = createGlobalStyle`
+  body {
+    background-color: rgb(223,223,223);
+  }
+`;
 
 // 커스텀 Label
 const CustomLabel = styled.label`
@@ -52,22 +59,78 @@ const InputText = styled.input.attrs({ type: 'text' })`
   background-color: white;
 `;
 
-const FlexContainer = styled.div`
+const ItemInfoFlexContainer = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-flow: row nowrap;
   align-items: center;
-  width: 70%;
+  width: 65%;
   min-width: 700px;
   margin: 0 auto;
+
+  & > .item_info_section {
+    background-color: white;
+    padding: 0 10px 10px 10px;
+    border: 2px solid #999;
+    width: 41.5%;
+  }
+
+  & > .image_upload_section {
+    position: relative;
+    border: 2px solid #999;
+    width: 303px;
+    height: 282px;
+    background-color: white;
+    padding: 0 10px 10px;
+  }
+
+  @media screen and (max-width: 1100px) {
+    width: 750px;
+
+    .item_info_section {
+      width: 312px;
+    }
+  }
 `;
 
-// 상품가격(KRW) 입력란 inline-style
-const price_input_style = {
-  borderBottom: '2px solid #999',
-  width: '250px',
-  marginBottom: '-5px',
-};
+// 상품 상세설명
+const ItemsDetailDiv = styled.div`
+  position: relative;
+  width: 65%;
+  background-color: white;
+  margin: 15px auto;
+  height: auto;
+  border: 2px solid #999;
+
+  @media screen and (max-width: 1100px) {
+    width: 750px;
+  }
+`;
+
+// 상품가격(KRW), 할인 전 가격(KRW)
+const PriceInputContainer = styled.div`
+  width: 65%;
+  margin: auto;
+  background-color: white;
+  position: relative;
+  border: 2px solid #999;
+
+  & > .price_input_box {
+    display: inline-block;
+    width: 40%;
+    margin 10px 0px 10px 0px;
+    border-bottom: 2px solid #999;
+  }
+
+  & > .price_input_style {
+    width: 250px;
+    margin-bottom: -5px;
+  }
+
+  @media screen and (max-width: 1100px) {
+    width: 750px;
+  }
+`;
 
 const AdminUpload = () => {
   const itemsCollectionRef = collection(fireStore, 'shopping_items');
@@ -192,14 +255,19 @@ const AdminUpload = () => {
   };
   return (
     <div>
+      {/* 전역 스타일링 적용 */}
+      <GlobalStyle />
+
+      {/* 왼쪽 고정된 Navigation Bar */}
       <LeftMenuBar />
-      <FlexContainer>
+
+      <ItemInfoFlexContainer>
         {/* 상품명, 상품 요약설명 div */}
         <div className="item_info_section">
           <br />
           <CustomLabel htmlFor="ITEMS_NAME">상품명</CustomLabel>
           <br />
-          <InputText id="ITEMS_NAME" width="300px" placeholder="상품명은 2~20자입니다" />
+          <InputText id="ITEMS_NAME" width="95%" placeholder="상품명은 2~20자입니다" />
           <br />
           <br />
           <CustomLabel htmlFor="ITEMS_CONTENTS">상품 요약 설명</CustomLabel>
@@ -213,18 +281,12 @@ const AdminUpload = () => {
             placeholder="요약 설명은 최대 10줄입니다."
             rows="10"
             cols="34"
+            style={{ width: '97%' }}
           />
         </div>
 
         {/* 대표 이미지 업로드 div*/}
-        <div
-          style={{
-            position: 'relative',
-            border: '2px solid #999',
-            width: '303px',
-            height: '270px',
-          }}
-        >
+        <div className="image_upload_section">
           <CustomLabel style={{ position: 'absolute', top: '10px', left: '10px' }}>
             대표 이미지
           </CustomLabel>
@@ -295,18 +357,42 @@ const AdminUpload = () => {
             }}
           />
         </div>
-      </FlexContainer>
+      </ItemInfoFlexContainer>
 
-      <Editor />
+      {/* 상품 상세설명 */}
+      <ItemsDetailDiv>
+        <CustomLabel
+          style={{
+            position: 'absolute',
+            top: '7px',
+            left: '7px',
+          }}
+        >
+          상세 설명
+        </CustomLabel>
+        <br />
+        <Editor />
+      </ItemsDetailDiv>
 
       {/* 상품 가격 입력 div*/}
-      <div style={price_input_style}>
-        <CustomLabel htmlFor="ITEMS_PRICE">상품 가격</CustomLabel>
-        <CustomLabel style={{ fontSize: '12.5px' }}> (KRW)</CustomLabel>
+      <PriceInputContainer>
+        <CustomLabel style={{ position: 'absolute', top: '7px', left: '7px' }}>가격</CustomLabel>
         <br />
-        <CustomLabel style={{ fontSize: '12.5px' }}>(KRW)</CustomLabel>
-        <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
-      </div>
+        <div className="price_input_box" style={{ marginLeft: '15px' }}>
+          <CustomLabel htmlFor="ITEMS_PRICE">상품 가격</CustomLabel>
+          <CustomLabel style={{ fontSize: '12.5px' }}> (KRW)</CustomLabel>
+          <br />
+          <CustomLabel style={{ fontSize: '12.5px' }}>(KRW)</CustomLabel>
+          <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
+        </div>
+        <div className="price_input_box" style={{ marginLeft: '120px' }}>
+          <CustomLabel htmlFor="ITEMS_PRICE">할인 이전 가격</CustomLabel>
+          <CustomLabel style={{ fontSize: '12.5px' }}> (KRW)</CustomLabel>
+          <br />
+          <CustomLabel style={{ fontSize: '12.5px' }}>(KRW)</CustomLabel>
+          <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
+        </div>
+      </PriceInputContainer>
       <br />
 
       {/* 상품 재질 입력란 */}

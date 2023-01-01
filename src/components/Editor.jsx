@@ -4,9 +4,8 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 const CustomEditor = styled(ReactQuill)`
-  width: 70%;
-  min-width: 700px;
   margin: 10px auto;
+  width: 95%;
   .ql-container {
     font-size: 16px;
   }
