@@ -8,11 +8,12 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
 import Editor from '../Editor.jsx';
 import LeftMenuBar from '../LeftMenuBar.jsx';
+import Option from '../Option.jsx';
 
 // 전역 스타일링
 const GlobalStyle = createGlobalStyle`
   body {
-    background-color: rgb(223,223,223);
+    background-color: rgb(243,243,243);
   }
 `;
 
@@ -386,51 +387,31 @@ const AdminUpload = () => {
           <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
         </div>
         <div className="price_input_box" style={{ marginLeft: '120px' }}>
-          <CustomLabel htmlFor="ITEMS_PRICE">할인 이전 가격</CustomLabel>
+          <CustomLabel htmlFor="ITEMS_PRICE_SALE">할인 이전 가격</CustomLabel>
           <CustomLabel style={{ fontSize: '12.5px' }}> (KRW)</CustomLabel>
           <br />
           <CustomLabel style={{ fontSize: '12.5px' }}>(KRW)</CustomLabel>
-          <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
+          <InputText id="ITEMS_PRICE_SALE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
         </div>
       </PriceInputContainer>
       <br />
-
+      <br />
+      <Option />
+      <br />
+      <br />
+      <Option />
+      <br />
+      <br />
       {/* 상품 재질 입력란 */}
       <CustomLabel htmlFor="ITEMS_FABRIC">재질</CustomLabel>
       <InputTextArea id="ITEMS_FABRIC" rows="5" cols="30" />
       <br />
-
       {/*  */}
       <CustomLabel htmlFor="ITEMS_SHOWMAIN">
         <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
         메인화면 추천상품 적용
       </CustomLabel>
       <br />
-      <br />
-      <CustomLabel>사이즈</CustomLabel>
-      <CustomLabel>
-        <input type="checkbox" name="ITEM_SIZE" value="S" />S
-      </CustomLabel>
-      <CustomLabel>
-        <input type="checkbox" name="ITEM_SIZE" value="M" />M
-      </CustomLabel>
-      <CustomLabel>
-        <input type="checkbox" name="ITEM_SIZE" value="L" />L
-      </CustomLabel>
-      <CustomLabel>
-        <input type="checkbox" name="ITEM_SIZE" value="XL" />
-        XL
-      </CustomLabel>
-      <CustomLabel>
-        <input type="checkbox" name="ITEM_SIZE" value="FREE" />
-        FREE
-      </CustomLabel>
-      <br />
-      <CustomLabel htmlFor="ITEMS_COLOR">상품 색상</CustomLabel>
-      <input type="color" id="ITEMS_COLOR" />
-      <br />
-      <CustomLabel htmlFor="ITEMS_MADEIN">MADE IN</CustomLabel>
-      <InputText id="ITEMS_MADEIN" />
       <br />
       <br />
       <button onClick={addItems}>추가하기</button>
