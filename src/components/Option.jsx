@@ -27,6 +27,42 @@ const ParentContainer = styled.div`
   border: 1px solid black;
   margin: 0 auto;
 
+  /* option-container div */
+  & > .option-container {
+    display: flex;
+    flex-flow: row nowrap;
+    gap: 6px;
+    width: 51.5%;
+
+    /* li라 쓰고 옵션 아이템이라 읽는다 */
+    li {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-family: 'GmarketSans', sans-serif;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: rgb(100, 100, 100);
+      border: 1px solid #999;
+      list-style: none;
+      background-color: rgb(222, 222, 222);
+      padding: 2px 5px 0px 5px;
+      white-space: nowrap;
+
+      /* label이라고 쓰고 옵션 옆 X 버튼이라고 읽는다 */
+      label {
+        font-weight: 200;
+        color: rgb(100, 100, 100);
+      }
+    }
+
+    /* 입력받는 input-text의 id */
+    #option-input-text {
+      flex: 1 1 auto;
+      overflow: hidden;
+    }
+  }
+
   @media screen and (max-width: 1100px) {
     width: 750px;
   }
@@ -51,49 +87,33 @@ const CustomOption = styled.select`
   border-bottom: 2px solid #999;
 `;
 
-const OptionContainer = styled.div`
-    display:flex;
-    flex-flow: row nowrap;
-    gap: 6px;
-    width: 51.5%;
-    
-    li {
-        display: flex;
-        gap: 6px;
-        align-items:center;        
-        font-family: "GmarketSans", sans-serif;
-        font-size: 14.5px;
-        font-weight: 600;
-        color: rgb(100, 100, 100);
-        border: 1px solid #999;
-        list-style: none;
-        background-color: rgb(222, 222, 222);
-        padding: 0px 5px 0px 5px;
-      
-        label {
-            font-weight: 200;
-            color: rgb(100, 100, 100);
-        }
-    }
-    & > #option-input-text {
-        flex: 1 1 auto;
-        overflow: hidden;
-    }
-  }
-`;
-
 const Option = () => {
   const [textValue, setTextValue] = useState('');
   const [option, setOption] = useState([]);
+  const [removeCnt, setRemoveCnt] = useState(0);
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
-    const InputText = document.querySelector('#option-input-text');
-    const TextWidth = InputText.clientWidth;
-    console.log('TextWidth', TextWidth);
+    const parentOfItemList = document.querySelector('.option-container');
+    const itemList = document.querySelectorAll('.option-list');
+    let itemWidth = 0;
 
-    if (TextWidth < 50) {
-      InputText.style.display = 'none';
+    for (let i = 0; i < itemList.length; i++) {
+      itemWidth += itemList[0].clientWidth;
+    }
+
+    // li의 width의 총 길이가 348px이 넘으면 마지막으로 추가한 요소를 삭제한다
+    // 코드 진짜 개판같은데 설명하자면 option-list{5}를 삭제하면
+    // 다음에 그 자리에 생성되는 요소는 option-list{5}가 아닌 option-list{6}으로 생성됨
+    // 그래서 삭제할 때 마다 RemoveCnt 상태를 1씩 증가시켜서
+    // <<      option-list{인덱스} + {삭제한 요소의 수}로 계산      >>
+    // 그래야지 querySelector로 제대로 된 DOM객체를 가져올 수 있게된다.
+    // 일단은 개같이 쓰는데 다음에 무조건 수정
+    if (itemWidth >= 348) {
+      const removeItem = document.querySelector(`#option-list${itemList.length - 1 + removeCnt}`);
+      parentOfItemList.removeChild(removeItem);
+      setRemoveCnt(removeCnt + 1);
+      document.querySelector('#option-input-text').style.display = 'none'; //입력 텍스트박스 없애버리기
     }
   }, [option]);
 
@@ -113,10 +133,10 @@ const Option = () => {
         <option>색상</option>
       </CustomOption>
       <OptionInputText width="14%" maxLength="6" />
-      <OptionContainer>
+      <div className="option-container">
         {option.map((item, idx) => {
           return (
-            <li key={idx} className="option-list">
+            <li id={'option-list' + idx} key={idx} className="option-list">
               {item}
               <label>X</label>
             </li>
@@ -131,7 +151,7 @@ const Option = () => {
           style={{ borderBottom: 'none' }}
           width="auto"
         />
-      </OptionContainer>
+      </div>
     </ParentContainer>
   );
 };
