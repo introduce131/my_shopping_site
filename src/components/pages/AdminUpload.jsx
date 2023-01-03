@@ -399,7 +399,6 @@ const AdminUpload = () => {
       <Option />
       <br />
       <br />
-      <Option />
       <br />
       <br />
       {/* 상품 재질 입력란 */}

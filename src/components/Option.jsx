@@ -88,8 +88,13 @@ const Option = () => {
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
-    let li = document.querySelectorAll('.option-list');
-    console.log(li);
+    const InputText = document.querySelector('#option-input-text');
+    const TextWidth = InputText.clientWidth;
+    console.log('TextWidth', TextWidth);
+
+    if (TextWidth < 50) {
+      InputText.style.display = 'none';
+    }
   }, [option]);
 
   //Enter 클릭 이벤트
