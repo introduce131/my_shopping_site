@@ -268,7 +268,12 @@ const AdminUpload = () => {
           <br />
           <CustomLabel htmlFor="ITEMS_NAME">상품명</CustomLabel>
           <br />
-          <InputText id="ITEMS_NAME" width="95%" placeholder="상품명은 2~20자입니다" />
+          <InputText
+            id="ITEMS_NAME"
+            width="95%"
+            placeholder="상품명은 2~20자입니다"
+            autoComplete="off"
+          />
           <br />
           <br />
           <CustomLabel htmlFor="ITEMS_CONTENTS">상품 요약 설명</CustomLabel>
@@ -384,14 +389,22 @@ const AdminUpload = () => {
           <CustomLabel style={{ fontSize: '12.5px' }}> (KRW)</CustomLabel>
           <br />
           <CustomLabel style={{ fontSize: '12.5px' }}>(KRW)</CustomLabel>
-          <InputText id="ITEMS_PRICE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
+          <InputText
+            id="ITEMS_PRICE"
+            style={{ borderBottom: 'none', marginLeft: '5px' }}
+            autoComplete="off"
+          />
         </div>
         <div className="price_input_box" style={{ marginLeft: '120px' }}>
           <CustomLabel htmlFor="ITEMS_PRICE_SALE">할인 이전 가격</CustomLabel>
           <CustomLabel style={{ fontSize: '12.5px' }}> (KRW)</CustomLabel>
           <br />
           <CustomLabel style={{ fontSize: '12.5px' }}>(KRW)</CustomLabel>
-          <InputText id="ITEMS_PRICE_SALE" style={{ borderBottom: 'none', marginLeft: '5px' }} />
+          <InputText
+            id="ITEMS_PRICE_SALE"
+            style={{ borderBottom: 'none', marginLeft: '5px' }}
+            autoComplete="off"
+          />
         </div>
       </PriceInputContainer>
       <br />
@@ -399,6 +412,7 @@ const AdminUpload = () => {
       <Option />
       <br />
       <br />
+      <Option />
       <br />
       <br />
       {/* 상품 재질 입력란 */}

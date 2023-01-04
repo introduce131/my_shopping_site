@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useRef } from 'react';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 
@@ -6,6 +7,7 @@ import styled from 'styled-components';
 const InputText = styled.input.attrs({ type: 'text' })`
   font-family: 'GmarketSans', sans-serif;
   height: auto;
+  id: ${(props) => props.id};
   width: ${(props) => props.width};
   line-height: normal;
   padding: 0.5em 0.5em;
@@ -85,6 +87,7 @@ const CustomOption = styled.select`
   border-left: none;
   border-right: none;
   border-bottom: 2px solid #999;
+  padding-top: 5px;
 `;
 
 const Option = () => {
@@ -93,6 +96,7 @@ const Option = () => {
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
+    // querySelector useRef로 수정하자
     const parentOfItemList = document.querySelector('.option-container');
     const itemList = document.querySelectorAll('.option-list');
     let itemWidth = 0;
@@ -114,7 +118,7 @@ const Option = () => {
       const copyArray = [...option];
       const popResult = copyArray.pop();
 
-      alert(`'${popResult}' 은(는) 자릿수초과로 지워집니다`);
+      alert(`방금 입력하신 옵션 '${popResult}' 은(는) 자릿수 초과로 지워집니다`);
       setOption(copyArray);
       document.querySelector('#option-input-text').disabled = true; //입력 막기
     } else {
@@ -145,7 +149,7 @@ const Option = () => {
         <option>기본</option>
         <option>색상</option>
       </CustomOption>
-      <OptionInputText width="14%" maxLength="6" />
+      <OptionInputText width="14%" maxLength="6" style={{ paddingBottom: '5px' }} />
       <div className="option-container">
         {option.map((item, idx) => {
           return (
@@ -171,6 +175,7 @@ const Option = () => {
           }}
           style={{ borderBottom: 'none' }}
           width="auto"
+          autoComplete="off"
         />
       </div>
     </ParentContainer>
