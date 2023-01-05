@@ -29,44 +29,44 @@ const ParentContainer = styled.div`
   background-color: white;
   margin: 0 auto;
 
+  @media screen and (max-width: 1100px) {
+    width: 750px;
+  }
+`;
+
+const OptionConatiner = styled.div`
   /* option-container div */
-  & > .option-container {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 6px;
+  width: 51.5%;
+
+  /* li라 쓰고 옵션 아이템이라 읽는다 */
+  li {
     display: flex;
-    flex-flow: row nowrap;
-    gap: 6px;
-    width: 51.5%;
+    gap: 10px;
+    align-items: center;
+    font-family: 'GmarketSans', sans-serif;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: rgb(100, 100, 100);
+    border: 1px solid #999;
+    list-style: none;
+    background-color: rgb(222, 222, 222);
+    padding: 2px 5px 0px 5px;
+    white-space: nowrap;
 
-    /* li라 쓰고 옵션 아이템이라 읽는다 */
-    li {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      font-family: 'GmarketSans', sans-serif;
-      font-size: 14.5px;
-      font-weight: 600;
+    /* label이라고 쓰고 옵션 옆 X 버튼이라고 읽는다 */
+    label {
+      font-weight: 200;
       color: rgb(100, 100, 100);
-      border: 1px solid #999;
-      list-style: none;
-      background-color: rgb(222, 222, 222);
-      padding: 2px 5px 0px 5px;
-      white-space: nowrap;
-
-      /* label이라고 쓰고 옵션 옆 X 버튼이라고 읽는다 */
-      label {
-        font-weight: 200;
-        color: rgb(100, 100, 100);
-      }
-    }
-
-    /* 입력받는 input-text의 id */
-    #option-input-text {
-      flex: 1 1 auto;
-      overflow: hidden;
     }
   }
 
-  @media screen and (max-width: 1100px) {
-    width: 750px;
+  /* 입력받는 input-text의 id */
+  #option-input-text {
+    flex: 1 1 auto;
+    overflow: hidden;
   }
 `;
 
@@ -93,19 +93,22 @@ const CustomOption = styled.select`
 const Option = () => {
   const [textValue, setTextValue] = useState('');
   const [option, setOption] = useState([]);
+  const optionContainerRef = useRef();
+  const optionListRef = useRef([]);
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
-    // querySelector useRef로 수정하자
-    const parentOfItemList = document.querySelector('.option-container');
-    const itemList = document.querySelectorAll('.option-list');
+    const itemList = ''; //optionListRef.current;
     let itemWidth = 0;
+
+    console.log(optionListRef.current.length);
+    const containerWidth = Math.round(optionContainerRef.current.clientWidth * 0.9);
+
+    console.log('option', optionListRef);
 
     for (let i = 0; i < itemList.length; i++) {
       itemWidth += itemList[i].clientWidth;
     }
-
-    console.log(itemList);
 
     // li의 width의 총 길이가 div의 90%를 넘으면 마지막으로 추가한 요소를 삭제한다
     // 코드 진짜 개판같은데 설명하자면 마지막 배열의 요소인 option-list{5}를 삭제하면
@@ -114,7 +117,7 @@ const Option = () => {
     // <<      option-list{인덱스} + {삭제한 요소의 수}로 계산      >>
     // 그래야지 querySelector로 제대로 된 DOM객체를 가져올 수 있게된다.
     // 일단은 개같이 쓰는데 다음에 무조건 수정
-    if (itemWidth >= parentOfItemList.clientWidth * 0.9) {
+    if (itemWidth >= containerWidth) {
       const copyArray = [...option];
       const popResult = copyArray.pop();
 
@@ -135,30 +138,26 @@ const Option = () => {
     }
   };
 
-  // 옵션을 옆에 "X", 삭제 이벤트 처리 핸들러
-  // 아니 idx 넘겨받지도 않았는데 왜 작동하는거냐? 수정하자
-  const deleteClickHandler = (idx) => {
-    const copyArray = [...option];
-    copyArray.splice(idx, 1); //해당 인덱스 1개만 삭제
-    setOption(copyArray);
-  };
-
   return (
     <ParentContainer>
       <CustomOption>
         <option>기본</option>
         <option>색상</option>
       </CustomOption>
+
       <OptionInputText width="14%" maxLength="6" style={{ paddingBottom: '5px' }} />
-      <div className="option-container">
+
+      <OptionConatiner ref={optionContainerRef}>
         {option.map((item, idx) => {
           return (
-            <li id={'option-list' + idx} key={idx} className="option-list">
+            <li key={idx} ref={(ele) => (optionListRef.current[idx] = ele)}>
               {item}
               <label
                 onClick={() => {
                   const copyArray = [...option];
+                  const copyRefArray = [...optionListRef.current];
                   copyArray.splice(idx, 1); //해당 인덱스 1개만 삭제
+                  console.log('hi', copyRefArray);
                   setOption(copyArray);
                 }}
               >
@@ -177,7 +176,7 @@ const Option = () => {
           width="auto"
           autoComplete="off"
         />
-      </div>
+      </OptionConatiner>
     </ParentContainer>
   );
 };
