@@ -98,17 +98,17 @@ const Option = () => {
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
-    const itemList = ''; //optionListRef.current;
-    let itemWidth = 0;
+    let refWidth = 0;
 
-    console.log(optionListRef.current.length);
-    const containerWidth = Math.round(optionContainerRef.current.clientWidth * 0.9);
-
-    console.log('option', optionListRef);
-
-    for (let i = 0; i < itemList.length; i++) {
-      itemWidth += itemList[i].clientWidth;
+    // li 태그들의 width를 구함
+    for (let i = 0; i < optionListRef.current.length; i++) {
+      const ref = optionListRef.current[i];
+      if (ref !== null) {
+        //null은 제외해서 width를 더함
+        refWidth += Math.round(ref.getBoundingClientRect().width);
+      }
     }
+    const containerWidth = Math.round(optionContainerRef.current.clientWidth * 0.9);
 
     // li의 width의 총 길이가 div의 90%를 넘으면 마지막으로 추가한 요소를 삭제한다
     // 코드 진짜 개판같은데 설명하자면 마지막 배열의 요소인 option-list{5}를 삭제하면
@@ -117,7 +117,7 @@ const Option = () => {
     // <<      option-list{인덱스} + {삭제한 요소의 수}로 계산      >>
     // 그래야지 querySelector로 제대로 된 DOM객체를 가져올 수 있게된다.
     // 일단은 개같이 쓰는데 다음에 무조건 수정
-    if (itemWidth >= containerWidth) {
+    if (refWidth >= containerWidth) {
       const copyArray = [...option];
       const popResult = copyArray.pop();
 
@@ -155,9 +155,7 @@ const Option = () => {
               <label
                 onClick={() => {
                   const copyArray = [...option];
-                  const copyRefArray = [...optionListRef.current];
-                  copyArray.splice(idx, 1); //해당 인덱스 1개만 삭제
-                  console.log('hi', copyRefArray);
+                  copyArray.splice(idx, 1); //해당 인덱스 1개만
                   setOption(copyArray);
                 }}
               >
