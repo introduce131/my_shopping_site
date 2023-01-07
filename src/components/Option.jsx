@@ -114,16 +114,15 @@ const Option = () => {
     }
     const containerWidth = Math.round(optionContainerRef.current.clientWidth * 0.9);
 
-    // li(옵션)들의 width의 총 길이가 div의 90%를 넘으면 마지막으로 추가한 요소를 삭제한다
+    console.log('refWidth : ', refWidth);
+
+    // li(옵션)들의 width의 총 길이가 부모div의 90%를 넘으면 마지막으로 추가한 요소를 삭제한다
     if (refWidth >= containerWidth) {
       const copyArray = [...option];
       const popResult = copyArray.pop();
 
       alert(`방금 입력하신 옵션 '${popResult}' 은(는) 자릿수 초과로 지워집니다`);
-      setOption(copyArray);
-      inputTextRef.current.disabled = true; //입력 막기
-    } else {
-      inputTextRef.current.disabled = false; //입력 풀기
+      setOption(copyArray); //자릿수 초과한 요소를 지우고 option state에 반영해줌.
     }
   }, [option]);
 
