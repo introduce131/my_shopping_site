@@ -95,6 +95,8 @@ const Option = () => {
   const [option, setOption] = useState([]);
   const optionContainerRef = useRef();
   const optionListRef = useRef([]);
+  const inputTextRef = useRef();
+  const returnValue = new Array(); //value를 컴포넌트 밖으로 보낼 배열
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
@@ -103,29 +105,25 @@ const Option = () => {
     // li 태그들의 width를 구함
     for (let i = 0; i < optionListRef.current.length; i++) {
       const ref = optionListRef.current[i];
+
       if (ref !== null) {
         //null은 제외해서 width를 더함
         refWidth += Math.round(ref.getBoundingClientRect().width);
+        returnValue[i] = String(ref.textContent).slice(0, -1); //마지막 X 값은 지우고 값을 배열에 저장
       }
     }
     const containerWidth = Math.round(optionContainerRef.current.clientWidth * 0.9);
 
-    // li의 width의 총 길이가 div의 90%를 넘으면 마지막으로 추가한 요소를 삭제한다
-    // 코드 진짜 개판같은데 설명하자면 마지막 배열의 요소인 option-list{5}를 삭제하면
-    // 다음에 그 자리에 생성되는 요소는 option-list{5}가 아닌 option-list{6}으로 생성됨
-    // 그래서 삭제할 때 마다 RemoveCnt 상태를 1씩 증가시켜서
-    // <<      option-list{인덱스} + {삭제한 요소의 수}로 계산      >>
-    // 그래야지 querySelector로 제대로 된 DOM객체를 가져올 수 있게된다.
-    // 일단은 개같이 쓰는데 다음에 무조건 수정
+    // li(옵션)들의 width의 총 길이가 div의 90%를 넘으면 마지막으로 추가한 요소를 삭제한다
     if (refWidth >= containerWidth) {
       const copyArray = [...option];
       const popResult = copyArray.pop();
 
       alert(`방금 입력하신 옵션 '${popResult}' 은(는) 자릿수 초과로 지워집니다`);
       setOption(copyArray);
-      document.querySelector('#option-input-text').disabled = true; //입력 막기
+      inputTextRef.current.disabled = true; //입력 막기
     } else {
-      document.querySelector('#option-input-text').disabled = false; //입력 풀기
+      inputTextRef.current.disabled = false; //입력 풀기
     }
   }, [option]);
 
@@ -166,6 +164,7 @@ const Option = () => {
         })}
         <InputText
           id="option-input-text"
+          ref={inputTextRef}
           onKeyPress={onKeyPress}
           onChange={(e) => {
             setTextValue(e.target.value);
