@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 
 // Input type = "text" 커스텀
 const InputText = styled.input.attrs({ type: 'text' })`
@@ -90,13 +91,30 @@ const CustomOption = styled.select`
   padding-top: 5px;
 `;
 
-const Option = () => {
+const InputColor = styled.input.attrs({ type: 'color' })`
+  appearance: none;
+  border: none;
+  width: 20px;
+  height: 20px;
+`;
+
+// 옵션값에 색상을 추가하기 위한 이벤트핸들러
+const onClickAddColorEvent = (e) => {
+  e.preventDefault(); //기존 이벤트는 막음처리
+  const bounds = e.target.getBoundingClientRect();
+  const x = e.clientX - bounds.left;
+  const y = e.clientY - bounds.top;
+  console.log('x:', x);
+  console.log('y:', y);
+};
+
+const Option = (props) => {
   const [textValue, setTextValue] = useState('');
   const [option, setOption] = useState([]);
   const optionContainerRef = useRef();
   const optionListRef = useRef([]);
   const inputTextRef = useRef();
-  const returnValue = new Array(); //value를 컴포넌트 밖으로 보낼 배열
+  const returnValue = new Array(); //옵션값을 컴포넌트 밖으로 보낼 배열
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
@@ -107,14 +125,13 @@ const Option = () => {
       const ref = optionListRef.current[i];
 
       if (ref !== null) {
-        //null은 제외해서 width를 더함
+        //null은 제외, 옵션(li태그)의 width를 refWidth변수에 중첩저장.
         refWidth += Math.round(ref.getBoundingClientRect().width);
         returnValue[i] = String(ref.textContent).slice(0, -1); //마지막 X 값은 지우고 값을 배열에 저장
       }
     }
+    props.getOptionData(returnValue); //부모 컴포넌트에게 옵션값이 저장된 배열 내보내기
     const containerWidth = Math.round(optionContainerRef.current.clientWidth * 0.9);
-
-    console.log('refWidth : ', refWidth);
 
     // li(옵션)들의 width의 총 길이가 부모div의 90%를 넘으면 마지막으로 추가한 요소를 삭제한다
     if (refWidth >= containerWidth) {
@@ -136,45 +153,58 @@ const Option = () => {
   };
 
   return (
-    <ParentContainer>
-      <CustomOption>
-        <option>기본</option>
-        <option>색상</option>
-      </CustomOption>
+    <div>
+      <ParentContainer>
+        <CustomOption>
+          <option>기본</option>
+          <option>색상</option>
+        </CustomOption>
 
-      <OptionInputText width="14%" maxLength="6" style={{ paddingBottom: '5px' }} />
+        <OptionInputText width="14%" maxLength="6" style={{ paddingBottom: '5px' }} />
 
-      <OptionConatiner ref={optionContainerRef}>
-        {option.map((item, idx) => {
-          return (
-            <li key={idx} ref={(ele) => (optionListRef.current[idx] = ele)}>
-              {item}
-              <label
-                onClick={() => {
-                  const copyArray = [...option];
-                  copyArray.splice(idx, 1); //해당 인덱스 1개만
-                  setOption(copyArray);
-                }}
-              >
-                X
-              </label>
-            </li>
-          );
-        })}
-        <InputText
-          id="option-input-text"
-          ref={inputTextRef}
-          onKeyPress={onKeyPress}
-          onChange={(e) => {
-            setTextValue(e.target.value);
-          }}
-          style={{ borderBottom: 'none' }}
-          width="auto"
-          autoComplete="off"
-        />
-      </OptionConatiner>
-    </ParentContainer>
+        <OptionConatiner ref={optionContainerRef}>
+          {option.map((item, idx) => {
+            return (
+              <div key={idx} style={{ display: 'flex' }}>
+                <InputColor />
+                <li
+                  key={idx}
+                  ref={(ele) => (optionListRef.current[idx] = ele)}
+                  onContextMenu={onClickAddColorEvent}
+                >
+                  {item}
+                  <label
+                    onClick={() => {
+                      const copyArray = [...option];
+                      copyArray.splice(idx, 1); //해당 인덱스 1개만
+                      setOption(copyArray);
+                    }}
+                  >
+                    X
+                  </label>
+                </li>
+              </div>
+            );
+          })}
+          <InputText
+            id="option-input-text"
+            ref={inputTextRef}
+            onKeyPress={onKeyPress}
+            onChange={(e) => {
+              setTextValue(e.target.value);
+            }}
+            style={{ borderBottom: 'none' }}
+            width="auto"
+            autoComplete="off"
+          />
+        </OptionConatiner>
+      </ParentContainer>
+    </div>
   );
+};
+
+Option.propTypes = {
+  getOptionData: PropTypes.func.isRequired,
 };
 
 export default Option;

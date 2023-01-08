@@ -140,6 +140,18 @@ const AdminUpload = () => {
   const [Content, setContent] = useState('');
   const [Uploadfile, setUploadfile] = useState([]);
   const [showImages, setShowImages] = useState([]);
+  const [sizeOptionData, setSizeOptionData] = useState([]);
+  const [colorOptionData, setColorOptionData] = useState([]);
+
+  // Option.jsx(자식 컴포넌트)에서 사이즈 option값을 가져옴
+  const getSizeOptionData = (data) => {
+    setSizeOptionData(data);
+  };
+
+  // Option.jsx(자식 컴포넌트)에서 색상 option값을 가져옴
+  const getColorOptionData = (data) => {
+    setColorOptionData(data);
+  };
 
   // 이미지 상대경로 저장
   const handleAddImages = (event) => {
@@ -254,6 +266,7 @@ const AdminUpload = () => {
       console.log(e);
     }
   };
+
   return (
     <div>
       {/* 전역 스타일링 적용 */}
@@ -409,10 +422,9 @@ const AdminUpload = () => {
       </PriceInputContainer>
       <br />
       <br />
-      <Option />
+      <Option getOptionData={getSizeOptionData} />
       <br />
-      <br />
-      <Option />
+      <Option getOptionData={getColorOptionData} />
       <br />
       <br />
       {/* 상품 재질 입력란 */}
