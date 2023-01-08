@@ -23,12 +23,14 @@ const InputText = styled.input.attrs({ type: 'text' })`
 // 상품 옵션 Contatiner div
 const ParentContainer = styled.div`
   display: flex;
+  position: relative;
   flex-flow: row nowrap;
   gap: 20px;
   width: 65%;
   height: 35px;
   background-color: white;
   margin: 0 auto;
+  padding-top: 35px;
 
   @media screen and (max-width: 1100px) {
     width: 750px;
@@ -40,22 +42,22 @@ const OptionConatiner = styled.div`
   display: flex;
   flex-flow: row nowrap;
   gap: 6px;
-  width: 51.5%;
+  width: 58%;
 
   /* li라 쓰고 옵션 아이템이라 읽는다 */
   li {
     display: flex;
-    gap: 10px;
+    gap: 5px;
     align-items: center;
     font-family: 'GmarketSans', sans-serif;
     font-size: 14.5px;
     font-weight: 600;
     color: rgb(100, 100, 100);
-    border: 1px solid #999;
     list-style: none;
     background-color: rgb(222, 222, 222);
     padding: 2px 5px 0px 5px;
     white-space: nowrap;
+    height: 80%;
 
     /* label이라고 쓰고 옵션 옆 X 버튼이라고 읽는다 */
     label {
@@ -91,12 +93,31 @@ const CustomOption = styled.select`
   padding-top: 5px;
 `;
 
+// 커스텀 색상표, 색상-옵션값 앞에 추가할 styled-component
 const InputColor = styled.input.attrs({ type: 'color' })`
   appearance: none;
   border: none;
-  width: 20px;
-  height: 20px;
+  background-color: rgb(222, 222, 222);
+  width: 29px;
+  height: 29px;
 `;
+
+// 커스텀 Label
+const CustomLabel = styled.label`
+  position: absolute;
+  font-family: 'GmarketSans', sans-serif;
+  color: rgb(100, 100, 100);
+  font-size: 0.8rem;
+  font-weight: 400;
+`;
+
+// in-line style로 작성된 옵션값 css
+const option_div_style = {
+  display: 'flex',
+  alignItems: 'center',
+  border: '1px solid #999',
+  backgroundColor: 'rgb(222, 222, 222)',
+};
 
 // 옵션값에 색상을 추가하기 위한 이벤트핸들러
 const onClickAddColorEvent = (e) => {
@@ -111,10 +132,12 @@ const onClickAddColorEvent = (e) => {
 const Option = (props) => {
   const [textValue, setTextValue] = useState('');
   const [option, setOption] = useState([]);
-  const optionContainerRef = useRef();
-  const optionListRef = useRef([]);
-  const inputTextRef = useRef();
-  const returnValue = new Array(); //옵션값을 컴포넌트 밖으로 보낼 배열
+  const [isColor, setIsColor] = useState(false); //옵션타입이 색상인지 구분하는 stat
+  const optionContainerRef = useRef(); //옵션을 감싼 div 컨테이너.ref
+  const optionListRef = useRef([]); //옵션값을 감싼 div 컨테이너.ref
+  const inputTextRef = useRef(); //옵션값을 작성하는 text박스.ref
+  //저장된 옵션값을 컴포넌트 밖으로 보낼 배열
+  const returnValue = new Array();
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
@@ -155,28 +178,47 @@ const Option = (props) => {
   return (
     <div>
       <ParentContainer>
-        <CustomOption>
-          <option>기본</option>
-          <option>색상</option>
+        {/* 옵션타입 {기본, 색상}*/}
+        <CustomLabel style={{ top: '7px', left: '7px' }}>옵션타입</CustomLabel>
+        <CustomOption
+          onChange={(e) => {
+            // 옵션타입이 color면 isColor state를 true 아니라면 false(기본)
+            if (e.target.value === 'color') {
+              setIsColor(true);
+              // 기본-> 색상으로 전환시, option값[배열]을 초기화시켜버림.
+              setOption([]);
+            } else {
+              // 색상 -> 기본으로 전환시는 option값[배열]을 비우지 않는다.
+              setIsColor(false);
+            }
+          }}
+        >
+          <option value="normal">기본</option>
+          <option value="color">색상</option>
         </CustomOption>
 
+        {/* 옵션명 */}
+        <CustomLabel style={{ top: '7px', left: 'calc(20% - 10px)' }}>옵션명</CustomLabel>
         <OptionInputText width="14%" maxLength="6" style={{ paddingBottom: '5px' }} />
 
+        {/* 옵션값 */}
+        <CustomLabel style={{ top: '7px', left: 'calc(39% - 10px)' }}>옵션값</CustomLabel>
         <OptionConatiner ref={optionContainerRef}>
           {option.map((item, idx) => {
             return (
-              <div key={idx} style={{ display: 'flex' }}>
-                <InputColor />
-                <li
-                  key={idx}
-                  ref={(ele) => (optionListRef.current[idx] = ele)}
-                  onContextMenu={onClickAddColorEvent}
-                >
+              <div
+                key={idx}
+                style={option_div_style}
+                ref={(ele) => (optionListRef.current[idx] = ele)}
+              >
+                {isColor ? <InputColor /> : ''}
+                <li key={idx} onContextMenu={onClickAddColorEvent}>
                   {item}
                   <label
                     onClick={() => {
+                      //선택된 인덱스 배열에서 1개 삭제
                       const copyArray = [...option];
-                      copyArray.splice(idx, 1); //해당 인덱스 1개만
+                      copyArray.splice(idx, 1);
                       setOption(copyArray);
                     }}
                   >

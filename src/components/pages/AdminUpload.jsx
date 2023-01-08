@@ -1,14 +1,13 @@
 /* 이 파일은 /admin 화면입니다. */
 /* 컴포넌트 이름이 긴 것은 어쩔 수 없습니다 ^^ */
-
 import React, { useState } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { fireStore, storage } from '../../firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
 import Editor from '../Editor.jsx';
-import LeftMenuBar from '../LeftMenuBar.jsx';
 import Option from '../Option.jsx';
+import LeftMenuBar from '../LeftMenuBar.jsx';
 
 // 전역 스타일링
 const GlobalStyle = createGlobalStyle`
