@@ -420,10 +420,10 @@ const AdminUpload = () => {
         </div>
       </PriceInputContainer>
       <br />
-      <br />
       <Option getOptionData={getSizeOptionData} />
       <br />
       <Option getOptionData={getColorOptionData} />
+      {console.log(colorOptionData)}
       <br />
       <br />
       {/* 상품 재질 입력란 */}

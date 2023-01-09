@@ -119,29 +119,20 @@ const option_div_style = {
   backgroundColor: 'rgb(222, 222, 222)',
 };
 
-// 옵션값에 색상을 추가하기 위한 이벤트핸들러
-const onClickAddColorEvent = (e) => {
-  e.preventDefault(); //기존 이벤트는 막음처리
-  const bounds = e.target.getBoundingClientRect();
-  const x = e.clientX - bounds.left;
-  const y = e.clientY - bounds.top;
-  console.log('x:', x);
-  console.log('y:', y);
-};
-
 const Option = (props) => {
-  const [textValue, setTextValue] = useState('');
-  const [option, setOption] = useState([]);
-  const [isColor, setIsColor] = useState(false); //옵션타입이 색상인지 구분하는 stat
-  const optionContainerRef = useRef(); //옵션을 감싼 div 컨테이너.ref
-  const optionListRef = useRef([]); //옵션값을 감싼 div 컨테이너.ref
-  const inputTextRef = useRef(); //옵션값을 작성하는 text박스.ref
-  //저장된 옵션값을 컴포넌트 밖으로 보낼 배열
-  const returnValue = new Array();
+  const [textValue, setTextValue] = useState(''); // 입력받은 텍스트를 저장할 state
+  const [option, setOption] = useState([{ color: '', value: '' }]); //옵션값으로 쓸 객체배열 state
+  const [isColor, setIsColor] = useState(false); // 옵션타입이 색상인지 구분하는 stat
+  const optionContainerRef = useRef(); // 옵션을 감싼 div 컨테이너.ref
+  const optionListRef = useRef([]); // 옵션값을 감싼 div 컨테이너.ref
+  const inputTextRef = useRef(); // 옵션값을 작성하는 text박스.ref
+  const returnValue = new Array(); // 저장된 옵션값을 컴포넌트 밖으로 보낼 배열
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
     let refWidth = 0;
+
+    console.log('option', option);
 
     // li 태그들의 width를 구함
     for (let i = 0; i < optionListRef.current.length; i++) {
@@ -166,10 +157,20 @@ const Option = (props) => {
     }
   }, [option]);
 
+  // 로딩(mount)시, 한번만 실행되게
+  useEffect(() => {
+    // option state의 초기값으로 {color:'', value:''} 를 주었기 때문에, 옵션값이 1개 있는것처럼 취급됨
+    // 그래서 useEffect로 로딩될때, option state를 초기화해주었음.
+    setOption([]);
+  }, []);
+
   //Enter 클릭 이벤트 처리 핸들러
   const onKeyPress = (e) => {
+    const optionData = {
+      value: textValue,
+    };
     if (e.key == 'Enter' && e.target.value !== '') {
-      setOption((option) => [...option, textValue]);
+      setOption((option) => option.concat(optionData));
       setTextValue('');
       e.target.value = '';
     }
@@ -185,11 +186,15 @@ const Option = (props) => {
             // 옵션타입이 color면 isColor state를 true 아니라면 false(기본)
             if (e.target.value === 'color') {
               setIsColor(true);
-              // 기본-> 색상으로 전환시, option값[배열]을 초기화시켜버림.
-              setOption([]);
+              setOption([]); // 기본-> 색상으로 전환시, option값[배열]을 초기화시켜버림.
             } else {
-              // 색상 -> 기본으로 전환시는 option값[배열]을 비우지 않는다.
-              setIsColor(false);
+              setIsColor(false); // 색상 -> 기본으로 전환시는 option값[배열]을 비우지 않는다.
+              const newArray = [...option];
+              // 색상 -> 기본으로 전환 시, color key를 삭제해버림.
+              newArray.forEach((item) => {
+                delete item.color;
+              });
+              setOption(newArray);
             }
           }}
         >
@@ -211,9 +216,22 @@ const Option = (props) => {
                 style={option_div_style}
                 ref={(ele) => (optionListRef.current[idx] = ele)}
               >
-                {isColor ? <InputColor /> : ''}
-                <li key={idx} onContextMenu={onClickAddColorEvent}>
-                  {item}
+                {/* 옵션타입이 색상이면 <inputColor>로 옵션값 맨앞에 색상표를 추가해줌 */}
+                {isColor ? (
+                  <InputColor
+                    //오른쪽 마우스로 RGB 컬러를 저장한다.
+                    onContextMenu={(e) => {
+                      e.preventDefault(); // 기본 이벤트 막기
+                      const newArray = [...option];
+                      newArray[idx].color = e.target.value;
+                      setOption(newArray);
+                    }}
+                  />
+                ) : (
+                  <></>
+                )}
+                <li>
+                  {item.value}
                   <label
                     onClick={() => {
                       //선택된 인덱스 배열에서 1개 삭제
