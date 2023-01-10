@@ -121,27 +121,35 @@ const option_div_style = {
 
 const Option = (props) => {
   const [textValue, setTextValue] = useState(''); // 입력받은 텍스트를 저장할 state
-  const [option, setOption] = useState([{ color: '', value: '' }]); //옵션값으로 쓸 객체배열 state
+  const [option, setOption] = useState([]); //옵션값으로 쓸 객체배열 state
   const [isColor, setIsColor] = useState(false); // 옵션타입이 색상인지 구분하는 stat
   const optionContainerRef = useRef(); // 옵션을 감싼 div 컨테이너.ref
   const optionListRef = useRef([]); // 옵션값을 감싼 div 컨테이너.ref
   const inputTextRef = useRef(); // 옵션값을 작성하는 text박스.ref
-  const returnValue = new Array(); // 저장된 옵션값을 컴포넌트 밖으로 보낼 배열
+  const returnValue = []; // 저장된 옵션값을 컴포넌트 밖으로 보낼 배열
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
     let refWidth = 0;
-
-    console.log('option', option);
 
     // li 태그들의 width를 구함
     for (let i = 0; i < optionListRef.current.length; i++) {
       const ref = optionListRef.current[i];
 
       if (ref !== null) {
-        //null은 제외, 옵션(li태그)의 width를 refWidth변수에 중첩저장.
+        const optionData = {};
+        // null은 제외, 옵션(li태그)의 width를 refWidth변수에 중첩저장.
         refWidth += Math.round(ref.getBoundingClientRect().width);
-        returnValue[i] = String(ref.textContent).slice(0, -1); //마지막 X 값은 지우고 값을 배열에 저장
+
+        // 옵션타입이 색상이면 {color, value}, 기본이면 {value}으로 설정
+        if (isColor) {
+          optionData.color = ref.children[0].value;
+          optionData.value = String(ref.children[1].textContent).slice(0, -1); //마지막 X 값은 지우고 값을 배열에 저장
+        } else {
+          optionData.value = String(ref.children[0].textContent).slice(0, -1); //마지막 X 값은 지우고 값을 배열에 저장
+        }
+
+        returnValue[i] = optionData;
       }
     }
     props.getOptionData(returnValue); //부모 컴포넌트에게 옵션값이 저장된 배열 내보내기
@@ -152,7 +160,7 @@ const Option = (props) => {
       const copyArray = [...option];
       const popResult = copyArray.pop();
 
-      alert(`방금 입력하신 옵션 '${popResult}' 은(는) 자릿수 초과로 지워집니다`);
+      alert(`방금 입력하신 옵션 '${popResult.value}' 은(는) 자릿수 초과로 지워집니다`);
       setOption(copyArray); //자릿수 초과한 요소를 지우고 option state에 반영해줌.
     }
   }, [option]);

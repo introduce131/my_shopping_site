@@ -1,7 +1,7 @@
 import React from 'react';
-import Home from './components/pages/Home';
-import Products from './components/pages/Products';
-import AdminUpload from './components/pages/AdminUpload';
+import Home from './pages/Home.jsx';
+import Products from './pages/Products.jsx';
+import AdminUpload from './pages/AdminUpload.jsx';
 import { Routes, Route } from 'react-router-dom';
 import './css/App.css';
 

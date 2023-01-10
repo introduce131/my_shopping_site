@@ -2,12 +2,12 @@
 /* 컴포넌트 이름이 긴 것은 어쩔 수 없습니다 ^^ */
 import React, { useState } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
-import { fireStore, storage } from '../../firebase.js';
+import { fireStore, storage } from '../firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
-import Editor from '../Editor.jsx';
-import Option from '../Option.jsx';
-import LeftMenuBar from '../LeftMenuBar.jsx';
+import Editor from '../components/Editor.jsx';
+import Option from '../components/Option.jsx';
+import LeftMenuBar from '../components/LeftMenuBar.jsx';
 
 // 전역 스타일링
 const GlobalStyle = createGlobalStyle`
@@ -421,9 +421,9 @@ const AdminUpload = () => {
       </PriceInputContainer>
       <br />
       <Option getOptionData={getSizeOptionData} />
-      <br />
       <Option getOptionData={getColorOptionData} />
-      {console.log(colorOptionData)}
+      {console.log('사이즈', sizeOptionData)}
+      {console.log('색상', colorOptionData)}
       <br />
       <br />
       {/* 상품 재질 입력란 */}

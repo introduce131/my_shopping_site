@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { doc, getDoc } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
-import { fireStore } from '../../../src/firebase';
-import Header from '../Header';
+import { fireStore } from '../firebase.js';
+import Header from '../components/Header.jsx';
 
 const ItemDetailContainerDiv = styled.div`
   display: flex;
