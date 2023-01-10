@@ -2,8 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Table = styled.table`
+  font-family: 'GmarketSans', sans-serif;
   margin: 0 auto;
   width: 65%;
+  background-color: white;
+  border: 1px solid black;
+
+  & > .header {
+    width: 100%;
+  }
 
   @media screen and (max-width: 1100px) {
     width: 750px;
@@ -21,7 +28,7 @@ const ReactTbody = (props) => {
 const CustomGrid = (props) => {
   return (
     <Table>
-      <thead>
+      <thead className="header">
         <tr>
           <td>크기</td>
           <td>색상</td>

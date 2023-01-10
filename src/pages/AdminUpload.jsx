@@ -1,13 +1,16 @@
 /* 이 파일은 /admin 화면입니다. */
 /* 컴포넌트 이름이 긴 것은 어쩔 수 없습니다 ^^ */
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { fireStore, storage } from '../firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { addDoc, collection } from 'firebase/firestore';
+import * as common from '../common.js';
 import Editor from '../components/Editor.jsx';
 import Option from '../components/Option.jsx';
 import LeftMenuBar from '../components/LeftMenuBar.jsx';
+import CustomGrid from '../components/CustomGrid.jsx';
+import { useEffect } from 'react';
 
 // 전역 스타일링
 const GlobalStyle = createGlobalStyle`
@@ -132,6 +135,18 @@ const PriceInputContainer = styled.div`
   }
 `;
 
+const OptionInputContainer = styled.div`
+  position: relative;
+  border: 2px solid #999;
+  margin: 0 auto;
+  width: 65%;
+  background-color: white;
+
+  @media screen and (max-width: 1100px) {
+    width: 750px;
+  }
+`;
+
 const AdminUpload = () => {
   const itemsCollectionRef = collection(fireStore, 'shopping_items');
   const [percent, setPercent] = useState(0);
@@ -141,6 +156,11 @@ const AdminUpload = () => {
   const [showImages, setShowImages] = useState([]);
   const [sizeOptionData, setSizeOptionData] = useState([]);
   const [colorOptionData, setColorOptionData] = useState([]);
+  const [dataList, setDataList] = useState([]);
+
+  useEffect(() => {
+    console.log(dataList);
+  }, [dataList]);
 
   // Option.jsx(자식 컴포넌트)에서 사이즈 option값을 가져옴
   const getSizeOptionData = (data) => {
@@ -405,6 +425,9 @@ const AdminUpload = () => {
             id="ITEMS_PRICE"
             style={{ borderBottom: 'none', marginLeft: '5px' }}
             autoComplete="off"
+            onChange={(e) => {
+              e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            }}
           />
         </div>
         <div className="price_input_box" style={{ marginLeft: '120px' }}>
@@ -416,15 +439,32 @@ const AdminUpload = () => {
             id="ITEMS_PRICE_SALE"
             style={{ borderBottom: 'none', marginLeft: '5px' }}
             autoComplete="off"
+            onChange={(e) => {
+              e.target.value = e.target.value.replace(/[^0-9]/g, '');
+            }}
           />
         </div>
       </PriceInputContainer>
       <br />
-      <Option getOptionData={getSizeOptionData} />
-      <Option getOptionData={getColorOptionData} />
-      {console.log('사이즈', sizeOptionData)}
-      {console.log('색상', colorOptionData)}
+
+      {/* 옵션 입력 div */}
+      <OptionInputContainer>
+        <CustomLabel style={{ position: 'absolute', top: '7px', left: '7px' }}>옵션</CustomLabel>
+        <br />
+        <Option getOptionData={getSizeOptionData} />
+        <Option getOptionData={getColorOptionData} />
+      </OptionInputContainer>
       <br />
+      <button
+        onClick={() => {
+          const data = common.optionDataList(sizeOptionData, colorOptionData);
+          setDataList(data);
+        }}
+      >
+        그리드 추가
+      </button>
+      <br />
+      <CustomGrid />
       <br />
       {/* 상품 재질 입력란 */}
       <CustomLabel htmlFor="ITEMS_FABRIC">재질</CustomLabel>

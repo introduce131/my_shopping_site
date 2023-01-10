@@ -26,15 +26,12 @@ const ParentContainer = styled.div`
   position: relative;
   flex-flow: row nowrap;
   gap: 20px;
-  width: 65%;
+  width: 100%;
   height: 35px;
   background-color: white;
-  margin: 0 auto;
   padding-top: 35px;
-
-  @media screen and (max-width: 1100px) {
-    width: 750px;
-  }
+  margin-top: 10px;
+  margin-bottom: 10px;
 `;
 
 const OptionConatiner = styled.div`
@@ -91,6 +88,8 @@ const CustomOption = styled.select`
   border-right: none;
   border-bottom: 2px solid #999;
   padding-top: 5px;
+  padding-left: 5px;
+  margin-left: 7px;
 `;
 
 // 커스텀 색상표, 색상-옵션값 앞에 추가할 styled-component
