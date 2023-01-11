@@ -1,5 +1,12 @@
 import React from 'react';
 
+// 천단위에 콤마 찍기 함수
+export const addCommas = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+// 숫자만 입력 받을 수 있게 적용하는 함수
+export const removeNonNumeric = (num) => num.toString().replace(/[^0-9]/g, '');
+
+// option 데이터 리스트를 만들어서 반환하는 함수
 export function optionDataList(sizeArray, colorArray) {
   let dataList = [];
   let dataRow = {};
@@ -12,8 +19,12 @@ export function optionDataList(sizeArray, colorArray) {
       dataRow.size = sizeArray[i].value;
       dataRow.color = colorArray[j].color;
       dataRow.colorName = colorArray[j].value;
+      dataRow.price = 0;
+      dataRow.stockNow = 0;
+      dataRow.stockAdd = 0;
+      dataRow.status = '';
       dataList[cnt] = dataRow;
-      cnt++;
+      cnt++; //카운트 1 증가
     }
   }
 

@@ -148,15 +148,20 @@ const OptionInputContainer = styled.div`
 `;
 
 const AdminUpload = () => {
-  const itemsCollectionRef = collection(fireStore, 'shopping_items');
-  const [percent, setPercent] = useState(0);
-  const [imgURL, setImgURL] = useState('');
-  const [Content, setContent] = useState('');
-  const [Uploadfile, setUploadfile] = useState([]);
-  const [showImages, setShowImages] = useState([]);
-  const [sizeOptionData, setSizeOptionData] = useState([]);
-  const [colorOptionData, setColorOptionData] = useState([]);
-  const [dataList, setDataList] = useState([]);
+  const itemsCollectionRef = collection(fireStore, 'shopping_items'); // 'shopping_items' collection 참조 생성
+  const [percent, setPercent] = useState(0); // [대표이미지] [사진 업로드] 진행 퍼센트
+  const [imgURL, setImgURL] = useState(''); // [대표이미지] [사진 업로드] 이미지를 성공적으로 저장 후, firebase에서 이미지 url을 받고 저장하는 state
+  const [Content, setContent] = useState(''); // [상품요약설명] 을 저장 하는 state
+  const [Uploadfile, setUploadfile] = useState([]); // [대표이미지] upload할 2개의 파일을 저장하는 state
+  const [showImages, setShowImages] = useState([]); // [대표이미지] [이미지추가] 후 화면에 미리볼 이미지를 저장할 state
+  const [sizeOptionData, setSizeOptionData] = useState([]); // [옵션] 사이즈 옵션을 저장할 state
+  const [colorOptionData, setColorOptionData] = useState([]); // [옵션] 색상 옵션을 저장할 state
+  const [dataList, setDataList] = useState([]); // [옵션] 위 2개의 데이터를 받아 가공하여 테이블에 뿌려줄 데이터[{..}{..}]를 받아오는 state
+
+  // 천단위 콤마, 숫자만 입력받게 input에 적용하는 핸들러 함수
+  const handleChange = (event) => {
+    event.target.value = common.addCommas(common.removeNonNumeric(event.target.value));
+  };
 
   useEffect(() => {
     console.log(dataList);
@@ -425,9 +430,7 @@ const AdminUpload = () => {
             id="ITEMS_PRICE"
             style={{ borderBottom: 'none', marginLeft: '5px' }}
             autoComplete="off"
-            onChange={(e) => {
-              e.target.value = e.target.value.replace(/[^0-9]/g, '');
-            }}
+            onChange={handleChange}
           />
         </div>
         <div className="price_input_box" style={{ marginLeft: '120px' }}>
@@ -439,9 +442,7 @@ const AdminUpload = () => {
             id="ITEMS_PRICE_SALE"
             style={{ borderBottom: 'none', marginLeft: '5px' }}
             autoComplete="off"
-            onChange={(e) => {
-              e.target.value = e.target.value.replace(/[^0-9]/g, '');
-            }}
+            onChange={handleChange}
           />
         </div>
       </PriceInputContainer>
@@ -464,7 +465,7 @@ const AdminUpload = () => {
         그리드 추가
       </button>
       <br />
-      <CustomGrid />
+      <CustomGrid dataList={dataList} />
       <br />
       {/* 상품 재질 입력란 */}
       <CustomLabel htmlFor="ITEMS_FABRIC">재질</CustomLabel>
