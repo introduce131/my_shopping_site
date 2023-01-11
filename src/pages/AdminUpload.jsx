@@ -27,6 +27,14 @@ const CustomLabel = styled.label`
   font-weight: 400;
 `;
 
+// "옵션 추가" Label
+const AddOptionList = styled(CustomLabel)`
+  color: rgb(61, 210, 186);
+  &:hover {
+    color: rgb(80, 230, 206);
+  }
+`;
+
 // "이미지 추가" "이미지 저장" Label
 const AddImageLabel = styled(CustomLabel)`
   color: rgb(61, 210, 186);
@@ -454,18 +462,21 @@ const AdminUpload = () => {
         <br />
         <Option getOptionData={getSizeOptionData} />
         <Option getOptionData={getColorOptionData} />
+        <br />
+        <AddOptionList
+          onClick={() => {
+            const data = common.optionDataList(sizeOptionData, colorOptionData);
+            setDataList(data);
+          }}
+          style={{ position: 'absolute', top: '190px', right: '30px' }}
+        >
+          옵션 추가
+        </AddOptionList>
+        <br />
+        <CustomGrid dataList={dataList} />
       </OptionInputContainer>
       <br />
-      <button
-        onClick={() => {
-          const data = common.optionDataList(sizeOptionData, colorOptionData);
-          setDataList(data);
-        }}
-      >
-        그리드 추가
-      </button>
       <br />
-      <CustomGrid dataList={dataList} />
       <br />
       {/* 상품 재질 입력란 */}
       <CustomLabel htmlFor="ITEMS_FABRIC">재질</CustomLabel>
@@ -476,7 +487,6 @@ const AdminUpload = () => {
         <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
         메인화면 추천상품 적용
       </CustomLabel>
-      <br />
       <br />
       <br />
       <button onClick={addItems}>추가하기</button>

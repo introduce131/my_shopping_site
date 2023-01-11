@@ -40,6 +40,7 @@ const OptionConatiner = styled.div`
   flex-flow: row nowrap;
   gap: 6px;
   width: 58%;
+  border-bottom: 1px solid #999;
 
   /* li라 쓰고 옵션 아이템이라 읽는다 */
   li {

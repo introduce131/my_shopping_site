@@ -26,10 +26,10 @@ const InputText = styled.input.attrs({ type: 'text' })`
   background-color: white;
 `;
 
+// 커스텀 <table>, Grid 대용
 const Table = styled.table`
   font-family: 'GmarketSans', sans-serif;
   margin: 0 auto;
-  width: 65%;
   background-color: white;
 
   /* header, body 다중 선택자 "," */
@@ -46,25 +46,39 @@ const Table = styled.table`
     }
   }
 
+  & > .header td {
+    color: rgb(100, 100, 100);
+  }
+
+  & > .body tr:hover {
+  }
+
   @media screen and (max-width: 1100px) {
     width: 750px;
   }
 `;
 
+// 커스텀 Select, option
 const CustomOption = styled.select`
   font-family: 'GmarketSans', sans-serif;
   color: rgb(100, 100, 100);
   font-size: 14.5px;
   font-weight: 400;
-  width: 15%;
+  width: 90%;
   height: 100%;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  border-bottom: 2px solid #999;
+  border: none;
   padding-top: 5px;
   padding-left: 5px;
   margin-left: 7px;
+`;
+
+// 커스텀 색상표, 색상-옵션값 앞에 추가할 styled-component
+const InputColor = styled.input.attrs({ type: 'color' })`
+  appearance: none;
+  border: none;
+  background-color: white;
+  width: 20px;
+  height: 20px;
 `;
 
 const CustomGrid = (props) => {
@@ -99,8 +113,16 @@ const CustomGrid = (props) => {
             <td>
               <input type="checkbox" />
             </td>
+            {/* [사이즈] */}
             <td>{item.size}</td>
-            <td>{item.colorName}</td>
+            {/* [색상] */}
+            <td>
+              <div style={{ paddingBottom: '2px' }}>
+                <InputColor value={item.color} disabled />
+                {item.colorName}
+              </div>
+            </td>
+            {/* [옵션가격] */}
             <td style={{ borderBottom: '2px solid #999' }}>
               <CustomLabel style={{ fontWeight: '600' }}>￦</CustomLabel>
               <InputText
@@ -111,27 +133,35 @@ const CustomGrid = (props) => {
                 defaultValue={item.price}
               />
             </td>
+            {/* [ 재고[현] ] */}
             <td style={{ borderBottom: '2px solid #999' }}>
               <InputText
                 width="70%"
                 style={{ borderBottom: 'none' }}
                 autoComplete="off"
                 defaultValue={item.stockNow}
+                readOnly
               />
             </td>
+            {/* [ 재고[추가] ] */}
             <td style={{ borderBottom: '2px solid #999' }}>
               <InputText
                 width="60%"
                 style={{ borderBottom: 'none' }}
                 autoComplete="off"
+                onChange={(event) => {
+                  event.target.value = common.removeNonNumeric(event.target.value);
+                }}
                 defaultValue={item.stockAdd}
               />
             </td>
-            <td>
+            {/* [상태] */}
+            {/* 1:판매중, 2:판매대기, 3:품절 */}
+            <td style={{ borderBottom: '2px solid #999' }}>
               <CustomOption>
                 <option value="1">판매중</option>
                 <option value="2">판매대기</option>
-                <option value="3">판매아님</option>
+                <option value="3">품 절</option>
               </CustomOption>
             </td>
           </tr>
