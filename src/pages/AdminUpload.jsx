@@ -10,7 +10,6 @@ import Editor from '../components/Editor.jsx';
 import Option from '../components/Option.jsx';
 import LeftMenuBar from '../components/LeftMenuBar.jsx';
 import CustomGrid from '../components/CustomGrid.jsx';
-import { useEffect } from 'react';
 
 // 전역 스타일링
 const GlobalStyle = createGlobalStyle`
@@ -162,27 +161,27 @@ const AdminUpload = () => {
   const [Content, setContent] = useState(''); // [상품요약설명] 을 저장 하는 state
   const [Uploadfile, setUploadfile] = useState([]); // [대표이미지] upload할 2개의 파일을 저장하는 state
   const [showImages, setShowImages] = useState([]); // [대표이미지] [이미지추가] 후 화면에 미리볼 이미지를 저장할 state
-  const [sizeOptionData, setSizeOptionData] = useState([]); // [옵션] 사이즈 옵션을 저장할 state
-  const [colorOptionData, setColorOptionData] = useState([]); // [옵션] 색상 옵션을 저장할 state
+  const [firstOptionData, setFirstOptionData] = useState([]); // [옵션] 사이즈 옵션을 저장할 state
+  const [SecondOptionData, setSecondOptionData] = useState([]); // [옵션] 색상 옵션을 저장할 state
   const [dataList, setDataList] = useState([]); // [옵션] 위 2개의 데이터를 받아 가공하여 테이블에 뿌려줄 데이터[{..}{..}]를 받아오는 state
+  const [header, setHeader] = useState({ first: '', second: '' });
+  const priceRef = useRef(); // [가격] [상품 가격] input ref
+  const firstOptRef = useRef(); // 첫번째 [옵션명].ref
+  const secondOptRef = useRef(); // 두번째 [옵션명].ref
 
   // 천단위 콤마, 숫자만 입력받게 input에 적용하는 핸들러 함수
   const handleChange = (event) => {
     event.target.value = common.addCommas(common.removeNonNumeric(event.target.value));
   };
 
-  useEffect(() => {
-    console.log(dataList);
-  }, [dataList]);
-
-  // Option.jsx(자식 컴포넌트)에서 사이즈 option값을 가져옴
-  const getSizeOptionData = (data) => {
-    setSizeOptionData(data);
+  // Option.jsx(자식 컴포넌트)에서 첫번째 option값을 가져옴
+  const getFirstOptionData = (data) => {
+    setFirstOptionData(data);
   };
 
-  // Option.jsx(자식 컴포넌트)에서 색상 option값을 가져옴
-  const getColorOptionData = (data) => {
-    setColorOptionData(data);
+  // Option.jsx(자식 컴포넌트)에서 두번째 option값을 가져옴
+  const getSecondOptionData = (data) => {
+    setSecondOptionData(data);
   };
 
   // 이미지 상대경로 저장
@@ -292,7 +291,6 @@ const AdminUpload = () => {
         ITEMS_SHOWMAIN: ItemChkShowMain,
         ITEMS_IMGURL: ItemImgURL,
       });
-      console.log('콘텐츠내용', ItemContent);
       //throw new Error('에러발생');
     } catch (e) {
       console.log(e);
@@ -439,6 +437,8 @@ const AdminUpload = () => {
             style={{ borderBottom: 'none', marginLeft: '5px' }}
             autoComplete="off"
             onChange={handleChange}
+            maxLength="10"
+            ref={priceRef}
           />
         </div>
         <div className="price_input_box" style={{ marginLeft: '120px' }}>
@@ -451,6 +451,7 @@ const AdminUpload = () => {
             style={{ borderBottom: 'none', marginLeft: '5px' }}
             autoComplete="off"
             onChange={handleChange}
+            maxLength="10"
           />
         </div>
       </PriceInputContainer>
@@ -460,20 +461,23 @@ const AdminUpload = () => {
       <OptionInputContainer>
         <CustomLabel style={{ position: 'absolute', top: '7px', left: '7px' }}>옵션</CustomLabel>
         <br />
-        <Option getOptionData={getSizeOptionData} />
-        <Option getOptionData={getColorOptionData} />
+        <Option ref={firstOptRef} getOptionData={getFirstOptionData} />
+        <Option ref={secondOptRef} getOptionData={getSecondOptionData} />
         <br />
+        {/* 옵션 추가 Label */}
         <AddOptionList
           onClick={() => {
-            const data = common.optionDataList(sizeOptionData, colorOptionData);
-            setDataList(data);
+            // 클릭 시, 1,2번째는 옵션 객체배열, 3,4번째는 옵션명, 5번째는 상품가격
+            const data = common.optionDataList(firstOptionData, SecondOptionData, priceRef);
+            data ? setDataList(data) : alert('옵션값을 먼저 넣어주세요');
+            setHeader({ first: firstOptRef.current.value, second: secondOptRef.current.value });
           }}
           style={{ position: 'absolute', top: '190px', right: '30px' }}
         >
           옵션 추가
         </AddOptionList>
         <br />
-        <CustomGrid dataList={dataList} />
+        <CustomGrid header={header} dataList={dataList} />
       </OptionInputContainer>
       <br />
       <br />

@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-import { useRef } from 'react';
-import { useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
@@ -119,7 +117,7 @@ const option_div_style = {
   backgroundColor: 'rgb(222, 222, 222)',
 };
 
-const Option = (props) => {
+const Option = React.forwardRef(function optionFunc(props, ref) {
   const [textValue, setTextValue] = useState(''); // 입력받은 텍스트를 저장할 state
   const [option, setOption] = useState([]); //옵션값으로 쓸 객체배열 state
   const [isColor, setIsColor] = useState(false); // 옵션타입이 색상인지 구분하는 stat
@@ -127,6 +125,8 @@ const Option = (props) => {
   const optionListRef = useRef([]); // 옵션값을 감싼 div 컨테이너.ref
   const inputTextRef = useRef(); // 옵션값을 작성하는 text박스.ref
   const returnValue = []; // 저장된 옵션값을 컴포넌트 밖으로 보낼 배열
+
+  useEffect(() => {});
 
   //option state의 동기적 처리를 위함
   useEffect(() => {
@@ -164,6 +164,10 @@ const Option = (props) => {
       setOption(copyArray); //자릿수 초과한 요소를 지우고 option state에 반영해줌.
     }
   }, [option]);
+
+  // useEffect(() => {
+  //   props.getHeader(optionName);
+  // }, [optionName]);
 
   // 로딩(mount)시, 한번만 실행되게
   useEffect(() => {
@@ -212,7 +216,7 @@ const Option = (props) => {
 
         {/* 옵션명 */}
         <CustomLabel style={{ top: '7px', left: 'calc(20% - 10px)' }}>옵션명</CustomLabel>
-        <OptionInputText width="14%" maxLength="6" style={{ paddingBottom: '5px' }} />
+        <OptionInputText ref={ref} width="14%" maxLength="6" style={{ paddingBottom: '5px' }} />
 
         {/* 옵션값 */}
         <CustomLabel style={{ top: '7px', left: 'calc(39% - 10px)' }}>옵션값</CustomLabel>
@@ -269,7 +273,7 @@ const Option = (props) => {
       </ParentContainer>
     </div>
   );
-};
+});
 
 Option.propTypes = {
   getOptionData: PropTypes.func.isRequired,
