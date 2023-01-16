@@ -188,15 +188,26 @@ const CustomGrid = (props) => {
       case 1: {
         let dataArray = [...dataList];
 
+        console.log(dataArray);
+
         // dataList와 checkList를 비교하여 데이터 삭제
         for (let i = 0; i < dataArray.length; i++) {
           for (let j = 0; j < checkList.length; j++) {
             if (dataArray[i].id === checkList[j]) {
               dataArray.splice(i, 1);
               i--;
+              break;
             }
           }
         }
+
+        // 테이블에 있는 체크박스 전부 unChecked
+        for (let i = 0; i < chkListRef.current.length; i++) {
+          chkListRef.current[i].checked = false;
+        }
+
+        tableLeftClickEvent(); // 컨텍스트 메뉴 다시 안보이게 처리
+
         setDataList([...dataArray]); // state 저장
         setCheckList([]); // checkList 초기화
       } // 삭제하기 End
