@@ -5,10 +5,9 @@ const MenuContatinerDiv = styled.div`
   position: fixed;
   display: flex;
   flex-flow: column nowrap;
-  gap: 10px;
   width: 165px;
   height: 100%;
-  background-color: #999;
+  background-color: rgb(70, 70, 70);
 
   @media screen and (max-width: 1100px) {
     display: none;
@@ -17,6 +16,7 @@ const MenuContatinerDiv = styled.div`
 
 const MenuItemDiv = styled.div`
   flex: 0 1 10%;
+  border: 1px solid white;
 `;
 
 const LeftMenuBar = () => {

@@ -154,7 +154,7 @@ const OptionInputContainer = styled.div`
   }
 `;
 
-const AdminUpload = () => {
+const Admin = () => {
   const itemsCollectionRef = collection(fireStore, 'shopping_items'); // 'shopping_items' collection 참조 생성
   const [percent, setPercent] = useState(0); // [대표이미지] [사진 업로드] 진행 퍼센트
   const [imgURL, setImgURL] = useState(''); // [대표이미지] [사진 업로드] 이미지를 성공적으로 저장 후, firebase에서 이미지 url을 받고 저장하는 state
@@ -498,4 +498,4 @@ const AdminUpload = () => {
   );
 };
 
-export default AdminUpload;
+export default Admin;
