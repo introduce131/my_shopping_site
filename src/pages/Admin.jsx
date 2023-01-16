@@ -82,7 +82,7 @@ const ItemInfoFlexContainer = styled.div`
     background-color: white;
     padding: 0 10px 10px 10px;
     border: 2px solid #999;
-    width: 41.5%;
+    width: 52.5%;
   }
 
   & > .image_upload_section {
