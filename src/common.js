@@ -27,6 +27,7 @@ export function optionDataList(firstArray, secondArray, priceRef) {
       dataRow = new Object();
       for (let j = 0; j < colorArray.length; j++) {
         dataRow = new Object();
+        dataRow.id = cnt;
         dataRow.size = sizeArray[i].value;
         dataRow.color = colorArray[j].color;
         dataRow.colorName = colorArray[j].value;

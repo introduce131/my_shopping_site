@@ -111,6 +111,7 @@ const ContextMenu = styled.div`
 
 const CustomGrid = (props) => {
   const [checkList, setCheckList] = useState([]); //check한 <tr>을 저장하는 state
+  const [dataList, setDataList] = useState([]); // props.dataList를 저장할 state
   const contextRef = useRef(); //custom context menu의 ref
   const chkListRef = useRef([]); // checkbox의 ref.배열
   const contextMenuList = [
@@ -120,6 +121,11 @@ const CustomGrid = (props) => {
     { id: 4, item: '없습니다' },
   ]; // context menu에 들어갈 아이템 목록
   const tableRef = useRef();
+
+  // 첫 마운트 시, 받아온 props.dataList를 dataList state에 초기화해준다
+  useEffect(() => {
+    setDataList([...props.dataList]);
+  }, [props.dataList]);
 
   // 천단위 콤마, 숫자만 입력받게 input에 적용하는 핸들러 함수
   const handleChange = (event) => {
@@ -180,17 +186,20 @@ const CustomGrid = (props) => {
     switch (item.id) {
       // '삭제하기' 선택
       case 1: {
-        let trArray = [];
-        // trArray에 체크된 tr element를 저장해놓는다
-        for (let i = 0; i < checkList.length; i++) {
-          trArray[i] = tableRef.current.children[checkList[i]];
+        let dataArray = [...dataList];
+
+        // dataList와 checkList를 비교하여 데이터 삭제
+        for (let i = 0; i < dataArray.length; i++) {
+          for (let j = 0; j < checkList.length; j++) {
+            if (dataArray[i].id === checkList[j]) {
+              dataArray.splice(i, 1);
+              i--;
+            }
+          }
         }
-        // trArray에 들어있는 tr(행)을 제거한다.
-        for (let i = 0; i < trArray.length; i++) {
-          tableRef.current.removeChild(trArray[i]);
-          setCheckList([]); // 삭제가 완료되면 checkList를 배열 초기화
-        }
-      }
+        setDataList([...dataArray]); // state 저장
+        setCheckList([]); // checkList 초기화
+      } // 삭제하기 End
     }
   };
 
@@ -200,109 +209,111 @@ const CustomGrid = (props) => {
   }, [checkList]);
 
   return (
-    <div style={{ position: 'relative' }}>
-      <ContextMenu ref={contextRef} onContextMenu={(e) => e.preventDefault()}>
-        <ul>
-          {contextMenuList.map((item, idx) => (
-            <li
-              key={idx}
-              onClick={() => {
-                contextMenuOnclick(item);
-              }}
-            >
-              {item.item}
-            </li>
-          ))}
-        </ul>
-      </ContextMenu>
-      <Table
-        style={{ borderSpacing: '10px 5px' }}
-        onClick={tableLeftClickEvent}
-        onContextMenu={tableRightClickEvent}
-      >
-        {/* 헤더 */}
-        <thead className="header">
-          <tr>
-            <td width="8%">
-              <input type="checkbox" onClick={checkAllClickEvent} />
-            </td>
-            <td width="12%">{props.header.first}</td>
-            <td width="17%">{props.header.second}</td>
-            <td width="18%">옵션가격</td>
-            <td width="15%">재고 [현]</td>
-            <td width="15%">재고 [추가]</td>
-            <td width="15%">상태</td>
-          </tr>
-        </thead>
-
-        {/* 데이터[body] */}
-        <tbody className="body" ref={tableRef}>
-          {props.dataList.map((item, idx) => (
-            <tr key={idx}>
-              {/* [체크박스] */}
-              <td>
-                <input
-                  type="checkbox"
-                  onChange={(e) => checkChangedEvent(e, idx)}
-                  ref={(ele) => (chkListRef.current[idx] = ele)}
-                />
+    <React.Fragment>
+      <div style={{ position: 'relative' }}>
+        <ContextMenu ref={contextRef} onContextMenu={(e) => e.preventDefault()}>
+          <ul>
+            {contextMenuList.map((item, idx) => (
+              <li
+                key={idx}
+                onClick={() => {
+                  contextMenuOnclick(item);
+                }}
+              >
+                {item.item}
+              </li>
+            ))}
+          </ul>
+        </ContextMenu>
+        <Table
+          style={{ borderSpacing: '10px 5px' }}
+          onClick={tableLeftClickEvent}
+          onContextMenu={tableRightClickEvent}
+        >
+          {/* 헤더 */}
+          <thead className="header">
+            <tr>
+              <td width="8%">
+                <input type="checkbox" onClick={checkAllClickEvent} />
               </td>
-              {/* [사이즈] */}
-              <td>{item.size}</td>
-              {/* [색상] */}
-              <td>
-                <div style={{ paddingBottom: '2px' }}>
-                  <InputColor value={item.color} disabled />
-                  {item.colorName}
-                </div>
-              </td>
-              {/* [옵션가격] */}
-              <td style={{ borderBottom: '2px solid #999' }}>
-                <CustomLabel style={{ fontWeight: '600' }}>￦</CustomLabel>
-                <InputText
-                  width="70%"
-                  style={{ borderBottom: 'none' }}
-                  autoComplete="off"
-                  onChange={handleChange}
-                  defaultValue={item.price}
-                />
-              </td>
-              {/* [ 재고[현] ] */}
-              <td style={{ borderBottom: '2px solid #999' }}>
-                <InputText
-                  width="70%"
-                  style={{ borderBottom: 'none' }}
-                  autoComplete="off"
-                  defaultValue={item.stockNow}
-                  readOnly
-                />
-              </td>
-              {/* [ 재고[추가] ] */}
-              <td style={{ borderBottom: '2px solid #999' }}>
-                <InputText
-                  width="60%"
-                  style={{ borderBottom: 'none' }}
-                  autoComplete="off"
-                  onChange={(event) => {
-                    event.target.value = common.removeNonNumeric(event.target.value);
-                  }}
-                  defaultValue={item.stockAdd}
-                />
-              </td>
-              {/* [상태] */}
-              {/* 1:판매중, 2:판매대기, 3:품절 */}
-              <td style={{ borderBottom: '2px solid #999' }}>
-                <CustomOption>
-                  <option value="1">판매중</option>
-                  <option value="2">판매대기</option>
-                  <option value="3">품 절</option>
-                </CustomOption>
-              </td>
+              <td width="12%">{props.header.first}</td>
+              <td width="17%">{props.header.second}</td>
+              <td width="18%">옵션가격</td>
+              <td width="15%">재고 [현]</td>
+              <td width="15%">재고 [추가]</td>
+              <td width="15%">상태</td>
             </tr>
-          ))}
-        </tbody>
-      </Table>
-    </div>
+          </thead>
+
+          {/* 데이터[body] */}
+          <tbody className="body" ref={tableRef}>
+            {dataList.map((item, idx) => (
+              <tr key={idx}>
+                {/* [체크박스] */}
+                <td>
+                  <input
+                    type="checkbox"
+                    onChange={(e) => checkChangedEvent(e, idx)}
+                    ref={(ele) => (chkListRef.current[idx] = ele)}
+                  />
+                </td>
+                {/* [사이즈] */}
+                <td>{item.size}</td>
+                {/* [색상] */}
+                <td>
+                  <div style={{ paddingBottom: '2px' }}>
+                    <InputColor value={item.color} disabled />
+                    {item.colorName}
+                  </div>
+                </td>
+                {/* [옵션가격] */}
+                <td style={{ borderBottom: '2px solid #999' }}>
+                  <CustomLabel style={{ fontWeight: '600' }}>￦</CustomLabel>
+                  <InputText
+                    width="70%"
+                    style={{ borderBottom: 'none' }}
+                    autoComplete="off"
+                    onChange={handleChange}
+                    defaultValue={item.price}
+                  />
+                </td>
+                {/* [ 재고[현] ] */}
+                <td style={{ borderBottom: '2px solid #999' }}>
+                  <InputText
+                    width="70%"
+                    style={{ borderBottom: 'none' }}
+                    autoComplete="off"
+                    defaultValue={item.stockNow}
+                    readOnly
+                  />
+                </td>
+                {/* [ 재고[추가] ] */}
+                <td style={{ borderBottom: '2px solid #999' }}>
+                  <InputText
+                    width="60%"
+                    style={{ borderBottom: 'none' }}
+                    autoComplete="off"
+                    onChange={(event) => {
+                      event.target.value = common.removeNonNumeric(event.target.value);
+                    }}
+                    defaultValue={item.stockAdd}
+                  />
+                </td>
+                {/* [상태] */}
+                {/* 1:판매중, 2:판매대기, 3:품절 */}
+                <td style={{ borderBottom: '2px solid #999' }}>
+                  <CustomOption>
+                    <option value="1">판매중</option>
+                    <option value="2">판매대기</option>
+                    <option value="3">품 절</option>
+                  </CustomOption>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    </React.Fragment>
   );
 };
 
