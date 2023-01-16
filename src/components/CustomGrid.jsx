@@ -110,15 +110,16 @@ const ContextMenu = styled.div`
 `;
 
 const CustomGrid = (props) => {
-  const [checkList, setCheckList] = useState([]);
-  const contextRef = useRef();
-  const chkListRef = useRef([]);
+  const [checkList, setCheckList] = useState([]); //check한 <tr>을 저장하는 state
+  const contextRef = useRef(); //custom context menu의 ref
+  const chkListRef = useRef([]); // checkbox의 ref.배열
   const contextMenuList = [
     { id: 1, item: '삭제하기' },
     { id: 2, item: '삭제하는' },
     { id: 3, item: '방법밖에' },
     { id: 4, item: '없습니다' },
-  ];
+  ]; // context menu에 들어갈 아이템 목록
+  const tableRef = useRef();
 
   // 천단위 콤마, 숫자만 입력받게 input에 적용하는 핸들러 함수
   const handleChange = (event) => {
@@ -152,6 +153,47 @@ const CustomGrid = (props) => {
     }
   };
 
+  // checkBox 전체선택 onClick 이벤트
+  const checkAllClickEvent = (e) => {
+    const isAllChecked = e.target.checked; // 체크여부 저장
+    let copyArray = [];
+
+    if (isAllChecked) {
+      // true, 체크박스 전부 checked, checkList state에도 저장
+      for (let i = 0; i < chkListRef.current.length; i++) {
+        chkListRef.current[i].checked = true;
+        copyArray[i] = i;
+      }
+      setCheckList(copyArray);
+    } else {
+      // false, 체크박스 전부 unChecked, checkList state에도 저장
+      for (let i = 0; i < chkListRef.current.length; i++) {
+        chkListRef.current[i].checked = false;
+        copyArray = [];
+      }
+      setCheckList(copyArray);
+    }
+  };
+
+  // context menu onClick 이벤트
+  const contextMenuOnclick = (item) => {
+    switch (item.id) {
+      // '삭제하기' 선택
+      case 1: {
+        let trArray = [];
+        // trArray에 체크된 tr element를 저장해놓는다
+        for (let i = 0; i < checkList.length; i++) {
+          trArray[i] = tableRef.current.children[checkList[i]];
+        }
+        // trArray에 들어있는 tr(행)을 제거한다.
+        for (let i = 0; i < trArray.length; i++) {
+          tableRef.current.removeChild(trArray[i]);
+          setCheckList([]); // 삭제가 완료되면 checkList를 배열 초기화
+        }
+      }
+    }
+  };
+
   // checkList의 비동기 처리를 위한 useEffect
   useEffect(() => {
     console.log(checkList);
@@ -162,7 +204,14 @@ const CustomGrid = (props) => {
       <ContextMenu ref={contextRef} onContextMenu={(e) => e.preventDefault()}>
         <ul>
           {contextMenuList.map((item, idx) => (
-            <li key={idx}>{item.item}</li>
+            <li
+              key={idx}
+              onClick={() => {
+                contextMenuOnclick(item);
+              }}
+            >
+              {item.item}
+            </li>
           ))}
         </ul>
       </ContextMenu>
@@ -175,27 +224,7 @@ const CustomGrid = (props) => {
         <thead className="header">
           <tr>
             <td width="8%">
-              <input
-                type="checkbox"
-                onClick={(e) => {
-                  const isAllChecked = e.target.checked;
-                  let copyArray = [];
-
-                  if (isAllChecked) {
-                    for (let i = 0; i < chkListRef.current.length; i++) {
-                      chkListRef.current[i].checked = true;
-                      copyArray[i] = i;
-                    }
-                    setCheckList(copyArray);
-                  } else {
-                    for (let i = 0; i < chkListRef.current.length; i++) {
-                      chkListRef.current[i].checked = false;
-                      copyArray = [];
-                    }
-                    setCheckList(copyArray);
-                  }
-                }}
-              />
+              <input type="checkbox" onClick={checkAllClickEvent} />
             </td>
             <td width="12%">{props.header.first}</td>
             <td width="17%">{props.header.second}</td>
@@ -207,7 +236,7 @@ const CustomGrid = (props) => {
         </thead>
 
         {/* 데이터[body] */}
-        <tbody className="body">
+        <tbody className="body" ref={tableRef}>
           {props.dataList.map((item, idx) => (
             <tr key={idx}>
               {/* [체크박스] */}
