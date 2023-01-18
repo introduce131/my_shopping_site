@@ -4,15 +4,6 @@ import styled from 'styled-components';
 import { fireStore } from '../firebase.js';
 import styles from '../css/Header.module.css';
 
-const ContextMenu = styled.div`
-  position: absolute;
-  z-index: 1;
-  width: 100px;
-  height: 100px;
-  background-color: black;
-  display: none;
-`;
-
 // 상단 메뉴아이템 선택 flex container
 const MenuConatiner = styled.div`
   display: flex;
@@ -31,23 +22,55 @@ const MenuConatiner = styled.div`
 `;
 
 const MainMenu = styled.ul`
+  /* 하나의 item도 컨테이너처럼 flex를 해준다*/
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 1 6%;
   list-style: none;
   text-align: center;
+  height: 34px;
+  padding-left: 15px;
+  padding-right: 15px;
   margin-top: 0;
   margin-bottom: 0;
+  cursor: pointer;
+  border: none;
   z-index: 1;
+
+  &:hover {
+    color: rgb(161, 161, 161);
+    border-bottom: 1px solid black;
+  }
+
+  &:hover > .main-menu-item ul {
+    color: black;
+  }
 `;
 
 const SubMenu = styled.ul`
   position: absolute;
   width: 100%;
   list-style: none;
-  text-align: center;
+  text-align: left;
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;
+  padding-left: 5px;
   top: 37px;
-  left: -3px;
+  left: -4px;
+  border: 1px solid black;
+  display: none;
+
+  li {
+    background-color: rgb(255, 255, 255);
+    line-height: 2em;
+  }
+
+  & > li:hover {
+    color: rgb(161, 161, 161);
+  }
 `;
 
 //작대기 3개로 이루어진 전체보기 메뉴 버튼입니더. by Component
@@ -73,19 +96,28 @@ const Header = () => {
   const [cateList, setCateList] = useState([]); // 카테고리 전부를 저장하는 state
   const [parentCate, setParentCate] = useState([]); // filter로 메인 카테고리를 저장하는 state
   const [childCate, setChildCate] = useState([]); // filter로 서브 카테고리를 저장하는 state
-  const contextRef = useRef();
   const subMenuRef = useRef([]);
 
   // 메인 메뉴의 하위메뉴인 서브메뉴를 설정함
-  const setSubMenu = (parentName) => {
+  const setSubMenu = (parentName, idx) => {
     const childData = [...childCate].filter((item) => item.CATE_PARENT === parentName);
 
     return childData.map((item, idx) => <li key={idx}>{item.CATE_NAME}</li>);
   };
 
   // 메인메뉴 위에 마우스를 올려놨을 때 이벤트
-  const menuMouseEnter = (e) => {
-    // 서브메뉴 ul의 display를 none -> block 으로 설정해야함
+  const mainMenuMouseEnter = (e) => {
+    e.target.children[0].children[0].style.display = 'block';
+  };
+
+  // 메인메뉴 위에 마우스를 올려놨을 때 이벤트
+  const mainMenuMouseLeave = (e) => {
+    e.target.children[0].children[0].style.display = 'none';
+  };
+
+  // 서브메뉴 위에 마우스를 올려놨을 때 이벤트
+  const subMenuMouseEnter = (e) => {
+    console.log(e);
   };
 
   // 첫 마운트 시, fireStore에서 카테고리 데이터 전체를 불러온 후 cateList state에 저장
@@ -118,23 +150,20 @@ const Header = () => {
         src="https://www.freepnglogos.com/uploads/instagram-icon-png/black-hd-instagram-icon-simple-black-design-9.png"
         alt=""
       />
-      <ContextMenu ref={contextRef} />
       {/* 상단 상품 카테고리 선택 flex container */}
       <MenuConatiner>
         <div className={styles.menu_item}>
           <MenuButton />
         </div>
         {parentCate.map((item, idx) => (
-          <MainMenu
-            style={{ position: 'relative' }}
-            key={idx}
-            className={styles.menu_item}
-            onMouseEnter={menuMouseEnter}
-          >
-            <li>
+          <MainMenu key={idx} onMouseEnter={mainMenuMouseEnter} onMouseLeave={mainMenuMouseLeave}>
+            <li className="main-menu-item">
               {item.CATE_NAME}
-              <SubMenu ref={(ele) => (subMenuRef.current[idx] = ele)}>
-                {setSubMenu(item.CATE_NAME)}
+              <SubMenu
+                ref={(ele) => (subMenuRef.current[idx] = ele)}
+                onMouseEnter={subMenuMouseEnter}
+              >
+                {setSubMenu(item.CATE_NAME, idx)}
               </SubMenu>
             </li>
           </MainMenu>

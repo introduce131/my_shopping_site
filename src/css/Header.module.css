@@ -92,19 +92,10 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
   flex: 0 1 6%;
   border: none;
 }
-
-.menu_item:focus {
-  outline: none;
-}
 .menu_item:nth-child(1) {
   flex: 0 1 6%;
 }
 /*{ 아이템의 1번째인 전체보기(아이콘)을 MouseOnEvent }*/
 .menu_item:nth-child(1):hover {
   background-color: rgb(63, 63, 63);
-}
-/*{ 해당 아이템 MouseOnEvent  }*/
-.menu_item:hover {
-  color: rgb(161, 161, 161);
-  border-bottom: 1px solid black;
 }
