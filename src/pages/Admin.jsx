@@ -82,7 +82,7 @@ const ItemInfoFlexContainer = styled.div`
     background-color: white;
     padding: 0 10px 10px 10px;
     border: 2px solid #999;
-    width: 52.5%;
+    width: 47%;
   }
 
   & > .image_upload_section {
@@ -98,7 +98,7 @@ const ItemInfoFlexContainer = styled.div`
     width: 750px;
 
     .item_info_section {
-      width: 312px;
+      width: 370px;
     }
   }
 `;

@@ -12,7 +12,7 @@ import { useState } from 'react';
 const settings = {
   slide: 'div', //슬라이드 되어야 할 태그 ex) div, li
   dots: true, //슬라이드 밑에 점 보이게(페이지네이션 여부)
-  rows: 2, //세로로 몇줄할거니?옵션
+  rows: 2, //세로로 몇줄할건지 정하는 옵션
   slidePerRow: 4, //slidesToShow, Scroll 과 같은 옵션인것 같다.
   infinite: true, //무한 반복 옵션
   speed: 1000, //다음 버튼 누르고 다음 슬라이드 뜨는 시간(ms)
@@ -159,7 +159,7 @@ const Main = () => {
 
   return (
     <div>
-      <MainSlideImage /> {/*추천상품 7개 Slide 표시*/}
+      {/* <MainSlideImage /> 메인화면을 장식할 slide */}
       <SiteIntroBox /> {/*사이트 소개.Box 4개 flex로 작성*/}
       {/* 1. WEEKLY BEST ITEMS 인기상품 16개*/}
       {/* 1-1. 하이퍼링크 적용할 WEEKLY BEST ITEMS */}

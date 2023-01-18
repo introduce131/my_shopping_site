@@ -79,22 +79,6 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
   width: 25px;
   height: 25px;
 }
-/*{ 상단 메뉴아이템 선택 flex container }*/
-.menu_container {
-  display: flex;
-  /* 메뉴 컨테이너 최소/최대크기 지정 */
-  margin: auto;
-  width: 1100px;
-  max-width: 1100px;
-  min-width: 900px;
-  /* End .. */
-  height: 34px;
-  flex-flow: row nowrap;
-  justify-content: space-around;
-  align-items: flex-start;
-  background-color: rgb(255, 255, 255);
-  border: 1.5px solid rgb(192, 192, 192);
-}
 /*{ 상단 메뉴아이템 선택 flex container의 items }*/
 .menu_item {
   height: 34px;
@@ -106,6 +90,14 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
   justify-content: center;
   align-items: center;
   flex: 0 1 6%;
+  border: none;
+}
+
+.menu_item:focus {
+  outline: none;
+}
+.menu_item:nth-child(1) {
+  flex: 0 1 6%;
 }
 /*{ 아이템의 1번째인 전체보기(아이콘)을 MouseOnEvent }*/
 .menu_item:nth-child(1):hover {
@@ -114,5 +106,5 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
 /*{ 해당 아이템 MouseOnEvent  }*/
 .menu_item:hover {
   color: rgb(161, 161, 161);
-  border-bottom: 2px solid black;
+  border-bottom: 1px solid black;
 }

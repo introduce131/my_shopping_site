@@ -5,7 +5,8 @@ const MenuContatinerDiv = styled.div`
   position: fixed;
   display: flex;
   flex-flow: column nowrap;
-  width: 165px;
+  width: 175px;
+  margin-left: -9px;
   height: 100%;
   background-color: rgb(70, 70, 70);
 
@@ -15,7 +16,7 @@ const MenuContatinerDiv = styled.div`
 `;
 
 const MenuItemDiv = styled.div`
-  flex: 0 1 10%;
+  flex: 0 1 5%;
   border: 1px solid white;
 `;
 
