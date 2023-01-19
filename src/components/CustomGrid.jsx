@@ -150,11 +150,11 @@ const CustomGrid = (props) => {
   const checkChangedEvent = (e, idx) => {
     const isChecked = e.target.checked; // 체크 상태 확인
     if (isChecked) {
-      // 체크하면 배열에 넣고
-      setCheckList([...checkList].concat(idx));
+      // 체크하면 배열에 value값을 넣고
+      setCheckList([...checkList].concat(Number(e.target.value)));
     } else {
       // 체크상태가 아니면 배열에서 삭제
-      const newArray = [...checkList].filter((ele) => ele !== idx);
+      const newArray = [...checkList].filter((ele) => ele !== Number(e.target.value));
       setCheckList(newArray);
     }
   };
@@ -188,7 +188,8 @@ const CustomGrid = (props) => {
       case 1: {
         let dataArray = [...dataList];
 
-        console.log(dataArray);
+        console.log('삭제 전 dataArray', dataArray);
+        console.log('삭제 전 checkList', checkList);
 
         // dataList와 checkList를 비교하여 데이터 삭제
         for (let i = 0; i < dataArray.length; i++) {
@@ -201,8 +202,13 @@ const CustomGrid = (props) => {
           }
         }
 
+        console.log('삭제 후 dataArray', dataArray);
+
+        const newArr = chkListRef.current;
+        const newArrLength = newArr.filter((ele) => ele !== null).length;
+
         // 테이블에 있는 체크박스 전부 unChecked
-        for (let i = 0; i < chkListRef.current.length; i++) {
+        for (let i = 0; i < newArrLength; i++) {
           chkListRef.current[i].checked = false;
         }
 
@@ -266,6 +272,7 @@ const CustomGrid = (props) => {
                     type="checkbox"
                     onChange={(e) => checkChangedEvent(e, idx)}
                     ref={(ele) => (chkListRef.current[idx] = ele)}
+                    value={item.id}
                   />
                 </td>
                 {/* [사이즈] */}

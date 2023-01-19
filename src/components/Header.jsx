@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { fireStore } from '../firebase.js';
 import styles from '../css/Header.module.css';
 
@@ -30,11 +30,11 @@ const MainMenu = styled.ul`
   flex: 0 1 6%;
   list-style: none;
   text-align: center;
-  height: 34px;
+  height: 100%;
   padding-left: 15px;
   padding-right: 15px;
   margin-top: 0;
-  margin-bottom: 0;
+  margin-bottom: 50px;
   cursor: pointer;
   border: none;
   z-index: 1;
@@ -49,26 +49,31 @@ const MainMenu = styled.ul`
   }
 `;
 
-const SubMenu = styled.ul`
+const SubMenu = styled.div`
   position: absolute;
-  width: 100%;
-  list-style: none;
-  text-align: left;
+  width: 110%;
   margin-top: 0;
   margin-bottom: 0;
   padding: 0;
-  padding-left: 5px;
-  top: 37px;
+  top: 34px;
   left: -4px;
   border: 1px solid black;
   display: none;
+  background-color: white;
 
-  li {
+  ul {
+    list-style: none;
+    text-align: left;
+    padding-left: 5px;
+    padding-top: 3px;
+  }
+
+  ul li {
     background-color: rgb(255, 255, 255);
     line-height: 2em;
   }
 
-  & > li:hover {
+  & > ul li:hover {
     color: rgb(161, 161, 161);
   }
 `;
@@ -99,25 +104,27 @@ const Header = () => {
   const subMenuRef = useRef([]);
 
   // 메인 메뉴의 하위메뉴인 서브메뉴를 설정함
-  const setSubMenu = (parentName, idx) => {
+  const setSubMenu = (parentName) => {
     const childData = [...childCate].filter((item) => item.CATE_PARENT === parentName);
 
-    return childData.map((item, idx) => <li key={idx}>{item.CATE_NAME}</li>);
+    return childData.map((item, idx) => (
+      <ul key={idx}>
+        <li key={idx}>{item.CATE_NAME}</li>
+      </ul>
+    ));
   };
 
   // 메인메뉴 위에 마우스를 올려놨을 때 이벤트
-  const mainMenuMouseEnter = (e) => {
-    e.target.children[0].children[0].style.display = 'block';
+  const mainMenuMouseEnter = (idx) => {
+    console.log('enter');
+    subMenuRef.current[idx].style.display = 'block';
+    // 하위 서브메뉴가 없으면 border : none
+    if (!subMenuRef.current[idx].children[0]) subMenuRef.current[idx].style.border = 'none';
   };
 
-  // 메인메뉴 위에 마우스를 올려놨을 때 이벤트
-  const mainMenuMouseLeave = (e) => {
-    e.target.children[0].children[0].style.display = 'none';
-  };
-
-  // 서브메뉴 위에 마우스를 올려놨을 때 이벤트
-  const subMenuMouseEnter = (e) => {
-    console.log(e);
+  // 메인메뉴 위에 마우스가 벗어났을 때 이벤트
+  const mainMenuMouseLeave = (idx) => {
+    subMenuRef.current[idx].style.display = 'none';
   };
 
   // 첫 마운트 시, fireStore에서 카테고리 데이터 전체를 불러온 후 cateList state에 저장
@@ -156,14 +163,19 @@ const Header = () => {
           <MenuButton />
         </div>
         {parentCate.map((item, idx) => (
-          <MainMenu key={idx} onMouseEnter={mainMenuMouseEnter} onMouseLeave={mainMenuMouseLeave}>
+          <MainMenu
+            key={idx}
+            onMouseEnter={() => {
+              mainMenuMouseEnter(idx);
+            }}
+            onMouseLeave={() => {
+              mainMenuMouseLeave(idx);
+            }}
+          >
             <li className="main-menu-item">
               {item.CATE_NAME}
-              <SubMenu
-                ref={(ele) => (subMenuRef.current[idx] = ele)}
-                onMouseEnter={subMenuMouseEnter}
-              >
-                {setSubMenu(item.CATE_NAME, idx)}
+              <SubMenu ref={(ele) => (subMenuRef.current[idx] = ele)}>
+                {setSubMenu(item.CATE_NAME)}
               </SubMenu>
             </li>
           </MainMenu>

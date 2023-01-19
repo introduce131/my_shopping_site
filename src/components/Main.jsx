@@ -159,7 +159,7 @@ const Main = () => {
 
   return (
     <div>
-      {/* <MainSlideImage /> 메인화면을 장식할 slide */}
+      <MainSlideImage /> {/*메인화면을 장식할 slide*/}
       <SiteIntroBox /> {/*사이트 소개.Box 4개 flex로 작성*/}
       {/* 1. WEEKLY BEST ITEMS 인기상품 16개*/}
       {/* 1-1. 하이퍼링크 적용할 WEEKLY BEST ITEMS */}
