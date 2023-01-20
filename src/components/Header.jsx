@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { fireStore } from '../firebase.js';
 import styles from '../css/Header.module.css';
 

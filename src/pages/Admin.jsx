@@ -9,6 +9,7 @@ import * as common from '../common.js';
 import Editor from '../components/Editor.jsx';
 import Option from '../components/Option.jsx';
 import LeftMenuBar from '../components/LeftMenuBar.jsx';
+import RightMenuBar from '../components/RightMenuBar.jsx';
 import CustomGrid from '../components/CustomGrid.jsx';
 
 // 전역 스타일링
@@ -298,12 +299,15 @@ const Admin = () => {
   };
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       {/* 전역 스타일링 적용 */}
       <GlobalStyle />
 
       {/* 왼쪽 고정된 Navigation Bar */}
-      <LeftMenuBar />
+      {/* <LeftMenuBar /> */}
+
+      {/* 오른쪽 고정된 Navigation Bar */}
+      <RightMenuBar />
 
       <ItemInfoFlexContainer>
         {/* 상품명, 상품 요약설명 div */}
