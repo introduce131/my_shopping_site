@@ -77,7 +77,7 @@ const MainMenu = styled.ul`
 const SubMenu = styled.ul`
   list-style: none;
   padding-left: 8px;
-  font-size: 14px;
+  font-size: 13px;
   line-height: 19px;
   border-left: 1px solid black;
   width: 50%;
@@ -101,6 +101,7 @@ const RightMenuBar = () => {
   const [childCate, setChildCate] = useState([]);
   const [parentName, setParentName] = useState('');
   const [childName, setChildName] = useState('');
+  const subMenuRef = useRef();
 
   // 첫 마운트 시, fireStore에서 카테고리 데이터 전체를 불러온 후 cateList state에 저장
   useEffect(() => {
@@ -123,6 +124,17 @@ const RightMenuBar = () => {
     const childArray = cateList.filter((item) => item.CATE_LEVEL === '2');
     setChildCate([...childArray]);
   }, [cateList]);
+
+  /* 메인 메뉴 값이 바뀌었을 때, useEffect로 동기적으로 처리해줌
+     메인 메뉴를 클릭하면, 서브메뉴의 스타일을 기본스타일로 일괄적용 */
+  useEffect(() => {
+    if (subMenuRef.current.children.length > 0) {
+      for (let i = 0; i < subMenuRef.current.children.length; i++) {
+        subMenuRef.current.children[i].style.color = 'black';
+        subMenuRef.current.children[i].style.backgroundColor = 'white';
+      }
+    }
+  }, [parentName]);
 
   /* 메인 메뉴의 하위메뉴인 서브메뉴를 설정함 */
   const setSubMenu = (menuName) => {
@@ -181,7 +193,7 @@ const RightMenuBar = () => {
           </MainMenu>
 
           {/* 서브 메뉴 */}
-          <SubMenu>{setSubMenu(parentName)}</SubMenu>
+          <SubMenu ref={subMenuRef}>{setSubMenu(parentName)}</SubMenu>
 
           {/* 저장할 카테고리를 Label에 표시 */}
         </Category>
