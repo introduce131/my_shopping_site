@@ -2,21 +2,29 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import { fireStore } from '../firebase.js';
+import * as common from '../common.js';
 
-const MenuContatinerDiv = styled.div`
+const MenuContainer = styled.div`
   position: absolute;
   right: 10px;
+  width: 15%;
   display: flex;
   flex-flow: column nowrap;
-  width: 15%;
-  margin-left: -9px;
-  height: 100%;
-  background-color: white;
-  border: 2px solid #999;
+  gap: 20px;
 
   @media screen and (max-width: 1350px) {
     display: none;
   }
+`;
+
+const MenuItem = styled.div`
+  display: flex;
+  flex-flow: column nowrap;
+  margin-left: -9px;
+  width: 100%;
+  height: auto;
+  background-color: white;
+  border: 2px solid #999;
 `;
 
 // 커스텀 Label
@@ -31,20 +39,41 @@ const CustomLabel = styled.label`
   margin-left: 15px;
 `;
 
+// 커스텀 카테고리 Label
+const CustomCatePath = styled(CustomLabel)`
+  font-family: 'Source Sans Pro', sans-serif;
+`;
+
 // Input type = "text" 커스텀
-const InputText = styled.input.attrs({ type: 'text' })`
+const InputText = styled.input.attrs({ type: 'text', spellCheck: 'false' })`
   font-family: 'GmarketSans', sans-serif;
   height: auto;
+  width: 85%;
   width: ${(props) => props.width};
   margin: 0 auto;
   line-height: normal;
-  padding: 0.5em 0.5em;
+  padding: 0.7em 0.5em 0.5em 0.5em;
   border-top: none;
   border-left: none;
   border-right: none;
   border-bottom: 2px solid #999;
   outline-style: none;
   background-color: white;
+`;
+
+// 커스텀 Select-option
+const CustomOption = styled.select`
+  font-family: 'GmarketSans', sans-serif;
+  color: rgb(100, 100, 100);
+  font-size: 14.5px;
+  width: 90%;
+  margin: 0 auto;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  border-bottom: 2px solid #999;
+  padding: 5px 0px 4px 5px;
+  margin-top: 5px;
 `;
 
 // 카테고리 styled-component
@@ -178,27 +207,90 @@ const RightMenuBar = () => {
     e.target.style.color = 'white';
   };
 
+  // 숫자만 입력받는 OnChange Event
+  const handleOnChange = (e) => {
+    e.target.value = common.removeNonNumeric(Number(e.target.value));
+  };
+
   return (
     <div>
-      <MenuContatinerDiv>
-        <CustomLabel style={{ marginBottom: '10px' }}>카테고리</CustomLabel>
-        <Category>
-          {/* 메인 메뉴 */}
-          <MainMenu>
-            {parentCate.map((item, idx) => (
-              <li onClick={mainMenuOnClick} key={idx}>
-                {item.CATE_NAME}
-              </li>
-            ))}
-          </MainMenu>
+      <MenuContainer>
+        {/* 카테고리, 원산지, 제조사, 브랜드 입력란*/}
+        <MenuItem>
+          <CustomLabel style={{ marginBottom: '10px' }}>카테고리</CustomLabel>
+          <Category>
+            {/* 메인 메뉴 */}
+            <MainMenu>
+              {parentCate.map((item, idx) => (
+                <li onClick={mainMenuOnClick} key={idx}>
+                  {item.CATE_NAME}
+                </li>
+              ))}
+            </MainMenu>
 
-          {/* 서브 메뉴 */}
-          <SubMenu ref={subMenuRef}>{setSubMenu(parentName)}</SubMenu>
+            {/* 서브 메뉴 */}
+            <SubMenu ref={subMenuRef}>{setSubMenu(parentName)}</SubMenu>
 
-          {/* 저장할 카테고리를 Label에 표시 */}
-        </Category>
-        <CustomLabel>{parentName + ' > ' + childName}</CustomLabel>
-      </MenuContatinerDiv>
+            {/* 저장할 카테고리를 Label에 표시 */}
+          </Category>
+          <CustomCatePath>{parentName + '  >  ' + childName}</CustomCatePath>
+          <br />
+          <CustomLabel>원산지</CustomLabel>
+          <InputText placeholder="예) Made in Korea" />
+          <br />
+          <br />
+          <CustomLabel>제조사</CustomLabel>
+          <InputText placeholder="예) LG의류" />
+          <br />
+          <br />
+          <CustomLabel>브랜드</CustomLabel>
+          <InputText placeholder="예) LINDA" />
+          <br />
+        </MenuItem>
+
+        {/* 상품 상태, 구매 설정(최소 구매수량, 1인-1회 구매시 최대수량) */}
+        <MenuItem>
+          <CustomLabel>상품 상태</CustomLabel>
+          <CustomOption>
+            <option value="new">신상품</option>
+            <option value="used">중고 상품</option>
+            <option value="return">반품 상품</option>
+          </CustomOption>
+          <br />
+          <CustomLabel>구매 설정</CustomLabel>
+          <br />
+          <CustomLabel style={{ fontSize: '13px' }}>최소 구매수량</CustomLabel>
+          <InputText
+            onChange={handleOnChange}
+            placeholder="숫자만 입력"
+            defaultValue="0"
+            maxLength="3"
+          />
+          <br />
+          <CustomLabel style={{ fontSize: '13px' }}>1회 구매시 최대수량</CustomLabel>
+          <InputText
+            onChange={handleOnChange}
+            placeholder="숫자만 입력"
+            defaultValue="0"
+            maxLength="3"
+          />
+          <br />
+          <CustomLabel style={{ fontSize: '13px' }}>1인 구매시 최대수량</CustomLabel>
+          <InputText
+            onChange={handleOnChange}
+            placeholder="숫자만 입력"
+            defaultValue="0"
+            maxLength="3"
+          />
+          <br />
+          {/* <div>
+            <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
+            <CustomLabel htmlFor="ITEMS_SHOWMAIN" style={{ fontSize: '13px' }}>
+              Weekly Best Items
+            </CustomLabel>
+          </div> */}
+        </MenuItem>
+      </MenuContainer>
     </div>
   );
 };

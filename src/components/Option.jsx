@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 
 // Input type = "text" 커스텀
-const InputText = styled.input.attrs({ type: 'text' })`
+const InputText = styled.input.attrs({ type: 'text', spellCheck: 'false' })`
   font-family: 'GmarketSans', sans-serif;
   height: auto;
   id: ${(props) => props.id};

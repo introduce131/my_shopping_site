@@ -56,7 +56,7 @@ const InputTextArea = styled.textarea`
 `;
 
 // Input type = "text" 커스텀
-const InputText = styled.input.attrs({ type: 'text' })`
+const InputText = styled.input.attrs({ type: 'text', spellCheck: 'false' })`
   font-family: 'GmarketSans', sans-serif;
   height: auto;
   width: ${(props) => props.width};
@@ -80,17 +80,18 @@ const ItemInfoFlexContainer = styled.div`
   margin: 0 auto;
 
   & > .item_info_section {
+    position: relative;
     background-color: white;
     padding: 0 10px 10px 10px;
     border: 2px solid #999;
-    width: 47%;
+    width: 52%;
   }
 
   & > .image_upload_section {
     position: relative;
     border: 2px solid #999;
-    width: 303px;
     height: 282px;
+    width: 40%;
     background-color: white;
     padding: 0 10px 10px;
   }
@@ -98,6 +99,9 @@ const ItemInfoFlexContainer = styled.div`
   @media screen and (max-width: 1100px) {
     width: 750px;
 
+    .item_info_section {
+      width: 370px;
+    }
     .item_info_section {
       width: 370px;
     }
@@ -155,6 +159,13 @@ const OptionInputContainer = styled.div`
   }
 `;
 
+// 상품 요약 설명, 상품 재질 설명 부분
+const ContentContainer = styled.div`
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+`;
+
 const Admin = () => {
   const itemsCollectionRef = collection(fireStore, 'shopping_items'); // 'shopping_items' collection 참조 생성
   const [percent, setPercent] = useState(0); // [대표이미지] [사진 업로드] 진행 퍼센트
@@ -169,6 +180,7 @@ const Admin = () => {
   const priceRef = useRef(); // [가격] [상품 가격] input ref
   const firstOptRef = useRef(); // 첫번째 [옵션명].ref
   const secondOptRef = useRef(); // 두번째 [옵션명].ref
+  const textAreaRef = useRef();
 
   // 천단위 콤마, 숫자만 입력받게 input에 적용하는 핸들러 함수
   const handleChange = (event) => {
@@ -261,6 +273,16 @@ const Admin = () => {
     }
   }
 
+  // textarea 글자수 제한 function
+  const onKeyLimit = (e, textRef) => {
+    let numberOfLines = (textRef.current.value.match(/\n/g) || []).length + 1;
+    let maxRows = textRef.current.rows;
+
+    if (e.which === 13 && numberOfLines === maxRows) {
+      return false;
+    }
+  };
+
   // 상품추가하기
   const addItems = async () => {
     //이부분 수정해야됨. ITEMS_SHOWMAIN이 전부 O로 나옴 2022-12-27
@@ -325,17 +347,30 @@ const Admin = () => {
           <br />
           <CustomLabel htmlFor="ITEMS_CONTENTS">상품 요약 설명</CustomLabel>
           <br />
-          <InputTextArea
-            id="ITEMS_CONTENTS"
-            onChange={(e) => {
-              let contents = e.target.value;
-              setContent(contents);
-            }}
-            placeholder="요약 설명은 최대 10줄입니다."
-            rows="10"
-            cols="34"
-            style={{ width: '97%' }}
-          />
+          <CustomLabel
+            style={{ position: 'absolute', left: '52.5%', top: '30.5%' }}
+            htmlFor="ITEMS_FABRIC"
+          >
+            재질
+          </CustomLabel>
+          <ContentContainer>
+            <InputTextArea
+              id="ITEMS_CONTENTS"
+              onChange={(e) => {
+                let contents = e.target.value;
+                setContent(contents);
+              }}
+              placeholder="요약 설명은 최대 10줄입니다."
+              rows="10"
+              cols="10"
+              style={{ width: '47%' }}
+              ref={textAreaRef}
+              onKeyDown={(e) => {
+                onKeyLimit(e, textAreaRef);
+              }}
+            />
+            <InputTextArea id="ITEMS_FABRIC" rows="5" cols="10" style={{ width: '47%' }} />
+          </ContentContainer>
         </div>
 
         {/* 대표 이미지 업로드 div*/}
@@ -487,14 +522,6 @@ const Admin = () => {
       <br />
       <br />
       {/* 상품 재질 입력란 */}
-      <CustomLabel htmlFor="ITEMS_FABRIC">재질</CustomLabel>
-      <InputTextArea id="ITEMS_FABRIC" rows="5" cols="30" />
-      <br />
-      {/*  */}
-      <CustomLabel htmlFor="ITEMS_SHOWMAIN">
-        <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
-        메인화면 추천상품 적용
-      </CustomLabel>
       <br />
       <br />
       <button onClick={addItems}>추가하기</button>
