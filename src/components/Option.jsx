@@ -126,8 +126,6 @@ const Option = React.forwardRef(function optionFunc(props, ref) {
   const inputTextRef = useRef(); // 옵션값을 작성하는 text박스.ref
   const returnValue = []; // 저장된 옵션값을 컴포넌트 밖으로 보낼 배열
 
-  useEffect(() => {});
-
   //option state의 동기적 처리를 위함
   useEffect(() => {
     let refWidth = 0;

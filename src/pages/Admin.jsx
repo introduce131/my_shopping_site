@@ -11,6 +11,7 @@ import Option from '../components/Option.jsx';
 import LeftMenuBar from '../components/LeftMenuBar.jsx';
 import RightMenuBar from '../components/RightMenuBar.jsx';
 import CustomGrid from '../components/CustomGrid.jsx';
+import { useEffect } from 'react';
 
 // 전역 스타일링
 const GlobalStyle = createGlobalStyle`
@@ -79,6 +80,7 @@ const ItemInfoFlexContainer = styled.div`
   min-width: 700px;
   margin: 0 auto;
 
+  /* 상품명, 상품요약설명, 재질 */
   & > .item_info_section {
     position: relative;
     background-color: white;
@@ -87,6 +89,7 @@ const ItemInfoFlexContainer = styled.div`
     width: 52%;
   }
 
+  /* 대표이미지 */
   & > .image_upload_section {
     position: relative;
     border: 2px solid #999;
@@ -94,16 +97,39 @@ const ItemInfoFlexContainer = styled.div`
     width: 40%;
     background-color: white;
     padding: 0 10px 10px;
+
+    /* 이미지 미리보기 */
+    .image_preview_section {
+      position: absolute;
+      left: 0;
+      top: 20%;
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      height: 45%;
+
+      /* 미리보기 이미지[아이템]에 적용될 스타일 */
+      .image_preview_item {
+        position: relative;
+        border: 2px solid black;
+
+        /* 각각의 이미지 사이즈 */
+        .image_size {
+          width: 128px;
+          height: 128px;
+        }
+      }
+    }
   }
 
   @media screen and (max-width: 1100px) {
     width: 750px;
 
     .item_info_section {
-      width: 370px;
+      width: 375px;
     }
     .item_info_section {
-      width: 370px;
+      width: 375px;
     }
   }
 `;
@@ -181,6 +207,15 @@ const Admin = () => {
   const firstOptRef = useRef(); // 첫번째 [옵션명].ref
   const secondOptRef = useRef(); // 두번째 [옵션명].ref
   const textAreaRef = useRef();
+  const editorRef = useRef(); // Editor.jsx의 [ReactQull].ref
+
+  // 컴포넌트 첫 마운트시에 실행
+  useEffect(() => {
+    if (editorRef.current) {
+      const { getEditor } = editorRef.current;
+      console.log('editorRef.current', editorRef.current);
+    }
+  }, []);
 
   // 천단위 콤마, 숫자만 입력받게 input에 적용하는 핸들러 함수
   const handleChange = (event) => {
@@ -230,21 +265,29 @@ const Admin = () => {
     setUploadfile(Array.from(Uploadfile).filter((_, index) => index !== id));
   };
 
-  // fireStore/Storage 이미지 업로드 함수
-  function handleUpload() {
-    //파일이 비어있지 않은지 먼저 확인
-    if (!Uploadfile[0]) {
+  // [이미지 추가] 클릭 시,
+  const handleUpload = async (file) => {
+    // 파일이 없으면 경고, 있으면 imageFileUpload 함수 호출해서 fireStorage에 저장
+    let url = [];
+    if (file.length > 0) {
+      for (let i = 0; i < file.length; i++) {
+        url[i] = await imageFileUpload(file[i]);
+      }
+    } else {
       alert('이미지 파일을 먼저 선택해주세요');
     }
-    /** <스토리지(저장소) 참조 생성 => 작업하려는 클라우드 파일에 대한 포인터 역할>
-     *  firebase/storage에서 ref함수를 가져오고 파라미터로
-     *  (저장소 서비스), (파일경로)를 인수로 전달함 */
+    console.log('url', url);
+  };
 
-    // 로직으로 사진은 최대 2장으로 한정했음
-    for (let i = 0; i < Uploadfile.length; i++) {
-      const storageRef = ref(storage, `files/${Uploadfile[i].name}`);
+  // firebase Storage에 이미지를 업로드하는 함수
+  const imageFileUpload = async (paraFile) => {
+    return new Promise((resolve, reject) => {
+      /** <스토리지(저장소) 참조 생성 => 작업하려는 클라우드 파일에 대한 포인터 역할>
+       *  firebase/storage에서 ref함수를 가져오고 파라미터로
+       *  (저장소 서비스), (파일경로)를 인수로 전달함 */
+      const storageRef = ref(storage, `files/${paraFile.name}`);
       /**  uploadBytesResumable()에 인스턴스를 전달하여 업로드 작업을 만듬.*/
-      const uploadTask = uploadBytesResumable(storageRef, Uploadfile[i]);
+      const uploadTask = uploadBytesResumable(storageRef, paraFile);
 
       /** state_changed 이벤트에는 3가지 콜백함수가 있다
        *  1번째 콜백함수 : 업로드 진행 상황 추적, 진행 상태 업로드
@@ -257,21 +300,22 @@ const Admin = () => {
         (snapshot) => {
           //퍼센트 값 = 반올림(지금까지 성공적으로 업로드된 byte 수 / 업로드할 총 byte 수)
           const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-
           setPercent(percent);
         },
         (err) => {
+          // promise reject
+          reject(err.code);
           setImgURL(err.code);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            resolve(url);
             setImgURL(url); //imgURL state에 저장
-            console.log('이미지 경로', url);
           });
         }
       );
-    }
-  }
+    });
+  };
 
   // textarea 글자수 제한 function
   const onKeyLimit = (e, textRef) => {
@@ -325,14 +369,14 @@ const Admin = () => {
       {/* 전역 스타일링 적용 */}
       <GlobalStyle />
 
-      {/* 왼쪽 고정된 Navigation Bar */}
+      {/* 왼쪽 Nav 관리자 메뉴 */}
       {/* <LeftMenuBar /> */}
 
-      {/* 오른쪽 고정된 Navigation Bar */}
+      {/* 오른쪽 Nav, 카테고리, 원산지, 제조사, 브랜드, 상품상태, 구매설정*/}
       <RightMenuBar />
 
       <ItemInfoFlexContainer>
-        {/* 상품명, 상품 요약설명 div */}
+        {/* [상품명], [상품 요약설명] [재질] */}
         <div className="item_info_section">
           <br />
           <CustomLabel htmlFor="ITEMS_NAME">상품명</CustomLabel>
@@ -369,11 +413,17 @@ const Admin = () => {
                 onKeyLimit(e, textAreaRef);
               }}
             />
-            <InputTextArea id="ITEMS_FABRIC" rows="5" cols="10" style={{ width: '47%' }} />
+            <InputTextArea
+              placeholder="재질 설명은 최대 10줄입니다."
+              id="ITEMS_FABRIC"
+              rows="5"
+              cols="10"
+              style={{ width: '47%' }}
+            />
           </ContentContainer>
         </div>
 
-        {/* 대표 이미지 업로드 div*/}
+        {/* [대표이미지] 업로드 */}
         <div className="image_upload_section">
           <CustomLabel style={{ position: 'absolute', top: '10px', left: '10px' }}>
             대표 이미지
@@ -395,32 +445,25 @@ const Admin = () => {
             />
             이미지 추가
           </AddImageLabel>
-          {showImages.map((image, id) => (
-            <div
-              key={id}
-              style={{
-                position: 'relative',
-                height: '130px',
-                border: '2px solid black',
-                marginLeft: '11.5px',
-                marginTop: '55px',
-                display: 'inline-block',
-              }}
-            >
-              <img src={image} style={{ width: '130px', height: '130px' }} />
-              <img
-                src={process.env.PUBLIC_URL + '/images/delete-image.png'}
-                style={{
-                  position: 'absolute',
-                  top: '3px',
-                  right: '3px',
-                  width: '20px',
-                  height: '20px',
-                }}
-                onClick={() => handleDeleteImage(id)}
-              />
-            </div>
-          ))}
+          {/* [대표이미지] 이미지 미리보기 */}
+          <div className="image_preview_section">
+            {showImages.map((image, id) => (
+              <div key={id} className="image_preview_item">
+                <img src={image} className="image_size" />
+                <img
+                  src={process.env.PUBLIC_URL + '/images/delete-image.png'}
+                  style={{
+                    position: 'absolute',
+                    top: '3px',
+                    right: '3px',
+                    width: '20px',
+                    height: '20px',
+                  }}
+                  onClick={() => handleDeleteImage(id)}
+                />
+              </div>
+            ))}
+          </div>
           <br />
           <CustomLabel style={{ position: 'absolute', top: '77%', left: '5%' }}>
             미리보기 사진은 최대 2장까지 가능합니다.
@@ -428,7 +471,7 @@ const Admin = () => {
           <br />
           <AddImageLabel
             style={{ position: 'absolute', bottom: '10px', right: '10px' }}
-            onClick={handleUpload}
+            onClick={() => handleUpload(Uploadfile)}
           >
             사진 업로드
           </AddImageLabel>
@@ -441,7 +484,7 @@ const Admin = () => {
               position: 'absolute',
               bottom: '11px',
               left: '20px',
-              width: '55%',
+              width: '60%',
             }}
           />
         </div>
@@ -459,7 +502,7 @@ const Admin = () => {
           상세 설명
         </CustomLabel>
         <br />
-        <Editor />
+        <Editor ref={editorRef} />
       </ItemsDetailDiv>
 
       {/* 상품 가격 입력 div*/}
@@ -477,6 +520,7 @@ const Admin = () => {
             autoComplete="off"
             onChange={handleChange}
             maxLength="10"
+            width="78%"
             ref={priceRef}
           />
         </div>
@@ -491,6 +535,7 @@ const Admin = () => {
             autoComplete="off"
             onChange={handleChange}
             maxLength="10"
+            width="78%"
           />
         </div>
       </PriceInputContainer>
@@ -525,6 +570,14 @@ const Admin = () => {
       <br />
       <br />
       <button onClick={addItems}>추가하기</button>
+      {'\n\n'}
+      <button
+        onClick={() => {
+          console.log(editorRef.current);
+        }}
+      >
+        에디터 ref 콘솔에 출력하기
+      </button>
     </div>
   );
 };
