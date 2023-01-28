@@ -1,12 +1,14 @@
 import React from 'react';
+import { storage } from './firebase.js';
+import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 
-// 천단위에 콤마 찍기 함수
+/** 천단위에 콤마 찍기 함수 */
 export const addCommas = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
-// 숫자만 입력 받을 수 있게 적용하는 함수
+/** 숫자만 입력 받을 수 있게 적용하는 함수 */
 export const removeNonNumeric = (num) => num.toString().replace(/[^0-9]/g, '');
 
-// option 데이터 리스트를 만들어서 반환하는 함수
+/** option 데이터 리스트를 만들어서 반환하는 함수 */
 export function optionDataList(firstArray, secondArray, priceRef) {
   let dataList = [];
   let dataRow = {};
@@ -46,19 +48,55 @@ export function optionDataList(firstArray, secondArray, priceRef) {
   return dataList;
 }
 
-// inputText에서 금액을 입력할 때, 천단위 숫자를 찍어주는 함수
+/** inputText에서 금액을 입력할 때, 천단위 숫자를 찍어주는 함수 */
 export function inputNumberFormat(obj) {
   obj.current.value = comma(uncomma(obj.current.value));
 }
 
-// 콤마 씌우기
+/** 콤마 씌우기 */
 export function comma(str) {
   str = String(str);
   return str.replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
 }
 
-// 콤마 지우기
+/** 콤마 지우기 */
 export function uncomma(str) {
   str = String(str);
   return str.replace(/[^\d]+/g, '');
 }
+
+/** firebase Storage에 이미지를 업로드하는 Promise 반환 함수 */
+export const imageFileUpload = async (paraFile, filePath) => {
+  return new Promise((resolve, reject) => {
+    /** <스토리지(저장소) 참조 생성 => 작업하려는 클라우드 파일에 대한 포인터 역할>
+     *  firebase/storage에서 ref함수를 가져오고 파라미터로
+     *  (저장소 서비스), (파일경로)를 인수로 전달함 */
+    console.log(filePath);
+    const storageRef = ref(storage, filePath);
+    /**  uploadBytesResumable()에 인스턴스를 전달하여 업로드 작업을 만듬.*/
+    const uploadTask = uploadBytesResumable(storageRef, paraFile);
+
+    /** state_changed 이벤트에는 3가지 콜백함수가 있다
+     *  1번째 콜백함수 : 업로드 진행 상황 추적, 진행 상태 업로드
+     *  2번째 콜백함수 : 업로드 실패 시 오류를 처리
+     *  3번째 콜백함수 : 업로드가 완료되면 실행되고, 다운로드 URL을 가져오고 콘솔에 표시
+     *                  fireStore 데이터베이스에 저장해도 됨.
+     */
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        //퍼센트 값 = 반올림(지금까지 성공적으로 업로드된 byte 수 / 업로드할 총 byte 수)
+        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+      },
+      (err) => {
+        // promise reject
+        reject(err.code);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+          resolve(url);
+        });
+      }
+    );
+  });
+};

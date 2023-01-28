@@ -2,8 +2,7 @@
 /* 컴포넌트 이름이 긴 것은 어쩔 수 없습니다 ^^ */
 import React, { useState, useRef } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
-import { fireStore, storage } from '../firebase.js';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+import { fireStore } from '../firebase.js';
 import { addDoc, collection } from 'firebase/firestore';
 import * as common from '../common.js';
 import Editor from '../components/Editor.jsx';
@@ -271,50 +270,12 @@ const Admin = () => {
     let url = [];
     if (file.length > 0) {
       for (let i = 0; i < file.length; i++) {
-        url[i] = await imageFileUpload(file[i]);
+        url[i] = await common.imageFileUpload(file[i], `files/${file[i].name}`);
       }
     } else {
       alert('이미지 파일을 먼저 선택해주세요');
     }
     console.log('url', url);
-  };
-
-  // firebase Storage에 이미지를 업로드하는 함수
-  const imageFileUpload = async (paraFile) => {
-    return new Promise((resolve, reject) => {
-      /** <스토리지(저장소) 참조 생성 => 작업하려는 클라우드 파일에 대한 포인터 역할>
-       *  firebase/storage에서 ref함수를 가져오고 파라미터로
-       *  (저장소 서비스), (파일경로)를 인수로 전달함 */
-      const storageRef = ref(storage, `files/${paraFile.name}`);
-      /**  uploadBytesResumable()에 인스턴스를 전달하여 업로드 작업을 만듬.*/
-      const uploadTask = uploadBytesResumable(storageRef, paraFile);
-
-      /** state_changed 이벤트에는 3가지 콜백함수가 있다
-       *  1번째 콜백함수 : 업로드 진행 상황 추적, 진행 상태 업로드
-       *  2번째 콜백함수 : 업로드 실패 시 오류를 처리
-       *  3번째 콜백함수 : 업로드가 완료되면 실행되고, 다운로드 URL을 가져오고 콘솔에 표시
-       *                  fireStore 데이터베이스에 저장해도 됨.
-       */
-      uploadTask.on(
-        'state_changed',
-        (snapshot) => {
-          //퍼센트 값 = 반올림(지금까지 성공적으로 업로드된 byte 수 / 업로드할 총 byte 수)
-          const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-          setPercent(percent);
-        },
-        (err) => {
-          // promise reject
-          reject(err.code);
-          setImgURL(err.code);
-        },
-        () => {
-          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-            resolve(url);
-            setImgURL(url); //imgURL state에 저장
-          });
-        }
-      );
-    });
   };
 
   // textarea 글자수 제한 function
