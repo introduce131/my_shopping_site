@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
 import { fireStore } from '../firebase.js';
 import * as common from '../common.js';
@@ -121,6 +122,28 @@ const SubMenu = styled.ul`
     color: white;
   }
 `;
+
+const CustomCheck = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-left: 10px;
+`;
+
+const CheckLabel = styled(CustomLabel)`
+  margin: 0;
+  font-size: 13px;
+`;
+
+const CheckMenu = (props) => {
+  return (
+    <CustomCheck>
+      <input type="checkbox" id={props.id} name={props.id} style={{ margin: 0 }} value="O" />
+      <CheckLabel htmlFor={props.id} style={{ fontSize: '12px' }}>
+        {props.content}
+      </CheckLabel>
+    </CustomCheck>
+  );
+};
 
 const RightMenuBar = () => {
   const categoryRef = collection(fireStore, 'shopping_category');
@@ -249,7 +272,7 @@ const RightMenuBar = () => {
         </MenuItem>
 
         {/* 상품 상태, 구매 설정(최소 구매수량, 1인-1회 구매시 최대수량) */}
-        <MenuItem>
+        <MenuItem style={{ marginBottom: '10px', paddingBottom: '10px' }}>
           <CustomLabel>상품 상태</CustomLabel>
           <CustomOption>
             <option value="new">신상품</option>
@@ -258,7 +281,6 @@ const RightMenuBar = () => {
           </CustomOption>
           <br />
           <CustomLabel>구매 설정</CustomLabel>
-          <br />
           <CustomLabel style={{ fontSize: '13px' }}>최소 구매수량</CustomLabel>
           <InputText
             onChange={handleOnChange}
@@ -283,16 +305,20 @@ const RightMenuBar = () => {
             maxLength="3"
           />
           <br />
-          {/* <div>
-            <input type="checkbox" id="ITEMS_SHOWMAIN" name="ITEMS_SHOWMAIN" value="O" />
-            <CustomLabel htmlFor="ITEMS_SHOWMAIN" style={{ fontSize: '13px' }}>
-              Weekly Best Items
-            </CustomLabel>
-          </div> */}
+          <CheckMenu id="ITEMS_BEST" content="OUR BEST ITEMS" />
+          <br />
+          <CheckMenu id="ITEMS_SPECIAL" content="SPECIAL ITEMS" />
+          <br />
+          <CheckMenu id="ITEMS_ALSO_LIKE" content="ALSO LIKE" />
         </MenuItem>
       </MenuContainer>
     </div>
   );
+};
+
+CheckMenu.propTypes = {
+  id: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired,
 };
 
 export default RightMenuBar;

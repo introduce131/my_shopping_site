@@ -13,7 +13,7 @@ const firebaseConfig = {
 };
 
 /** 위에 config내용으로 firebase 변수에 저장 */
-const firebase = initializeApp(firebaseConfig);
+export const firebase = initializeApp(firebaseConfig);
 
 /** fireStore 내보내기 << 다른 곳에서 불러올때 fireStore로 불러와야 함!! */
 export const fireStore = getFirestore(firebase);

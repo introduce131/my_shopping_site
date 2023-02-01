@@ -253,8 +253,8 @@ const CustomGrid = (props) => {
               <td width="8%">
                 <input type="checkbox" onClick={checkAllClickEvent} />
               </td>
-              <td width="12%">{props.header.first}</td>
-              <td width="17%">{props.header.second}</td>
+              <td width="12%">{props.header.first || '옵션명 [1]'}</td>
+              <td width="17%">{props.header.second || '옵션명 [2]'}</td>
               <td width="18%">옵션가격</td>
               <td width="15%">재고 [현]</td>
               <td width="15%">재고 [추가]</td>

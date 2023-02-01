@@ -10,7 +10,6 @@ import Option from '../components/Option.jsx';
 import LeftMenuBar from '../components/LeftMenuBar.jsx';
 import RightMenuBar from '../components/RightMenuBar.jsx';
 import CustomGrid from '../components/CustomGrid.jsx';
-import { useEffect } from 'react';
 
 // 전역 스타일링
 const GlobalStyle = createGlobalStyle`
@@ -202,23 +201,21 @@ const Admin = () => {
   const [SecondOptionData, setSecondOptionData] = useState([]); // [옵션] 색상 옵션을 저장할 state
   const [dataList, setDataList] = useState([]); // [옵션] 위 2개의 데이터를 받아 가공하여 테이블에 뿌려줄 데이터[{..}{..}]를 받아오는 state
   const [header, setHeader] = useState({ first: '', second: '' });
+  const [urlData, setUrlData] = useState([]); // [상세설명]에 총 저장된 이미지 url을 저장하는 state
   const priceRef = useRef(); // [가격] [상품 가격] input ref
   const firstOptRef = useRef(); // 첫번째 [옵션명].ref
   const secondOptRef = useRef(); // 두번째 [옵션명].ref
   const textAreaRef = useRef();
   const editorRef = useRef(); // Editor.jsx의 [ReactQull].ref
 
-  // 컴포넌트 첫 마운트시에 실행
-  useEffect(() => {
-    if (editorRef.current) {
-      const { getEditor } = editorRef.current;
-      console.log('editorRef.current', editorRef.current);
-    }
-  }, []);
-
   // 천단위 콤마, 숫자만 입력받게 input에 적용하는 핸들러 함수
   const handleChange = (event) => {
     event.target.value = common.addCommas(common.removeNonNumeric(event.target.value));
+  };
+
+  // Editor.jsx(자식 컴포넌트)에서 저장된 이미지 url 배열을 가져옴
+  const getUrlData = (data) => {
+    setUrlData(data);
   };
 
   // Option.jsx(자식 컴포넌트)에서 첫번째 option값을 가져옴
@@ -283,8 +280,8 @@ const Admin = () => {
     let numberOfLines = (textRef.current.value.match(/\n/g) || []).length + 1;
     let maxRows = textRef.current.rows;
 
-    if (e.which === 13 && numberOfLines === maxRows) {
-      return false;
+    if (numberOfLines === maxRows > 9) {
+      return;
     }
   };
 
@@ -364,6 +361,7 @@ const Admin = () => {
               onChange={(e) => {
                 let contents = e.target.value;
                 setContent(contents);
+                console.log(contents);
               }}
               placeholder="요약 설명은 최대 10줄입니다."
               rows="10"
@@ -463,7 +461,7 @@ const Admin = () => {
           상세 설명
         </CustomLabel>
         <br />
-        <Editor ref={editorRef} />
+        <Editor ref={editorRef} getUrlData={getUrlData} />
       </ItemsDetailDiv>
 
       {/* 상품 가격 입력 div*/}
@@ -531,10 +529,10 @@ const Admin = () => {
       <br />
       <br />
       <button onClick={addItems}>추가하기</button>
-      {'\n\n'}
       <button
         onClick={() => {
-          console.log(editorRef.current);
+          const quillImgArray = common.returnEditorImg(editorRef);
+          common.deleteServerImage(quillImgArray, urlData);
         }}
       >
         에디터 ref 콘솔에 출력하기
