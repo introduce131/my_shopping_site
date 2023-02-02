@@ -88,6 +88,15 @@ export function deleteServerImage(quillArray, urlData) {
   }
 }
 
+export function limitTextAreaLine(e, maxRows) {
+  // 10줄 이상 키보드 입력 엔터 막기
+  const lines = e.target.value.split('\n').length;
+  console.log(lines);
+  if (lines > maxRows - 1 && e.key === 'Enter') {
+    e.preventDefault();
+  }
+}
+
 /** inputText에서 금액을 입력할 때, 천단위 숫자를 찍어주는 함수 */
 export function inputNumberFormat(obj) {
   obj.current.value = comma(uncomma(obj.current.value));

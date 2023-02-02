@@ -5,7 +5,8 @@ const MenuContatinerDiv = styled.div`
   position: fixed;
   display: flex;
   flex-flow: column nowrap;
-  width: 175px;
+  width: 11%;
+  min-width: 175px;
   margin-left: -9px;
   height: 100%;
   background-color: rgb(70, 70, 70);
@@ -16,24 +17,27 @@ const MenuContatinerDiv = styled.div`
 `;
 
 const MenuItemDiv = styled.div`
-  flex: 0 1 5%;
+  display: flex;
+  align-items: center;
   border: 1px solid white;
+  color: white;
+  height: 5%;
 `;
 
 const LeftMenuBar = () => {
   return (
     <div>
       <MenuContatinerDiv>
-        <MenuItemDiv>아이템 1</MenuItemDiv>
-        <MenuItemDiv>아이템 2</MenuItemDiv>
-        <MenuItemDiv>아이템 3</MenuItemDiv>
-        <MenuItemDiv>아이템 4</MenuItemDiv>
-        <MenuItemDiv>아이템 5</MenuItemDiv>
-        <MenuItemDiv>아이템 6</MenuItemDiv>
-        <MenuItemDiv>아이템 7</MenuItemDiv>
-        <MenuItemDiv>아이템 8</MenuItemDiv>
-        <MenuItemDiv>아이템 9</MenuItemDiv>
-        <MenuItemDiv>아이템 10</MenuItemDiv>
+        <div>아이콘</div>
+        <MenuItemDiv>사용자 관리</MenuItemDiv>
+        <MenuItemDiv>상품 관리</MenuItemDiv>
+        <MenuItemDiv>주문 관리</MenuItemDiv>
+        <MenuItemDiv>반품 관리</MenuItemDiv>
+        <MenuItemDiv>교환 관리</MenuItemDiv>
+        <MenuItemDiv>문의 관리</MenuItemDiv>
+        <MenuItemDiv>쿠폰 관리</MenuItemDiv>
+        <MenuItemDiv>통계 확인</MenuItemDiv>
+        <MenuItemDiv>고객 지원</MenuItemDiv>
       </MenuContatinerDiv>
     </div>
   );

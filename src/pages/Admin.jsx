@@ -50,6 +50,7 @@ const InputTextArea = styled.textarea`
   rows: ${(props) => props.rows};
   cols: ${(props) => props.cols};
   border: 2px solid #999;
+  overflow: hidden;
   resize: none;
   margin-top: 7px;
 `;
@@ -202,6 +203,7 @@ const Admin = () => {
   const [dataList, setDataList] = useState([]); // [옵션] 위 2개의 데이터를 받아 가공하여 테이블에 뿌려줄 데이터[{..}{..}]를 받아오는 state
   const [header, setHeader] = useState({ first: '', second: '' });
   const [urlData, setUrlData] = useState([]); // [상세설명]에 총 저장된 이미지 url을 저장하는 state
+  const [value, setValue] = useState('');
   const priceRef = useRef(); // [가격] [상품 가격] input ref
   const firstOptRef = useRef(); // 첫번째 [옵션명].ref
   const secondOptRef = useRef(); // 두번째 [옵션명].ref
@@ -276,14 +278,17 @@ const Admin = () => {
   };
 
   // textarea 글자수 제한 function
-  const onKeyLimit = (e, textRef) => {
-    let numberOfLines = (textRef.current.value.match(/\n/g) || []).length + 1;
-    let maxRows = textRef.current.rows;
-
-    if (numberOfLines === maxRows > 9) {
-      return;
+  function onHandleChange(e) {
+    setContent(e.target.value);
+    const lines = e.target.value.split('\n').length;
+    const maxRows = 5;
+    if (lines.length > maxRows) {
+      const limitedLines = lines.slice(0, maxRows);
+      setValue(limitedLines.join('\n'));
+    } else {
+      setValue(e.target.value);
     }
-  };
+  }
 
   // 상품추가하기
   const addItems = async () => {
@@ -358,23 +363,21 @@ const Admin = () => {
           <ContentContainer>
             <InputTextArea
               id="ITEMS_CONTENTS"
-              onChange={(e) => {
-                let contents = e.target.value;
-                setContent(contents);
-                console.log(contents);
+              onKeyPress={(e) => {
+                common.limitTextAreaLine(e, 10);
               }}
               placeholder="요약 설명은 최대 10줄입니다."
               rows="10"
               cols="10"
               style={{ width: '47%' }}
               ref={textAreaRef}
-              onKeyDown={(e) => {
-                onKeyLimit(e, textAreaRef);
-              }}
             />
             <InputTextArea
               placeholder="재질 설명은 최대 10줄입니다."
               id="ITEMS_FABRIC"
+              onKeyPress={(e) => {
+                common.limitTextAreaLine(e, 10);
+              }}
               rows="5"
               cols="10"
               style={{ width: '47%' }}

@@ -84,6 +84,7 @@ const Editor = React.forwardRef(function optionEditor(props, quillRef) {
         onChange={(contents) => {
           console.log(contents);
         }}
+        defaultValue="<br><br><br><br><br><br><br><br>"
       ></CustomEditor>
     </div>
   );
