@@ -147,7 +147,7 @@ const CustomGrid = (props) => {
   };
 
   // checkBox onChange 이벤트
-  const checkChangedEvent = (e, idx) => {
+  const checkChangedEvent = (e) => {
     const isChecked = e.target.checked; // 체크 상태 확인
     if (isChecked) {
       // 체크하면 배열에 value값을 넣고

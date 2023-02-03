@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
-import { collection, getDocs, query, orderBy, where } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
 import { fireStore } from '../firebase.js';
 import * as common from '../common.js';
 
@@ -134,18 +134,25 @@ const CheckLabel = styled(CustomLabel)`
   font-size: 13px;
 `;
 
-const CheckMenu = (props) => {
+const CheckMenu = React.forwardRef(function chkFunc(props, ref) {
   return (
     <CustomCheck>
-      <input type="checkbox" id={props.id} name={props.id} style={{ margin: 0 }} value="O" />
+      <input
+        type="checkbox"
+        id={props.id}
+        name={props.id}
+        style={{ margin: 0 }}
+        value="O"
+        ref={ref}
+      />
       <CheckLabel htmlFor={props.id} style={{ fontSize: '12px' }}>
         {props.content}
       </CheckLabel>
     </CustomCheck>
   );
-};
+});
 
-const RightMenuBar = () => {
+const RightMenuBar = (props) => {
   const categoryRef = collection(fireStore, 'shopping_category');
   const resultQuery = query(categoryRef, orderBy('CATE_RANK', 'asc'));
   const [cateList, setCateList] = useState([]);
@@ -154,6 +161,20 @@ const RightMenuBar = () => {
   const [parentName, setParentName] = useState('');
   const [childName, setChildName] = useState('');
   const subMenuRef = useRef();
+  /*--------------------------------------
+    0 : 카테고리 경로
+    1 : 원산지
+    2 : 제조사
+    3 : 브랜드
+    4 : 상품상태(new, used, return)
+    5 : 최소 구매수량
+    6 : 1회 구매시 최대 수량
+    7 : 1인 구매시 최대 수량
+    8 : OUR BEST ITEMS
+    9 : SPECIAL ITEMS
+    10: ALSO LIKE
+  --------------------------------------*/
+  const refArray = useRef([]);
 
   // 첫 마운트 시, fireStore에서 카테고리 데이터 전체를 불러온 후 cateList state에 저장
   useEffect(() => {
@@ -164,6 +185,8 @@ const RightMenuBar = () => {
       });
     };
     getItems();
+
+    props.onRef(refArray);
   }, []);
 
   /* 부모/자식 카테고리를 나누어서 state에 저장하는 작업 */
@@ -239,7 +262,7 @@ const RightMenuBar = () => {
     <div>
       <MenuContainer>
         {/* 카테고리, 원산지, 제조사, 브랜드 입력란*/}
-        <MenuItem>
+        <MenuItem style={{ position: 'relative' }}>
           <CustomLabel style={{ marginBottom: '10px' }}>카테고리</CustomLabel>
           <Category>
             {/* 메인 메뉴 */}
@@ -256,25 +279,27 @@ const RightMenuBar = () => {
 
             {/* 저장할 카테고리를 Label에 표시 */}
           </Category>
-          <CustomCatePath>{parentName + '  >  ' + childName}</CustomCatePath>
+          <CustomCatePath ref={(ele) => (refArray.current[0] = ele)}>
+            {parentName + '  >  ' + childName}
+          </CustomCatePath>
           <br />
           <CustomLabel>원산지</CustomLabel>
-          <InputText placeholder="예) Made in Korea" />
+          <InputText placeholder="예) Made in Korea" ref={(ele) => (refArray.current[1] = ele)} />
           <br />
           <br />
           <CustomLabel>제조사</CustomLabel>
-          <InputText placeholder="예) LG의류" />
+          <InputText placeholder="예) LG의류" ref={(ele) => (refArray.current[2] = ele)} />
           <br />
           <br />
           <CustomLabel>브랜드</CustomLabel>
-          <InputText placeholder="예) LINDA" />
+          <InputText placeholder="예) LINDA" ref={(ele) => (refArray.current[3] = ele)} />
           <br />
         </MenuItem>
 
         {/* 상품 상태, 구매 설정(최소 구매수량, 1인-1회 구매시 최대수량) */}
-        <MenuItem style={{ marginBottom: '10px', paddingBottom: '10px' }}>
+        <MenuItem style={{ paddingBottom: '10px' }}>
           <CustomLabel>상품 상태</CustomLabel>
-          <CustomOption>
+          <CustomOption ref={(ele) => (refArray.current[4] = ele)}>
             <option value="new">신상품</option>
             <option value="used">중고 상품</option>
             <option value="return">반품 상품</option>
@@ -284,36 +309,52 @@ const RightMenuBar = () => {
           <CustomLabel style={{ fontSize: '13px' }}>최소 구매수량</CustomLabel>
           <InputText
             onChange={handleOnChange}
-            placeholder="숫자만 입력"
             defaultValue="0"
             maxLength="3"
+            ref={(ele) => (refArray.current[5] = ele)}
           />
           <br />
           <CustomLabel style={{ fontSize: '13px' }}>1회 구매시 최대수량</CustomLabel>
           <InputText
             onChange={handleOnChange}
-            placeholder="숫자만 입력"
             defaultValue="0"
             maxLength="3"
+            ref={(ele) => (refArray.current[6] = ele)}
           />
           <br />
           <CustomLabel style={{ fontSize: '13px' }}>1인 구매시 최대수량</CustomLabel>
           <InputText
             onChange={handleOnChange}
-            placeholder="숫자만 입력"
             defaultValue="0"
             maxLength="3"
+            ref={(ele) => (refArray.current[7] = ele)}
           />
           <br />
-          <CheckMenu id="ITEMS_BEST" content="OUR BEST ITEMS" />
+          <CheckMenu
+            id="ITEMS_BEST"
+            content="OUR BEST ITEMS"
+            ref={(ele) => (refArray.current[8] = ele)}
+          />
           <br />
-          <CheckMenu id="ITEMS_SPECIAL" content="SPECIAL ITEMS" />
+          <CheckMenu
+            id="ITEMS_SPECIAL"
+            content="SPECIAL ITEMS"
+            ref={(ele) => (refArray.current[9] = ele)}
+          />
           <br />
-          <CheckMenu id="ITEMS_ALSO_LIKE" content="ALSO LIKE" />
+          <CheckMenu
+            id="ITEMS_ALSO_LIKE"
+            content="ALSO LIKE"
+            ref={(ele) => (refArray.current[10] = ele)}
+          />
         </MenuItem>
       </MenuContainer>
     </div>
   );
+};
+
+RightMenuBar.propTypes = {
+  onRef: PropTypes.func.isRequired,
 };
 
 CheckMenu.propTypes = {

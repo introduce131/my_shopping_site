@@ -1,6 +1,11 @@
 import React from 'react';
-import { firebase, storage } from './firebase.js';
+import { storage } from './firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+
+/** 상품 고유 ID 생성 */
+export const createID = () => {
+  return Math.random().toString(36).substring(2, 11);
+};
 
 /** 천단위에 콤마 찍기 함수 */
 export const addCommas = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -66,28 +71,6 @@ export function returnEditorImg(ref) {
   return returnArray;
 }
 
-/** 차집합 계산 후, 서버에 필요없는 이미지를 삭제하는 함수 */
-export function deleteServerImage(quillArray, urlData) {
-  console.log('array, 현재 quill에 보여지는 이미지', quillArray);
-  console.log('urldata, 현재 서버에 저장된 이미지', urlData);
-
-  const url_DELETE = quillArray
-    .filter((x) => !urlData.includes(x))
-    .concat(urlData.filter((x) => !quillArray.includes(x)));
-
-  for (let i = 0; i < url_DELETE.length; i++) {
-    const httpsRef = ref(storage, url_DELETE[i]);
-
-    deleteObject(httpsRef)
-      .then(() => {
-        console.log(url_DELETE[i] + ' 파일삭제됨');
-      })
-      .catch((err) => {
-        console.log('에러코드 ' + err.code);
-      });
-  }
-}
-
 export function limitTextAreaLine(e, maxRows) {
   // 10줄 이상 키보드 입력 엔터 막기
   const lines = e.target.value.split('\n').length;
@@ -113,6 +96,10 @@ export function uncomma(str) {
   str = String(str);
   return str.replace(/[^\d]+/g, '');
 }
+
+/* -------------------------------- */
+/*    firebase, storage 관련 함수    */
+/* -------------------------------- */
 
 /** firebase Storage에 이미지를 업로드하는 Promise 반환 함수 */
 export const imageFileUpload = async (paraFile, filePath) => {
@@ -148,3 +135,29 @@ export const imageFileUpload = async (paraFile, filePath) => {
     );
   });
 };
+
+/** 차집합 계산 후, 서버에 필요없는 이미지를 삭제하는 함수 */
+export function deleteServerImage(quillArray, urlData) {
+  console.log('array, 현재 quill에 보여지는 이미지', quillArray);
+  console.log('urldata, 현재 서버에 저장된 이미지', urlData);
+
+  const url_DELETE = quillArray
+    .filter((x) => !urlData.includes(x))
+    .concat(urlData.filter((x) => !quillArray.includes(x)));
+
+  for (let i = 0; i < url_DELETE.length; i++) {
+    const httpsRef = ref(storage, url_DELETE[i]);
+
+    deleteObject(httpsRef)
+      .then(() => {
+        console.log(url_DELETE[i] + ' 파일삭제됨');
+      })
+      .catch((err) => {
+        console.log('에러코드 ' + err.code);
+      });
+  }
+}
+
+export function uploadData(uploadArray) {
+  console.log('uploadArray', uploadArray);
+}
