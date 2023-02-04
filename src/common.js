@@ -1,8 +1,6 @@
-import React from 'react';
 import { fireStore, storage } from './firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
-import Swal from 'sweetalert2';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, writeBatch, doc } from 'firebase/firestore';
 
 /** 상품 고유 ID 생성 */
 export const createID = () => {
@@ -232,7 +230,7 @@ export async function uploadData(uploadArray) {
 
   const date = new Date();
 
-  // 업로드 date
+  // 업로드 date yyyymmdd hhmmss msms
   const upldDate =
     date.getFullYear() +
     ('0' + (date.getMonth() + 1)).slice(-2) +
@@ -267,62 +265,62 @@ export async function uploadData(uploadArray) {
     ItemDate: upldDate,
   };
 
-  console.log(Items.ItemOtDt);
-
-  // try {
-  //   const itemsCollectionRef = collection(fireStore, 'shopping_items'); // 'shopping_items' collection 참조 생성
-
-  //   const pathArray = Items.ItemPath.split('>'); // "TOP > 니트" 에서 구분자 '>' 제거
-
-  //   const _res_ = await addDoc(itemsCollectionRef, {
-  //     ITEMS_PKID: Items.ItemPKid,
-  //     ITEMS_NAME: Items.ItemName,
-  //     ITEMS_SUMMARY: Items.ItemSmry,
-  //     ITEMS_FABRIC: Items.ItemFbrc,
-  //     ITMES_IMG1: Items.ItemImg1,
-  //     ITEMS_IMG2: Items.ItemImg2,
-  //     ITEMS_CONTENT: Items.ItemCntn,
-  //     ITEMS_PRICE: Items.ItemPrce,
-  //     ITEMS_COST: Items.ItemCost,
-  //     ITEMS_CATE_PARENT: pathArray[0].trim(),
-  //     ITEMS_CATE_NAME: pathArray[1].trim(),
-  //     ITEMS_MADE: Items.ItemMade,
-  //     ITEMS_MAKER: Items.ItemMakr,
-  //     ITEMS_BRAND: Items.ItemBrnd,
-  //     ITEMS_STATS: Items.ItemStat,
-  //     ITEMS_MIN_AMOUNT: Items.ItemMinS,
-  //     ITEMS_MAX_AMOUNT: Items.ItemMaxS,
-  //     ITEMS_MAX_AMOUNT_BUY: Items.ItemMaxB,
-  //     ITEMS_OUR_BEST: Items.ItemBEST,
-  //     ITEMS_SPECIAL: Items.ItemSPCL,
-  //     ITEMS_ALSO_LIKE: Items.ItemALSO,
-  //     ITEMS_UPLD_DATE: Items.ItemDate,
-  //   });
-  // } catch (e) {
-  //   return { icon: 'error', text: '서버에 [상품]을 추가하는 중에 에러가 발생했습니다' };
-  // }
-
+  // shopping_items 컬렉션에 1개의 마스터 데이터를 추가함.
   try {
-    const optionsCollectionRef = collection(fireStore, 'shopping_option_data'); // 'shopping_option_data' collection 참조 생성
+    const itemsCollectionRef = collection(fireStore, 'shopping_items'); // 'shopping_items' collection 참조 생성
+    const pathArray = Items.ItemPath.split('>'); // "TOP > 니트" 에서 구분자 '>' 제거
 
-    const batch = fireStore.batch();
-    Items.ItemOtDt.forEach((doc, index) => {
-      const newDocRef = optionsCollectionRef.doc(`document-${index}`);
-      batch.set(newDocRef, doc);
+    const _res_ = await addDoc(itemsCollectionRef, {
+      ITEMS_PKID: Items.ItemPKid,
+      ITEMS_NAME: Items.ItemName,
+      ITEMS_SUMMARY: Items.ItemSmry,
+      ITEMS_FABRIC: Items.ItemFbrc,
+      ITMES_IMG1: Items.ItemImg1,
+      ITEMS_IMG2: Items.ItemImg2,
+      ITEMS_CONTENT: Items.ItemCntn,
+      ITEMS_PRICE: Items.ItemPrce,
+      ITEMS_COST: Items.ItemCost,
+      ITEMS_CATE_PARENT: pathArray[0].trim(),
+      ITEMS_CATE_NAME: pathArray[1].trim(),
+      ITEMS_MADE: Items.ItemMade,
+      ITEMS_MAKER: Items.ItemMakr,
+      ITEMS_BRAND: Items.ItemBrnd,
+      ITEMS_STATS: Items.ItemStat,
+      ITEMS_MIN_AMOUNT: Items.ItemMinS,
+      ITEMS_MAX_AMOUNT: Items.ItemMaxS,
+      ITEMS_MAX_AMOUNT_BUY: Items.ItemMaxB,
+      ITEMS_OUR_BEST: Items.ItemBEST,
+      ITEMS_SPECIAL: Items.ItemSPCL,
+      ITEMS_ALSO_LIKE: Items.ItemALSO,
+      ITEMS_UPLD_DATE: Items.ItemDate,
+    });
+  } catch (e) {
+    return { icon: 'error', text: '서버에 [상품]을 추가하는 중에 에러가 발생했습니다' };
+  }
+
+  // shopping_option_data 컬렉션에 옵션데이터 값을 가공하여 추가함
+  try {
+    const batch = writeBatch(fireStore);
+
+    Items.ItemOtDt.forEach((item) => {
+      const documentData = {
+        ITEMS_PKID: Items.ItemPKid,
+        OPTION_ROW: item.id,
+        OPTION_SIZE: item.size,
+        OPTION_COLOR: item.color,
+        OPTION_COLOR_NAME: item.colorName,
+        OPTION_PRICE: item.price,
+        OPTION_STOCK_NOW: item.stockNow,
+        OPTION_STOCK_ADD: item.stockAdd,
+        OPTION_STATUS: item.status,
+      };
+      const docRef = doc(collection(fireStore, 'shopping_option_data'));
+      batch.set(docRef, documentData);
     });
 
-    batch
-      .commit()
-      .then(() => {
-        console.log('성공');
-      })
-      .catch((err) => {
-        console.log('에러', err);
-      });
+    await batch.commit();
   } catch (e) {
-    return {
-      icon: 'error',
-      text: '서버에 [상품] - [옵션 데이터]를 추가하는 중에 에러가 발생했습니다',
-    };
+    // return 전에 에러나면 shopping_items에 데이터 들어가는 부분 삭제해야 함.
+    return { icon: 'error', text: '서버에 [옵션 데이터]를 추가하는 중에 에러가 발생했습니다' };
   }
 }
