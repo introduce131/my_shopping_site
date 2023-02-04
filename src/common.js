@@ -1,10 +1,64 @@
 import React from 'react';
-import { storage } from './firebase.js';
+import { fireStore, storage } from './firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import Swal from 'sweetalert2';
+import { addDoc, collection } from 'firebase/firestore';
 
 /** 상품 고유 ID 생성 */
 export const createID = () => {
   return Math.random().toString(36).substring(2, 11);
+};
+
+/** byte수를 계산하는 메서드 객체 */
+export const calByte = {
+  // getByteLength : 입력된 글자 전체의 byte를 계산해서 return
+  getByteLength: function (s) {
+    if (s == null || s.length == 0) {
+      return 0;
+    }
+    let size = 0;
+    for (let i = 0; i < s.length; i++) {
+      size += this.charByteSize(s.charAt(i));
+    }
+    return size;
+  },
+
+  // cutByteLength : 원하는 byte 만큼 글자를 잘라서 return
+  cutByteLength: function (s, len) {
+    if (s == null || s.length == 0) {
+      return 0;
+    }
+    let size = 0;
+    let rIndex = s.length;
+
+    for (let i = 0; i < s.length; i++) {
+      size += this.charByteSize(s.charAt(i));
+      if (size == len) {
+        rIndex = i + 1;
+        break;
+      } else if (size > len) {
+        rIndex = i;
+        break;
+      }
+    }
+    return s.substring(0, rIndex);
+  },
+
+  // charByteSize : 한글자에 대한 byte를 계산하는 메서드
+  charByteSize: function (ch) {
+    if (ch == null || ch.length == 0) {
+      return 0;
+    }
+    let charCode = ch.charCodeAt(0);
+
+    if (charCode <= 0x00007f) {
+      return 1;
+    } else if (charCode <= 0x0007ff) {
+      return 2;
+    } else if (charCode <= 0x00ffff) {
+      return 3;
+    }
+  },
 };
 
 /** 천단위에 콤마 찍기 함수 */
@@ -74,7 +128,6 @@ export function returnEditorImg(ref) {
 export function limitTextAreaLine(e, maxRows) {
   // 10줄 이상 키보드 입력 엔터 막기
   const lines = e.target.value.split('\n').length;
-  console.log(lines);
   if (lines > maxRows - 1 && e.key === 'Enter') {
     e.preventDefault();
   }
@@ -101,8 +154,9 @@ export function uncomma(str) {
 /*    firebase, storage 관련 함수    */
 /* -------------------------------- */
 
-/** firebase Storage에 이미지를 업로드하는 Promise 반환 함수 */
-export const imageFileUpload = async (paraFile, filePath) => {
+/** firebase Storage에 이미지를 업로드하는 Promise 반환 함수
+ * (파일), (서버파일경로), (percent setState) */
+export const imageFileUpload = async (paraFile, filePath, setPercent) => {
   return new Promise((resolve, reject) => {
     /** <스토리지(저장소) 참조 생성 => 작업하려는 클라우드 파일에 대한 포인터 역할>
      *  firebase/storage에서 ref함수를 가져오고 파라미터로
@@ -122,6 +176,7 @@ export const imageFileUpload = async (paraFile, filePath) => {
       (snapshot) => {
         //퍼센트 값 = 반올림(지금까지 성공적으로 업로드된 byte 수 / 업로드할 총 byte 수)
         const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        if (setPercent) setPercent(percent);
       },
       (err) => {
         // promise reject
@@ -158,6 +213,116 @@ export function deleteServerImage(quillArray, urlData) {
   }
 }
 
-export function uploadData(uploadArray) {
-  console.log('uploadArray', uploadArray);
+export async function uploadData(uploadArray) {
+  console.log(uploadArray);
+
+  // 데이터 공백 유효성 검사하기
+  for (let i = 0; i < uploadArray.length; i++) {
+    if (uploadArray[i]?.value === '' || uploadArray[i] === '' || uploadArray[i]?.length === 0) {
+      // 3번, 이미지 데이터가 없을 때, 따로 에러를 return해준다.
+      if (i === 3) return { icon: 'error', text: '대표 이미지를 추가해주세요' };
+
+      // object, HTMLELement값이라면 focus를 잡아준다.
+      if (typeof uploadArray[i] === 'object') uploadArray[i].focus();
+
+      // 이미지 데이터를 제외한 모든 공백값 부재의 에러는 이곳으로 처리함.
+      return { icon: 'error', text: '모든 데이터를 전부 넣어주세요' };
+    }
+  }
+
+  const date = new Date();
+
+  // 업로드 date
+  const upldDate =
+    date.getFullYear() +
+    ('0' + (date.getMonth() + 1)).slice(-2) +
+    ('0' + date.getDate()).slice(-2) +
+    ('0' + date.getHours()).slice(-2) +
+    ('0' + date.getMinutes()).slice(-2) +
+    ('0' + date.getSeconds()).slice(-2) +
+    ('0' + date.getMilliseconds()).slice(-2);
+
+  const Items = {
+    ItemPKid: createID(), // [상품 ID](PK)
+    ItemName: uploadArray[0].value, //  [상품명]
+    ItemSmry: uploadArray[1].value, //  [상품 요약설명]
+    ItemFbrc: uploadArray[2].value, //  [재질]
+    ItemImg1: uploadArray[3][0], // [대표이미지 1]
+    ItemImg2: uploadArray[3][1], // [대표이미지 2]
+    ItemCntn: calByte.cutByteLength(uploadArray[4].value, 15000), // [상세설명]
+    ItemPrce: uploadArray[5].value, // [상품 가격]
+    ItemCost: uploadArray[6].value, // [할인 이전 가격]
+    ItemOtDt: uploadArray[7], // [옵션 데이터]
+    ItemPath: uploadArray[8].textContent, // [카테고리 label]
+    ItemMade: uploadArray[9].value, // [원산지]
+    ItemMakr: uploadArray[10].value, // [제조사]
+    ItemBrnd: uploadArray[11].value, // [브랜드]
+    ItemStat: uploadArray[12].value, // [상품 상태(select)]
+    ItemMinS: uploadArray[13].value, // [최소 구매수량]
+    ItemMaxS: uploadArray[14].value, // [1회 구매시 최대수량]
+    ItemMaxB: uploadArray[15].value, // [1인 구매시 최대수량]
+    ItemBEST: uploadArray[16].value, // [OUR BEST ITEMS]
+    ItemSPCL: uploadArray[17].value, // [SPECIAL ITEMS]
+    ItemALSO: uploadArray[18].value, // [ALSO LIKE]
+    ItemDate: upldDate,
+  };
+
+  console.log(Items.ItemOtDt);
+
+  // try {
+  //   const itemsCollectionRef = collection(fireStore, 'shopping_items'); // 'shopping_items' collection 참조 생성
+
+  //   const pathArray = Items.ItemPath.split('>'); // "TOP > 니트" 에서 구분자 '>' 제거
+
+  //   const _res_ = await addDoc(itemsCollectionRef, {
+  //     ITEMS_PKID: Items.ItemPKid,
+  //     ITEMS_NAME: Items.ItemName,
+  //     ITEMS_SUMMARY: Items.ItemSmry,
+  //     ITEMS_FABRIC: Items.ItemFbrc,
+  //     ITMES_IMG1: Items.ItemImg1,
+  //     ITEMS_IMG2: Items.ItemImg2,
+  //     ITEMS_CONTENT: Items.ItemCntn,
+  //     ITEMS_PRICE: Items.ItemPrce,
+  //     ITEMS_COST: Items.ItemCost,
+  //     ITEMS_CATE_PARENT: pathArray[0].trim(),
+  //     ITEMS_CATE_NAME: pathArray[1].trim(),
+  //     ITEMS_MADE: Items.ItemMade,
+  //     ITEMS_MAKER: Items.ItemMakr,
+  //     ITEMS_BRAND: Items.ItemBrnd,
+  //     ITEMS_STATS: Items.ItemStat,
+  //     ITEMS_MIN_AMOUNT: Items.ItemMinS,
+  //     ITEMS_MAX_AMOUNT: Items.ItemMaxS,
+  //     ITEMS_MAX_AMOUNT_BUY: Items.ItemMaxB,
+  //     ITEMS_OUR_BEST: Items.ItemBEST,
+  //     ITEMS_SPECIAL: Items.ItemSPCL,
+  //     ITEMS_ALSO_LIKE: Items.ItemALSO,
+  //     ITEMS_UPLD_DATE: Items.ItemDate,
+  //   });
+  // } catch (e) {
+  //   return { icon: 'error', text: '서버에 [상품]을 추가하는 중에 에러가 발생했습니다' };
+  // }
+
+  try {
+    const optionsCollectionRef = collection(fireStore, 'shopping_option_data'); // 'shopping_option_data' collection 참조 생성
+
+    const batch = fireStore.batch();
+    Items.ItemOtDt.forEach((doc, index) => {
+      const newDocRef = optionsCollectionRef.doc(`document-${index}`);
+      batch.set(newDocRef, doc);
+    });
+
+    batch
+      .commit()
+      .then(() => {
+        console.log('성공');
+      })
+      .catch((err) => {
+        console.log('에러', err);
+      });
+  } catch (e) {
+    return {
+      icon: 'error',
+      text: '서버에 [상품] - [옵션 데이터]를 추가하는 중에 에러가 발생했습니다',
+    };
+  }
 }

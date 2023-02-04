@@ -362,7 +362,7 @@ const Admin_Product = () => {
 
       {/* 저장 버튼 */}
       <AddItemsButton
-        onClick={() => {
+        onClick={async () => {
           const parentRef = [
             itemNameRef.current,
             itemSmryRef.current,
@@ -374,7 +374,8 @@ const Admin_Product = () => {
             dataList,
           ];
           const uploadArray = [...parentRef, ...childRef[0].current];
-          const result = common.uploadData(uploadArray);
+          const result = await common.uploadData(uploadArray);
+          Swal.fire(result);
         }}
       >
         저장
@@ -382,7 +383,6 @@ const Admin_Product = () => {
 
       {/* 오른쪽 Nav, 카테고리, 원산지, 제조사, 브랜드, 상품상태, 구매설정*/}
       <RightMenuBar onRef={addChildRef} />
-      {console.log('childRef', childRef)}
 
       <ItemInfoFlexContainer>
         {/* [상품명], [상품 요약설명] [재질] */}
