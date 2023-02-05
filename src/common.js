@@ -218,10 +218,11 @@ export async function uploadData(uploadArray) {
   for (let i = 0; i < uploadArray.length; i++) {
     if (uploadArray[i]?.value === '' || uploadArray[i] === '' || uploadArray[i]?.length === 0) {
       // 3번, 이미지 데이터가 없을 때, 따로 에러를 return해준다.
-      if (i === 3) return { icon: 'error', text: '대표 이미지를 추가해주세요' };
+      if (i === 3) return { icon: 'error', text: '먼저 대표 이미지를 추가해주세요' };
+      // 7번, 옵션 데이터가 없을 때, 따로 에러 return
+      if (i === 7) return { icon: 'error', text: '먼저 옵션 데이터를 추가해주세요' };
 
       // object, HTMLELement값이라면 focus를 잡아준다.
-      // 2023-02-04 옵션데이터 없으면 이상하게 잡히던데 수정하셈
       if (typeof uploadArray[i] === 'object') uploadArray[i].focus();
 
       // 이미지 데이터를 제외한 모든 공백값 부재의 에러는 이곳으로 처리함.
@@ -322,8 +323,11 @@ export async function uploadData(uploadArray) {
     await batch.commit();
   } catch (e) {
     // return 전에 에러나면 shopping_items에 데이터 들어가는 부분 삭제해야 함.
+    // 아마 shoppig_items, optiondata 전부 writebatch로 감싸고,
+    // catch부분에 batch.delete()해야 할수도있음. rollback 기능을 제공하지 않기 때문..
     return { icon: 'error', text: '서버에 [옵션 데이터]를 추가하는 중에 에러가 발생했습니다' };
   }
 
+  // 위에 두 데이터가 정상적으로 업로드 되면 성공 결과를 return
   return { icon: 'success', text: '저장 완료!' };
 }
