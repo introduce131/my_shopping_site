@@ -109,7 +109,7 @@ const ContextMenu = styled.div`
   }
 `;
 
-const CustomGrid = (props) => {
+const CustomGrid = React.forwardRef(function gridFunc(props, ref) {
   const [checkList, setCheckList] = useState([]); //check한 <tr>을 저장하는 state
   const [dataList, setDataList] = useState([]); // props.dataList를 저장할 state
   const contextRef = useRef(); //custom context menu의 ref
@@ -263,7 +263,7 @@ const CustomGrid = (props) => {
           </thead>
 
           {/* 데이터[body] */}
-          <tbody className="body" ref={tableRef}>
+          <tbody className="body" ref={ref}>
             {dataList.map((item, idx) => (
               <tr key={idx}>
                 {/* [체크박스] */}
@@ -321,9 +321,9 @@ const CustomGrid = (props) => {
                 {/* 1:판매중, 2:판매대기, 3:품절 */}
                 <td style={{ borderBottom: '2px solid #999' }}>
                   <CustomOption>
-                    <option value="1">판매중</option>
-                    <option value="2">판매대기</option>
-                    <option value="3">품 절</option>
+                    <option value="sale">판매중</option>
+                    <option value="wait">판매대기</option>
+                    <option value="sold">품 절</option>
                   </CustomOption>
                 </td>
               </tr>
@@ -333,7 +333,7 @@ const CustomGrid = (props) => {
       </div>
     </React.Fragment>
   );
-};
+});
 
 CustomGrid.propTypes = {
   dataList: PropTypes.array.isRequired,

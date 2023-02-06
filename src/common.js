@@ -105,6 +105,46 @@ export function optionDataList(firstArray, secondArray, priceRef) {
   return dataList;
 }
 
+/** CustomGrid의 tbody의 ref를 받아와서 데이터 형태로 변환해주는 함수 */
+export const returnOptionData = (ref) => {
+  let array = [];
+  let data = {};
+  const rows = ref.current.children; // <tr>을 가져와서 여기에 담음
+
+  for (let i = 0; i < rows.length; i++) {
+    const cols = rows[i].children; // <tr>의 <td>를 여기에 순차적으로 담음
+
+    for (let j = 0; j < cols.length; j++) {
+      // id값은 row id로
+      data.id = i;
+
+      switch (j) {
+        case 1: // [사이즈]
+          data.size = cols[j].textContent;
+          break;
+        case 2: // [색, 색상]
+          data.color = cols[j].children[0].children[0].value;
+          data.colorName = cols[j].children[0].textContent;
+          break;
+        case 3: // [옵션가격]
+          data.price = cols[j].children[1].value;
+          break;
+        case 4: // [재고(현)]
+          data.stockNow = cols[j].children[0].value;
+          break;
+        case 5: // [재고(추가)]
+          data.stockAdd = cols[j].children[0].value;
+          break;
+        case 6: // [상태]
+          data.status = cols[j].children[0].value;
+          break;
+      }
+    }
+    array = [...array, { ...data }];
+  }
+  return array; // 완성된 객체배열을 return
+};
+
 /** Editor의 ref를 받아서 <img src=".."> 를 배열로 반환하는 함수 */
 export function returnEditorImg(ref) {
   const content = ref.current.value;
@@ -267,12 +307,14 @@ export async function uploadData(uploadArray) {
     ItemDate: upldDate,
   };
 
+  const itemBatch = writeBatch(fireStore); // 'shopping_items' 컬렉션에서 작업할 트랜잭션 생성
+  const newDocRef = doc(collection(fireStore, 'shopping_items')); // shopping_items 컬렉션 하위 새 document 생성
+
   // shopping_items 컬렉션에 1개의 마스터 데이터를 추가함.
   try {
-    const itemsCollectionRef = collection(fireStore, 'shopping_items'); // 'shopping_items' collection 참조 생성
     const pathArray = Items.ItemPath.split('>'); // "TOP > 니트" 에서 구분자 '>' 제거
 
-    const _res_ = await addDoc(itemsCollectionRef, {
+    itemBatch.set(newDocRef, {
       ITEMS_PKID: Items.ItemPKid,
       ITEMS_NAME: Items.ItemName,
       ITEMS_SUMMARY: Items.ItemSmry,
@@ -297,13 +339,17 @@ export async function uploadData(uploadArray) {
       ITEMS_UPLD_DATE: Items.ItemDate,
     });
   } catch (e) {
+    itemBatch.delete(newDocRef); // 에러나면 트랜잭션 삭제
     return { icon: 'error', text: '서버에 [상품]을 추가하는 중에 에러가 발생했습니다' };
   }
 
-  // shopping_option_data 컬렉션에 옵션데이터 값을 가공하여 추가함
-  try {
-    const batch = writeBatch(fireStore);
+  await itemBatch.commit(); // 에러 안났으면, 상품 데이터 commit
 
+  // shopping_option_data 컬렉션에 옵션데이터 값을 가공하여 추가함
+  const optionBatch = writeBatch(fireStore);
+  const docRef = doc(collection(fireStore, 'shopping_option_data'));
+
+  try {
     Items.ItemOtDt.forEach((item) => {
       const documentData = {
         ITEMS_PKID: Items.ItemPKid,
@@ -316,17 +362,14 @@ export async function uploadData(uploadArray) {
         OPTION_STOCK_ADD: item.stockAdd,
         OPTION_STATUS: item.status,
       };
-      const docRef = doc(collection(fireStore, 'shopping_option_data'));
-      batch.set(docRef, documentData);
+      optionBatch.set(docRef, documentData);
     });
-
-    await batch.commit();
   } catch (e) {
-    // return 전에 에러나면 shopping_items에 데이터 들어가는 부분 삭제해야 함.
-    // 아마 shoppig_items, optiondata 전부 writebatch로 감싸고,
-    // catch부분에 batch.delete()해야 할수도있음. rollback 기능을 제공하지 않기 때문..
+    optionBatch.delete(docRef); // 에러나면 트랜잭션 삭제
     return { icon: 'error', text: '서버에 [옵션 데이터]를 추가하는 중에 에러가 발생했습니다' };
   }
+  // 에러 안났으면, 옵션 데이터 commit
+  await optionBatch.commit();
 
   // 위에 두 데이터가 정상적으로 업로드 되면 성공 결과를 return
   return { icon: 'success', text: '저장 완료!' };

@@ -217,10 +217,8 @@ const AddItemsButton = styled.button`
 `;
 
 const Admin_Product = () => {
-  const itemsCollectionRef = collection(fireStore, 'shopping_items'); // 'shopping_items' collection 참조 생성
   const [percent, setPercent] = useState(0); // [대표이미지] [사진 업로드] 진행 퍼센트
   const [imgURL, setImgURL] = useState(''); // [대표이미지] [사진 업로드] 이미지를 성공적으로 저장 후, firebase에서 이미지 url을 받고 저장하는 state
-  const [Content, setContent] = useState(''); // [상품요약설명] 을 저장 하는 state
   const [Uploadfile, setUploadfile] = useState([]); // [대표이미지] upload할 2개의 파일을 저장하는 state
   const [showImages, setShowImages] = useState([]); // [대표이미지] [이미지추가] 후 화면에 미리볼 이미지를 저장할 state
   const [firstOptionData, setFirstOptionData] = useState([]); // [옵션] 사이즈 옵션을 저장할 state
@@ -238,6 +236,7 @@ const Admin_Product = () => {
   const itemCostRef = useRef(); // [할인 이전 가격(원가)]
   const firstOptRef = useRef(); // [옵션명1]
   const secndOptRef = useRef(); // [옵션명2]
+  const gridRef = useRef();
 
   useEffect(() => {
     //Swal.fire('커스터마이징 alert');
@@ -315,43 +314,6 @@ const Admin_Product = () => {
     setImgURL(url);
   };
 
-  // 상품추가하기
-  const addItems = async () => {
-    //이부분 수정해야됨. ITEMS_SHOWMAIN이 전부 O로 나옴 2022-12-27
-    const ItemChkShowMain = document.querySelector('input[name=ITEMS_SHOWMAIN]').value;
-    const ItemName = document.querySelector('#ITEMS_NAME').value;
-    const ItemPrice = document.querySelector('#ITEMS_PRICE').value;
-    const ItemFabric = document.querySelector('#ITEMS_FABRIC').value;
-    const ItemSizeList = document.querySelectorAll('input[name=ITEM_SIZE]:checked');
-    let ItemSize = '';
-    ItemSizeList.forEach((chk) => {
-      // 사이즈가 2종류 이상이면, "," 구분자 추가
-      ItemSizeList > 1 ? (ItemSize += chk.value + ', ') : (ItemSize += chk.value);
-    });
-    const ItemColor = document.querySelector('#ITEMS_COLOR').value;
-    const ItemMadein = document.querySelector('#ITEMS_MADEIN').value;
-    const ItemContent = Content; //useState 변수 Content
-    const ItemImgURL = imgURL; //useState 변수 imgURL
-
-    try {
-      //addDoc("컬렉션에 대한 참조", "데이터가 포함된 Object")
-      const _res_ = await addDoc(itemsCollectionRef, {
-        ITEMS_NAME: ItemName,
-        ITEMS_PRICE: parseInt(ItemPrice),
-        ITEMS_FABRIC: ItemFabric,
-        ITEMS_SIZE: ItemSize,
-        ITEMS_COLOR: ItemColor,
-        ITEMS_MADEIN: ItemMadein,
-        ITEMS_CONTENTS: ItemContent,
-        ITEMS_SHOWMAIN: ItemChkShowMain,
-        ITEMS_IMGURL: ItemImgURL,
-      });
-      //throw new Error('에러발생');
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   return (
     <div style={{ position: 'relative' }}>
       {/* 전역 스타일링 적용 */}
@@ -371,8 +333,9 @@ const Admin_Product = () => {
             itemEditRef.current,
             itemPrceRef.current,
             itemCostRef.current,
-            dataList,
+            common.returnOptionData(gridRef),
           ];
+
           const uploadArray = [...parentRef, ...childRef[0].current];
           const result = await common.uploadData(uploadArray);
           Swal.fire(result);
@@ -572,7 +535,7 @@ const Admin_Product = () => {
           옵션 추가
         </AddOptionList>
         <br />
-        <CustomGrid header={header} dataList={dataList} />
+        <CustomGrid header={header} dataList={dataList} ref={gridRef} />
       </OptionInputContainer>
       <br />
       <br />
@@ -580,7 +543,6 @@ const Admin_Product = () => {
       {/* 상품 재질 입력란 */}
       <br />
       <br />
-      <button onClick={addItems}>추가하기</button>
       <button
         onClick={() => {
           const quillImgArray = common.returnEditorImg(itemEditRef);
