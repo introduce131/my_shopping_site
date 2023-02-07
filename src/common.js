@@ -1,6 +1,6 @@
 import { fireStore, storage } from './firebase.js';
 import { ref, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
-import { addDoc, collection, writeBatch, doc } from 'firebase/firestore';
+import { collection, writeBatch, doc } from 'firebase/firestore';
 
 /** 상품 고유 ID 생성 */
 export const createID = () => {

@@ -2,9 +2,7 @@
 /* Admin - Product */
 import React, { useState, useRef } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
-import { addDoc, collection } from 'firebase/firestore';
 import Swal from 'sweetalert2';
-import { fireStore } from '../firebase.js';
 import * as common from '../common.js';
 import Editor from '../components/Editor.jsx';
 import Option from '../components/Option.jsx';

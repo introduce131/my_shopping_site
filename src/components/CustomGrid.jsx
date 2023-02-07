@@ -114,13 +114,13 @@ const CustomGrid = React.forwardRef(function gridFunc(props, ref) {
   const [dataList, setDataList] = useState([]); // props.dataList를 저장할 state
   const contextRef = useRef(); //custom context menu의 ref
   const chkListRef = useRef([]); // checkbox의 ref.배열
+  const checkAllRef = useRef(); // checkbox 전체선택 ref
   const contextMenuList = [
     { id: 1, item: '삭제하기' },
     { id: 2, item: '삭제하는' },
     { id: 3, item: '방법밖에' },
     { id: 4, item: '없습니다' },
   ]; // context menu에 들어갈 아이템 목록
-  const tableRef = useRef();
 
   // 첫 마운트 시, 받아온 props.dataList를 dataList state에 초기화해준다
   useEffect(() => {
@@ -164,21 +164,27 @@ const CustomGrid = React.forwardRef(function gridFunc(props, ref) {
     const isAllChecked = e.target.checked; // 체크여부 저장
     let copyArray = [];
 
+    // current를 담고 있는 배열을 복사해서 null값을 제거 후,
+    // 제대로 된 length를 얻고자 함.
+    const newCurrent = chkListRef.current;
+    const newArray = newCurrent.filter((ele) => {
+      return ele !== undefined && ele !== null;
+    });
+
     if (isAllChecked) {
       // true, 체크박스 전부 checked, checkList state에도 저장
-      for (let i = 0; i < chkListRef.current.length; i++) {
+      for (let i = 0; i < newArray.length; i++) {
         chkListRef.current[i].checked = true;
-        copyArray[i] = i;
+        copyArray[i] = Number(newArray[i].value);
       }
-      setCheckList(copyArray);
     } else {
       // false, 체크박스 전부 unChecked, checkList state에도 저장
-      for (let i = 0; i < chkListRef.current.length; i++) {
+      for (let i = 0; i < newArray.length; i++) {
         chkListRef.current[i].checked = false;
         copyArray = [];
       }
-      setCheckList(copyArray);
     }
+    setCheckList(copyArray); // 체크 리스트에 저장
   };
 
   // context menu onClick 이벤트
@@ -187,9 +193,6 @@ const CustomGrid = React.forwardRef(function gridFunc(props, ref) {
       // '삭제하기' 선택
       case 1: {
         let dataArray = [...dataList];
-
-        console.log('삭제 전 dataArray', dataArray);
-        console.log('삭제 전 checkList', checkList);
 
         // dataList와 checkList를 비교하여 데이터 삭제
         for (let i = 0; i < dataArray.length; i++) {
@@ -201,9 +204,6 @@ const CustomGrid = React.forwardRef(function gridFunc(props, ref) {
             }
           }
         }
-
-        console.log('삭제 후 dataArray', dataArray);
-
         const newArr = chkListRef.current;
         const newArrLength = newArr.filter((ele) => ele !== null).length;
 
@@ -216,7 +216,8 @@ const CustomGrid = React.forwardRef(function gridFunc(props, ref) {
 
         setDataList([...dataArray]); // state 저장
         setCheckList([]); // checkList 초기화
-      } // 삭제하기 End
+        checkAllRef.current.checked = false; // 전체 선택 체크해제..혹시 모르니까
+      } // '삭제하기' End
     }
   };
 
@@ -251,7 +252,7 @@ const CustomGrid = React.forwardRef(function gridFunc(props, ref) {
           <thead className="header">
             <tr>
               <td width="8%">
-                <input type="checkbox" onClick={checkAllClickEvent} />
+                <input type="checkbox" onClick={checkAllClickEvent} ref={checkAllRef} />
               </td>
               <td width="12%">{props.header.first || '옵션명 [1]'}</td>
               <td width="17%">{props.header.second || '옵션명 [2]'}</td>
