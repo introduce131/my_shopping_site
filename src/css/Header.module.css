@@ -1,72 +1,3 @@
-/*2022-12-01 움직이는 메뉴 아이콘 css 적용 
-(https://www.youtube.com/watch?v=IvXuk5Sh4GE) */
-input[id='menu_icon'] {
-  display: none;
-}
-input[id='menu_icon'] + label {
-  display: block;
-  width: 38px;
-  height: 20px;
-  position: relative;
-  cursor: pointer;
-}
-input[id='menu_icon'] + label span {
-  display: block;
-  position: absolute;
-  left: 3.3px;
-  width: 80%;
-  height: 3px;
-  border-radius: 10px;
-  background: rgb(0, 0, 0);
-  transition: all 0.25s;
-}
-/*{ 3개의 가로실선과 2개의 세로실선으로 이루어진 메뉴아이콘 생성 }*/
-input[id='menu_icon'] + label span:nth-child(1) {
-  top: 0;
-}
-input[id='menu_icon'] + label span:nth-child(2) {
-  top: 50%;
-  transform: translateY(-50%);
-}
-input[id='menu_icon'] + label span:nth-child(3) {
-  bottom: 0;
-}
-input[id='menu_icon'] + label span:nth-child(4) {
-  opacity: 0;
-  top: 72%;
-  transform: translateY(-50%);
-  width: 6.5%;
-  height: 8px;
-}
-input[id='menu_icon'] + label span:nth-child(5) {
-  opacity: 0;
-  top: 72%;
-  transform: translateY(-50%);
-  width: 6.5%;
-  height: 8px;
-  left: 31.2px;
-}
-/*{ 마우스를 올려놓으면 1번째줄은 살짝 내려오고 2~3번째줄은 박스모양으로 변경 }*/
-input[id='menu_icon']:hover + label span:nth-child(1) {
-  top: 8%;
-  background-color: white;
-}
-input[id='menu_icon']:hover + label span:nth-child(2) {
-  background-color: white;
-}
-input[id='menu_icon']:hover + label span:nth-child(3) {
-  background-color: white;
-}
-input[id='menu_icon']:hover + label span:nth-child(4) {
-  opacity: 1;
-  background-color: white;
-}
-input[id='menu_icon']:hover + label span:nth-child(5) {
-  opacity: 1;
-  background-color: white;
-}
-/*{ ////////// 여기까지 //////////}*/
-/* { 최상단 로고를 나타냄 img로 수정해야함 } */
 #logo {
   margin-top: 33px;
   text-align: center;
@@ -76,26 +7,9 @@ input[id='menu_icon']:hover + label span:nth-child(5) {
 }
 /*{ 인스타 바로가기 img }*/
 #insta_img {
+  position: absolute;
+  top: -90%;
+  left: 0;
   width: 25px;
   height: 25px;
-}
-/*{ 상단 메뉴아이템 선택 flex container의 items }*/
-.menu_item {
-  height: 34px;
-  padding-left: 15px;
-  padding-right: 15px;
-  cursor: pointer;
-  /* 하나의 item도 컨테이너처럼 flex를 해준다*/
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 0 1 6%;
-  border: none;
-}
-.menu_item:nth-child(1) {
-  flex: 0 1 6%;
-}
-/*{ 아이템의 1번째인 전체보기(아이콘)을 MouseOnEvent }*/
-.menu_item:nth-child(1):hover {
-  background-color: rgb(63, 63, 63);
 }

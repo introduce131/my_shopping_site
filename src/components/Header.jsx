@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import { fireStore } from '../firebase.js';
 import styles from '../css/Header.module.css';
 
 // 상단 메뉴아이템 선택 flex container
 const MenuConatiner = styled.div`
   display: flex;
+  position: relative;
   /* 메뉴 컨테이너 최소/최대크기 지정 */
   margin: auto;
   width: 1100px;
@@ -19,8 +20,10 @@ const MenuConatiner = styled.div`
   align-items: flex-start;
   background-color: rgb(255, 255, 255);
   border: 1.5px solid rgb(192, 192, 192);
+  border-top: 1.5px solid black;
 `;
 
+// 메인컨테이너의 item, 하위 서브메뉴를 보여줘야해서 ul로 작성
 const MainMenu = styled.ul`
   /* 하나의 item도 컨테이너처럼 flex를 해준다*/
   position: relative;
@@ -49,6 +52,7 @@ const MainMenu = styled.ul`
   }
 `;
 
+// 서브메뉴. li를 부모로 삼음
 const SubMenu = styled.div`
   position: absolute;
   width: 110%;
@@ -60,6 +64,34 @@ const SubMenu = styled.div`
   border: 1px solid black;
   display: none;
   background-color: white;
+
+  &.before-after:after {
+    border-color: white transparent;
+    border-style: solid;
+    border-width: 0 6px 8px 6.5px;
+    content: '';
+    display: block;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    position: absolute;
+    top: -7px;
+    width: 0;
+    z-index: 1;
+  }
+
+  &.before-after:before {
+    border-color: black transparent;
+    border-style: solid;
+    border-width: 0 6px 8px 6.5px;
+    content: '';
+    display: block;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    position: absolute;
+    top: -8px;
+    width: 0;
+    z-index: 0;
+  }
 
   ul {
     list-style: none;
@@ -78,22 +110,25 @@ const SubMenu = styled.div`
   }
 `;
 
-//작대기 3개로 이루어진 전체보기 메뉴 버튼입니더. by Component
-function MenuButton() {
-  return (
-    <div>
-      <input type="checkbox" id="menu_icon" />
-      <label htmlFor="menu_icon">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </label>
-    </div>
-  );
-}
+// 헤더가 화면에 꽉차보이기 위해 만든 가짜 div. Z-index는 헤더 컨테이너보다 낮은값
+const FakeContainer = styled.div`
+  position: absolute;
+  top: 55%;
+  width: 100vw;
+  min-width: 1100px;
+  height: 34px;
+  background-color: rgb(255, 255, 255);
+  border: 1.5px solid rgb(192, 192, 192);
+  border-top: 1.5px solid black;
+  z-index: 0;
+`;
 
+// 전역 스타일링, body
+const GlobalStyle = createGlobalStyle`
+  body {
+    margin: 0;
+  }
+`;
 //Header Components Function
 const Header = () => {
   const categoryRef = collection(fireStore, 'shopping_category');
@@ -104,8 +139,14 @@ const Header = () => {
   const subMenuRef = useRef([]);
 
   // 메인 메뉴의 하위메뉴인 서브메뉴를 설정함
-  const setSubMenu = (parentName) => {
+  const setSubMenu = (parentName, idx) => {
     const childData = [...childCate].filter((item) => item.CATE_PARENT === parentName);
+
+    // 여기 무조건 수정해라
+    // 약간의 딜레이를 줘야함..
+    setTimeout(() => {
+      console.log(subMenuRef.current[idx]);
+    }, 1);
 
     return childData.map((item, idx) => (
       <ul key={idx}>
@@ -116,7 +157,6 @@ const Header = () => {
 
   // 메인메뉴 위에 마우스를 올려놨을 때 이벤트
   const mainMenuMouseEnter = (idx) => {
-    console.log('enter');
     subMenuRef.current[idx].style.display = 'block';
     // 하위 서브메뉴가 없으면 border : none
     if (!subMenuRef.current[idx].children[0]) subMenuRef.current[idx].style.border = 'none';
@@ -152,16 +192,17 @@ const Header = () => {
   return (
     <div style={{ position: 'relative' }}>
       <div id={styles.logo}>c h a r l o t t e</div> {/*로고*/}
-      <img
-        id={styles.insta_img}
-        src="https://www.freepnglogos.com/uploads/instagram-icon-png/black-hd-instagram-icon-simple-black-design-9.png"
-        alt=""
-      />
+      {/* 글로벌 스타일 body 지정 */}
+      <GlobalStyle />
       {/* 상단 상품 카테고리 선택 flex container */}
+      <FakeContainer />
       <MenuConatiner>
-        <div className={styles.menu_item}>
-          <MenuButton />
-        </div>
+        <img
+          id={styles.insta_img}
+          src={process.env.PUBLIC_URL + '/images/instagram-icon.png'}
+          alt=""
+        />
+        <MainMenu></MainMenu>
         {parentCate.map((item, idx) => (
           <MainMenu
             key={idx}
@@ -174,8 +215,8 @@ const Header = () => {
           >
             <li className="main-menu-item">
               {item.CATE_NAME}
-              <SubMenu ref={(ele) => (subMenuRef.current[idx] = ele)}>
-                {setSubMenu(item.CATE_NAME)}
+              <SubMenu ref={(ele) => (subMenuRef.current[idx] = ele)} className="before-after">
+                {setSubMenu(item.CATE_NAME, idx)}
               </SubMenu>
             </li>
           </MainMenu>
