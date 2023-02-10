@@ -136,17 +136,12 @@ const Header = () => {
   const [cateList, setCateList] = useState([]); // 카테고리 전부를 저장하는 state
   const [parentCate, setParentCate] = useState([]); // filter로 메인 카테고리를 저장하는 state
   const [childCate, setChildCate] = useState([]); // filter로 서브 카테고리를 저장하는 state
+  const [isSub, setIsSub] = useState();
   const subMenuRef = useRef([]);
 
   // 메인 메뉴의 하위메뉴인 서브메뉴를 설정함
-  const setSubMenu = (parentName, idx) => {
+  const setSubMenu = (parentName) => {
     const childData = [...childCate].filter((item) => item.CATE_PARENT === parentName);
-
-    // 여기 무조건 수정해라
-    // 약간의 딜레이를 줘야함..
-    setTimeout(() => {
-      console.log(subMenuRef.current[idx]);
-    }, 1);
 
     return childData.map((item, idx) => (
       <ul key={idx}>
@@ -158,8 +153,11 @@ const Header = () => {
   // 메인메뉴 위에 마우스를 올려놨을 때 이벤트
   const mainMenuMouseEnter = (idx) => {
     subMenuRef.current[idx].style.display = 'block';
-    // 하위 서브메뉴가 없으면 border : none
-    if (!subMenuRef.current[idx].children[0]) subMenuRef.current[idx].style.border = 'none';
+    // 하위 서브메뉴가 없으면 border : none, 'before-after' 클래스 지우기
+    if (!subMenuRef.current[idx].children[0]) {
+      subMenuRef.current[idx].style.border = 'none';
+      subMenuRef.current[idx].classList.remove('before-after');
+    }
   };
 
   // 메인메뉴 위에 마우스가 벗어났을 때 이벤트
@@ -216,7 +214,7 @@ const Header = () => {
             <li className="main-menu-item">
               {item.CATE_NAME}
               <SubMenu ref={(ele) => (subMenuRef.current[idx] = ele)} className="before-after">
-                {setSubMenu(item.CATE_NAME, idx)}
+                {setSubMenu(item.CATE_NAME)}
               </SubMenu>
             </li>
           </MainMenu>

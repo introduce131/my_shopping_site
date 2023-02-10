@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 import { doc, getDoc } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
 import { fireStore } from '../firebase.js';
+import * as common from '../common.js';
 import Header from '../components/Header.jsx';
 
 const ItemDetailContainerDiv = styled.div`
@@ -36,12 +38,16 @@ const ItemDetailContentDiv = styled.div`
       color: rgb(20, 20, 20);
     }
 
-    & > .colorBox {
-      width: 20px;
-      height: 5px;
-      border: 1px solid lightgray;
-      margin-top: -5px;
-      background-color: ${(props) => props.$boxColor};
+    & > .colorBoxContainer {
+      display: flex;
+      gap: 7px;
+
+      .colorBox {
+        width: 20px;
+        height: 6px;
+        border: 1px solid black;
+        margin-top: -5px;
+      }
     }
   }
 
@@ -79,6 +85,22 @@ const ItemDetailContentDiv = styled.div`
   }
 `;
 
+const LabelFabric = styled.label`
+  white-space: pre-wrap;
+`;
+
+const ItemsColorBox = (props) => {
+  const colorArray = props.colorRGB.split('^');
+  colorArray.pop(); // 마지막 한개 공백이라서 지움
+  return (
+    <div className="colorBoxContainer">
+      {colorArray.map((ele, idx) => (
+        <div key={idx} className="colorBox" style={{ backgroundColor: ele }} />
+      ))}
+    </div>
+  );
+};
+
 const Products = () => {
   const param = useParams();
   const [Item, setItem] = useState({});
@@ -99,14 +121,14 @@ const Products = () => {
       <Header />
       <ItemDetailContainerDiv>
         <ItemDetailContentDiv>
-          <img src={Item.ITEMS_IMGURL} alt="" />
+          <img src={Item.ITEMS_IMG1} alt="" />
         </ItemDetailContentDiv>
 
         <ItemDetailContentDiv $boxColor={Item.ITEMS_COLOR}>
           {/* 상품명, 상품 대표색상 */}
           <div className="ITEM_TOP_INFO">
-            <label className="ITEM_TITLE">{Item.ITEMS_NAME}</label>
-            <div className={'colorBox'} />
+            <label className="ITEMS_NAME">{Item.ITEMS_NAME}</label>
+            <ItemsColorBox colorRGB={Item.ITEMS_COLOR || ''} />
           </div>
           {/* 상품 기본정보 (가격, 포인트, 재질, 사이즈, 색상, madein) */}
           <div className="ITEM_BASIS_INFO">
@@ -118,28 +140,32 @@ const Products = () => {
             </label>
             <label className="label_title">point</label>
             <label>
-              {String(Math.round(Item.ITEMS_PRICE / 100))
+              {String(Math.round(Number(common.uncomma(Item.ITEMS_PRICE)) / 100))
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
               &nbsp;(1%)
             </label>
             <label className="label_title">fabric</label>
-            <label style={{ 'white-space': 'pre-wrap' }}>{Item.ITEMS_FABRIC}</label>
+            <LabelFabric>{Item.ITEMS_FABRIC}</LabelFabric>
             <label className="label_title">size</label>
-            <label>{Item.ITEMS_SIZE}</label>
+            <label>{common.removeDeli(Item.ITEMS_SIZE || '')}</label>
             <label className="label_title">color</label>
-            <label>{Item.ITEMS_COLOR}</label>
+            <label>{common.removeDeli(Item.ITEMS_COLORNAME || '')}</label>
             <label className="label_title">made in</label>
-            <label>{Item.ITEMS_MADEIN}</label>
+            <label>{Item.ITEMS_MADE}</label>
           </div>
           {/* 상품 간단 설명 */}
           <div className="ITEM_CONTENT_INFO">
-            <label>{Item.ITEMS_CONTENTS}</label>
+            <label>{Item.ITEMS_SUMMARY}</label>
           </div>
         </ItemDetailContentDiv>
       </ItemDetailContainerDiv>
     </div>
   );
+};
+
+ItemsColorBox.propTypes = {
+  colorRGB: PropTypes.string.isRequired,
 };
 
 export default Products;

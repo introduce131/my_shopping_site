@@ -39,10 +39,10 @@ const MainSlideImage = () => {
           <Image src={process.env.PUBLIC_URL + '/images/sale.jpg'} />
         </div>
         <div>
-          <Image src={process.env.PUBLIC_URL + '/images/image02.jpg'} />
+          <Image src={process.env.PUBLIC_URL + '/images/banner_1.jpg'} />
         </div>
         <div>
-          <Image src={process.env.PUBLIC_URL + '/images/image03.jpg'} />
+          <Image src={process.env.PUBLIC_URL + '/images/banner_2.jpg'} />
         </div>
       </CustomSlider>
     </div>

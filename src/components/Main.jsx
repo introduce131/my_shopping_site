@@ -1,18 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Slider from 'react-slick';
 import { Link } from 'react-router-dom';
 import MainSlideImage from './MainSlideImage';
 import styled from 'styled-components';
+import PropTypes from 'prop-types';
 import { fireStore } from '../../src/firebase'; //firebase.js에서 내보낸 fireStore
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import { useEffect } from 'react';
-import { useState } from 'react';
 
 // Slider 세팅
 const settings = {
   slide: 'div', //슬라이드 되어야 할 태그 ex) div, li
   dots: true, //슬라이드 밑에 점 보이게(페이지네이션 여부)
   rows: 2, //세로로 몇줄할건지 정하는 옵션
+  slidePerRow: 4, //slidesToShow, Scroll 과 같은 옵션인것 같다.
+  infinite: true, //무한 반복 옵션
+  speed: 1000, //다음 버튼 누르고 다음 슬라이드 뜨는 시간(ms)
+  slidesToShow: 4, //한 화면에 보여질 컨텐츠 개수
+  slidesToScroll: 4, //스크롤 한번에 움직일 컨텐츠 개수
+  autoplay: true, //자동 스크롤 사용 여부
+  autoplaySpeed: 7500, //자동 스크롤 시 다음 슬라이드 뜨는 시간(ms)
+  vertical: false, //세로 방향 옵션 true:세로, false:가로
+  arrows: true, //옆으로 이동하는 화살표 표시 여부
+  dotsClass: 'slick-dots', //아래 나오는 점(페이지네이션) css class 지정
+  dragable: 'true', //드래그 가능 여부
+};
+
+const settings_2 = {
+  slide: 'div', //슬라이드 되어야 할 태그 ex) div, li
+  dots: true, //슬라이드 밑에 점 보이게(페이지네이션 여부)
+  rows: 1, //세로로 몇줄할건지 정하는 옵션
   slidePerRow: 4, //slidesToShow, Scroll 과 같은 옵션인것 같다.
   infinite: true, //무한 반복 옵션
   speed: 1000, //다음 버튼 누르고 다음 슬라이드 뜨는 시간(ms)
@@ -133,12 +149,45 @@ const SiteIntroBox = () => {
   );
 };
 
+// 메인화면에 상품목록 위에 서브타이틀을 달아줄 Component
+const SubTitle = (props) => {
+  return (
+    <div>
+      <h2 style={{ textAlign: 'center' }}>{props.title}</h2>
+      <p
+        style={{
+          textAlign: 'center',
+          color: '#8A8989',
+          marginTop: '-5px',
+        }}
+      >
+        {props.sub}
+      </p>
+    </div>
+  );
+};
+
+// count만큼 br태그를 생성해 텍스트 형태로 __html에 저장.
+const createBR = (count) => {
+  let brTag = '';
+  for (let i = 0; i < count; i++) {
+    brTag += '<br/>';
+  }
+  return { __html: brTag };
+};
+
+// createBR 함수를 사용하여 dangerouslySetInnerHTML 프로퍼티로 innerHTML 같이 사용함.
+// 주의점은 key는 늘 '__html'로만 사용하여야 한다. value는 string 형태의 변수 아무거나
+const SetNextLine = (props) => {
+  return <div dangerouslySetInnerHTML={createBR(Number(props.count))} />;
+};
+
 const Main = () => {
   /** fireStore의 collection에서 "shopping_itmes" 라는 document를 찾아서 저장된 값 */
   const itemsRef = collection(fireStore, 'shopping_items');
   /** query메서드를 사용할 때, 인수 1번째는 document, 2번째는 where절
    *  한주간의 인기상품만 보이게 조건 적용 */
-  const resultQuery = query(itemsRef, where('ITEMS_SHOWMAIN', '==', 'O'));
+  const resultQuery = query(itemsRef, where('ITEMS_WEEKLY_BEST', '==', 'O'));
   const [ItemsList, setItemsList] = useState([]);
 
   // 첫 Loading시에만 적용
@@ -157,34 +206,39 @@ const Main = () => {
     getItems();
   }, []);
 
+  useEffect(() => {
+    console.log(ItemsList);
+  }, [ItemsList]);
+
   return (
     <div>
       <MainSlideImage /> {/*메인화면을 장식할 slide*/}
       <SiteIntroBox /> {/*사이트 소개.Box 4개 flex로 작성*/}
       {/* 1. WEEKLY BEST ITEMS 인기상품 16개*/}
       {/* 1-1. 하이퍼링크 적용할 WEEKLY BEST ITEMS */}
-      <h2 style={{ textAlign: 'center' }}>WEEKLY BEST ITEMS</h2>
-      <p
-        style={{
-          textAlign: 'center',
-          color: '#8A8989',
-          marginTop: '-5px',
-        }}
-      >
-        한 주간의 인기상품을 만나보세요
-      </p>
-      {/*1-1 End..*/}
+      <SubTitle title="WEEKLY BEST ITEMS" sub="한 주간의 인기상품을 만나보세요" />
       <StyledSlider {...settings}>
         {ItemsList.map((ele, idx) => (
           <div key={idx}>
             <Link to={`/products/${ele['DOCUMENT_ID']}`}>
-              <img src={ele['ITEMS_IMGURL']} alt="" />
+              <img src={ele['ITEMS_IMG1']} alt="" />
             </Link>
           </div>
         ))}
       </StyledSlider>
+      <SetNextLine count="5" />
+      <SubTitle title="WEEKLY BEST ITEMS" sub="한 주간의 인기상품을 만나보세요" />
     </div>
   );
+};
+
+SubTitle.propTypes = {
+  title: PropTypes.string.isRequired,
+  sub: PropTypes.string.isRequired,
+};
+
+SetNextLine.propTypes = {
+  count: PropTypes.string.isRequired,
 };
 
 export default Main;

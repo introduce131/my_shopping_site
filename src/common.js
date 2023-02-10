@@ -59,6 +59,19 @@ export const calByte = {
   },
 };
 
+/** 구분자 "^"를 지워서 ","로 바꿔주는 함수.. */
+export const removeDeli = (deliStr) => {
+  let newStr = '';
+  const newArr = deliStr.split('^');
+  newArr.pop();
+
+  for (let i = 0; i < newArr.length; i++) {
+    i === newArr.length - 1 ? (newStr += newArr[i]) : (newStr += newArr[i] + ', ');
+  }
+
+  return newStr;
+};
+
 /** 천단위에 콤마 찍기 함수 */
 export const addCommas = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
@@ -144,6 +157,56 @@ export const returnOptionData = (ref) => {
   }
   return array; // 완성된 객체배열을 return
 };
+
+/** 옵션 데이터를 받아서 중복 제거 후, Rgb 배열을 반환함 */
+export function returnColor(optionArray) {
+  let colorRgbArray = [];
+  let colorNameArray = [];
+  let rgbStr = '';
+  let nameStr = '';
+  let returnArr = [];
+
+  for (let i = 0; i < optionArray.length; i++) {
+    colorRgbArray[i] = optionArray[i].color;
+    colorNameArray[i] = optionArray[i].colorName;
+  }
+
+  const setRGB = new Set(colorRgbArray);
+  const uniqueRgbArr = [...setRGB];
+
+  const setColorName = new Set(colorNameArray);
+  const uniqueNameArr = [...setColorName];
+
+  for (let i = 0; i < uniqueRgbArr.length; i++) {
+    rgbStr += uniqueRgbArr[i] + '^';
+    nameStr += uniqueNameArr[i] + '^';
+  }
+
+  returnArr[0] = rgbStr;
+  returnArr[1] = nameStr;
+
+  return returnArr; // 중복없는 rgb color를 return
+}
+
+/** 옵션 데이터를 받아서 중복 제거 후, 구분자 "^"로 나누어진
+    사이즈 string을 반환함 */
+export function returnSize(optionArray) {
+  let sizeArray = [];
+  let sizeStr = '';
+
+  for (let i = 0; i < optionArray.length; i++) {
+    sizeArray[i] = optionArray[i].size;
+  }
+
+  const setSize = new Set(sizeArray);
+  const uniqueSizeArr = [...setSize];
+
+  for (let i = 0; i < uniqueSizeArr; i++) {
+    sizeStr = uniqueSizeArr[i] + '^';
+  }
+
+  return sizeStr;
+}
 
 /** Editor의 ref를 받아서 <img src=".."> 를 배열로 반환하는 함수 */
 export function returnEditorImg(ref) {
@@ -251,6 +314,7 @@ export function deleteServerImage(quillArray, urlData) {
   }
 }
 
+// fireStore에 데이터 업로드
 export async function uploadData(uploadArray) {
   console.log(uploadArray);
 
@@ -319,11 +383,14 @@ export async function uploadData(uploadArray) {
       ITEMS_NAME: Items.ItemName,
       ITEMS_SUMMARY: Items.ItemSmry,
       ITEMS_FABRIC: Items.ItemFbrc,
-      ITMES_IMG1: Items.ItemImg1,
+      ITEMS_IMG1: Items.ItemImg1,
       ITEMS_IMG2: Items.ItemImg2,
       ITEMS_CONTENT: Items.ItemCntn,
       ITEMS_PRICE: Items.ItemPrce,
       ITEMS_COST: Items.ItemCost,
+      ITEMS_SIZE: returnSize(Items.ItemOtDt),
+      ITEMS_COLOR: returnColor(Items.ItemOtDt)[0],
+      ITEMS_COLORNAME: returnColor(Items.ItemOtDt)[1],
       ITEMS_CATE_PARENT: pathArray[0].trim(),
       ITEMS_CATE_NAME: pathArray[1].trim(),
       ITEMS_MADE: Items.ItemMade,
