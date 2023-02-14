@@ -201,8 +201,8 @@ export function returnSize(optionArray) {
   const setSize = new Set(sizeArray);
   const uniqueSizeArr = [...setSize];
 
-  for (let i = 0; i < uniqueSizeArr; i++) {
-    sizeStr = uniqueSizeArr[i] + '^';
+  for (let i = 0; i < uniqueSizeArr.length; i++) {
+    sizeStr += uniqueSizeArr[i] + '^';
   }
 
   return sizeStr;
@@ -405,19 +405,19 @@ export async function uploadData(uploadArray) {
       ITEMS_ALSO_LIKE: Items.ItemALSO,
       ITEMS_UPLD_DATE: Items.ItemDate,
     });
+    await itemBatch.commit(); // 에러 안났으면, 상품 데이터 commit
   } catch (e) {
     itemBatch.delete(newDocRef); // 에러나면 트랜잭션 삭제
     return { icon: 'error', text: '서버에 [상품]을 추가하는 중에 에러가 발생했습니다' };
   }
 
-  await itemBatch.commit(); // 에러 안났으면, 상품 데이터 commit
-
   // shopping_option_data 컬렉션에 옵션데이터 값을 가공하여 추가함
   const optionBatch = writeBatch(fireStore);
-  const docRef = doc(collection(fireStore, 'shopping_option_data'));
 
+  // async await을 사용하기 위해 for..of 문으로 대체함
   try {
-    Items.ItemOtDt.forEach((item) => {
+    for (const item of Items.ItemOtDt) {
+      const docRef = doc(collection(fireStore, 'shopping_option_data'));
       const documentData = {
         ITEMS_PKID: Items.ItemPKid,
         OPTION_ROW: item.id,
@@ -430,13 +430,12 @@ export async function uploadData(uploadArray) {
         OPTION_STATUS: item.status,
       };
       optionBatch.set(docRef, documentData);
-    });
+    }
+    await optionBatch.commit(); // 에러 안났으면, 옵션 데이터 commit
   } catch (e) {
-    optionBatch.delete(docRef); // 에러나면 트랜잭션 삭제
+    optionBatch.delete(); // 에러나면 트랜잭션 삭제
     return { icon: 'error', text: '서버에 [옵션 데이터]를 추가하는 중에 에러가 발생했습니다' };
   }
-  // 에러 안났으면, 옵션 데이터 commit
-  await optionBatch.commit();
 
   // 위에 두 데이터가 정상적으로 업로드 되면 성공 결과를 return
   return { icon: 'success', text: '저장 완료!' };
