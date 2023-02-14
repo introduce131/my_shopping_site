@@ -166,9 +166,12 @@ export function returnColor(optionArray) {
   let nameStr = '';
   let returnArr = [];
 
-  for (let i = 0; i < optionArray.length; i++) {
-    colorRgbArray[i] = optionArray[i].color;
-    colorNameArray[i] = optionArray[i].colorName;
+  // 판매중이 아닌 상품은 보여주지 않을거임
+  const newArray = optionArray.filter((item) => item.status == 'sale');
+
+  for (let i = 0; i < newArray.length; i++) {
+    colorRgbArray[i] = newArray[i].color;
+    colorNameArray[i] = newArray[i].colorName;
   }
 
   const setRGB = new Set(colorRgbArray);
@@ -194,8 +197,11 @@ export function returnSize(optionArray) {
   let sizeArray = [];
   let sizeStr = '';
 
-  for (let i = 0; i < optionArray.length; i++) {
-    sizeArray[i] = optionArray[i].size;
+  // 판매중이 아닌 상품은 보여주지 않을거임
+  const newArray = optionArray.filter((item) => item.status == 'sale');
+
+  for (let i = 0; i < newArray.length; i++) {
+    sizeArray[i] = newArray[i].size;
   }
 
   const setSize = new Set(sizeArray);
@@ -318,22 +324,6 @@ export function deleteServerImage(quillArray, urlData) {
 export async function uploadData(uploadArray) {
   console.log(uploadArray);
 
-  // 데이터 공백 유효성 검사하기
-  for (let i = 0; i < uploadArray.length; i++) {
-    if (uploadArray[i]?.value === '' || uploadArray[i] === '' || uploadArray[i]?.length === 0) {
-      // 3번, 이미지 데이터가 없을 때, 따로 에러를 return해준다.
-      if (i === 3) return { icon: 'error', text: '먼저 대표 이미지를 추가해주세요' };
-      // 7번, 옵션 데이터가 없을 때, 따로 에러 return
-      if (i === 7) return { icon: 'error', text: '먼저 옵션 데이터를 추가해주세요' };
-
-      // object, HTMLELement값이라면 focus를 잡아준다.
-      if (typeof uploadArray[i] === 'object') uploadArray[i].focus();
-
-      // 이미지 데이터를 제외한 모든 공백값 부재의 에러는 이곳으로 처리함.
-      return { icon: 'error', text: '모든 데이터를 전부 넣어주세요' };
-    }
-  }
-
   const date = new Date();
 
   // 업로드 date yyyymmdd hhmmss msms
@@ -371,71 +361,9 @@ export async function uploadData(uploadArray) {
     ItemDate: upldDate,
   };
 
-  const itemBatch = writeBatch(fireStore); // 'shopping_items' 컬렉션에서 작업할 트랜잭션 생성
-  const newDocRef = doc(collection(fireStore, 'shopping_items')); // shopping_items 컬렉션 하위 새 document 생성
-
-  // shopping_items 컬렉션에 1개의 마스터 데이터를 추가함.
-  try {
-    const pathArray = Items.ItemPath.split('>'); // "TOP > 니트" 에서 구분자 '>' 제거
-
-    itemBatch.set(newDocRef, {
-      ITEMS_PKID: Items.ItemPKid,
-      ITEMS_NAME: Items.ItemName,
-      ITEMS_SUMMARY: Items.ItemSmry,
-      ITEMS_FABRIC: Items.ItemFbrc,
-      ITEMS_IMG1: Items.ItemImg1,
-      ITEMS_IMG2: Items.ItemImg2,
-      ITEMS_CONTENT: Items.ItemCntn,
-      ITEMS_PRICE: Items.ItemPrce,
-      ITEMS_COST: Items.ItemCost,
-      ITEMS_SIZE: returnSize(Items.ItemOtDt),
-      ITEMS_COLOR: returnColor(Items.ItemOtDt)[0],
-      ITEMS_COLORNAME: returnColor(Items.ItemOtDt)[1],
-      ITEMS_CATE_PARENT: pathArray[0].trim(),
-      ITEMS_CATE_NAME: pathArray[1].trim(),
-      ITEMS_MADE: Items.ItemMade,
-      ITEMS_MAKER: Items.ItemMakr,
-      ITEMS_BRAND: Items.ItemBrnd,
-      ITEMS_STATS: Items.ItemStat,
-      ITEMS_MIN_AMOUNT: Items.ItemMinS,
-      ITEMS_MAX_AMOUNT: Items.ItemMaxS,
-      ITEMS_MAX_AMOUNT_BUY: Items.ItemMaxB,
-      ITEMS_OUR_BEST: Items.ItemBEST,
-      ITEMS_SPECIAL: Items.ItemSPCL,
-      ITEMS_ALSO_LIKE: Items.ItemALSO,
-      ITEMS_UPLD_DATE: Items.ItemDate,
-    });
-    await itemBatch.commit(); // 에러 안났으면, 상품 데이터 commit
-  } catch (e) {
-    itemBatch.delete(newDocRef); // 에러나면 트랜잭션 삭제
-    return { icon: 'error', text: '서버에 [상품]을 추가하는 중에 에러가 발생했습니다' };
-  }
-
-  // shopping_option_data 컬렉션에 옵션데이터 값을 가공하여 추가함
-  const optionBatch = writeBatch(fireStore);
-
-  // async await을 사용하기 위해 for..of 문으로 대체함
-  try {
-    for (const item of Items.ItemOtDt) {
-      const docRef = doc(collection(fireStore, 'shopping_option_data'));
-      const documentData = {
-        ITEMS_PKID: Items.ItemPKid,
-        OPTION_ROW: item.id,
-        OPTION_SIZE: item.size,
-        OPTION_COLOR: item.color,
-        OPTION_COLOR_NAME: item.colorName,
-        OPTION_PRICE: item.price,
-        OPTION_STOCK_NOW: item.stockNow,
-        OPTION_STOCK_ADD: item.stockAdd,
-        OPTION_STATUS: item.status,
-      };
-      optionBatch.set(docRef, documentData);
-    }
-    await optionBatch.commit(); // 에러 안났으면, 옵션 데이터 commit
-  } catch (e) {
-    optionBatch.delete(); // 에러나면 트랜잭션 삭제
-    return { icon: 'error', text: '서버에 [옵션 데이터]를 추가하는 중에 에러가 발생했습니다' };
-  }
+  console.log('ItemOtdt', Items.ItemOtDt);
+  console.log('returnsize', returnSize(Items.ItemOtDt));
+  console.log('returnColor', returnColor(Items.ItemOtDt)[0]);
 
   // 위에 두 데이터가 정상적으로 업로드 되면 성공 결과를 return
   return { icon: 'success', text: '저장 완료!' };
