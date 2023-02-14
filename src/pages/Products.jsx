@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
+import Swal from 'sweetalert2';
 import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
 import { fireStore } from '../firebase.js';
@@ -45,9 +46,9 @@ const ItemDetailContentDiv = styled.div`
 
       .colorBox {
         width: 20px;
-        height: 6px;
-        border: 1px solid black;
-        margin-top: -5px;
+        height: 5px;
+        border: 1px solid gray;
+        margin-top: -8px;
       }
     }
   }
@@ -91,8 +92,7 @@ const ItemDetailContentDiv = styled.div`
     align-items: center;
     flex-flow: row wrap;
     width: 95%;
-    padding-left: 20px;
-    padding-bottom: 20px;
+    padding: 0px 15px 20px 15px;
     border-bottom: 1px solid lightgray;
 
     & > label {
@@ -107,9 +107,69 @@ const ItemDetailContentDiv = styled.div`
       padding-top: 20px;
 
       & > select {
+        padding-left: 7px;
         width: 95%;
         height: 25px;
+        font-size: 0.725rem;
       }
+    }
+  }
+
+  /* 최소_최대_구매수량_표시_부분 */
+  & > .ITEM_BUY_GUIDE_INFO {
+    display: flex;
+    justify-content: left;
+    flex-flow: row wrap;
+    width: 95%;
+    padding: 0px 20px 10px 10px;
+    border-bottom: 1px solid lightgray;
+
+    label {
+      font-size: 0.715rem;
+      padding-top: 10px;
+      color: #555;
+    }
+  }
+
+  /* 구매할_상품(상품명, 수량, 가격)_표시_부분 */
+  & > .ITEM_WILL_BUY_INFO {
+    width: 100%;
+    padding-bottom: 20px;
+    border-bottom: 1px solid lightgray;
+  }
+
+  /* 바로구매_장바구니_관싱상품_표시_부분 */
+  & > .ITEM_COMMIT_INFO {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-flow: row wrap;
+    width: 95%;
+    padding: 20px 15px 20px 15px;
+
+    button {
+      height: 50px;
+      width: 165px;
+      border: 2px solid lightgray;
+      background-color: white;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    button.item_buy {
+      height: 50px;
+      width: 165px;
+      border: 2px solid #444;
+      background-color: #444;
+      font-size: 0.9rem;
+      color: white;
+    }
+
+    button:hover {
+      background-color: white;
+      color: #555;
+      border: 2px solid black;
+      transition-duration: 0.3s;
     }
   }
 
@@ -117,6 +177,44 @@ const ItemDetailContentDiv = styled.div`
     width: 500px;
     height: 700px;
     margin-right: 25px;
+  }
+`;
+
+const OrderSheet = styled.table`
+  margin-top: 1px;
+  border-collapse: collapse;
+  width: 100%;
+
+  & > thead {
+    height: 30px;
+
+    td {
+      border: 1px solid lightgray;
+      padding-left: 10px;
+    }
+  }
+
+  & > tbody {
+    td {
+      padding-left: 10px;
+      .order-name {
+        display: flex;
+        align-items: center;
+        width: 90%;
+        min-height: 17px;
+        height: auto;
+        padding: 5px 5px 5px 10px;
+        background-color: rgb(170, 170, 170);
+        border-radius: 2px;
+        color: white;
+      }
+      .order-count {
+        width: 50%;
+      }
+      .order-price {
+        width: 90%;
+      }
+    }
   }
 `;
 
@@ -140,6 +238,9 @@ const Products = () => {
   const param = useParams();
   const [Item, setItem] = useState({});
   const [optionData, setOptionData] = useState([]);
+  const [buyItems, setBuyItems] = useState([]);
+  const sizeRef = useRef();
+  const colorRef = useRef();
 
   // 첫 렌더링 시에만 서버에서 데이터 불러옴
   useEffect(() => {
@@ -172,10 +273,35 @@ const Products = () => {
     getOption();
   }, [Item]);
 
-  // 첫 렌더링 시에 받아온 옵션데이터를 또 다시 가공한다..이거 맞나 ㅋㅋ
+  // state에 orderList를 중복없이 저장하는 함수
+  const setOrderList = (e) => {
+    if (colorRef.current.value !== 'none') {
+      const optionObj = {
+        color: colorRef.current.value,
+        size: e.target.value,
+        price: Item.ITEMS_PRICE,
+      };
+
+      const prevArr = [...buyItems];
+
+      // 중복된 오더가 있는지 필터로 체크한다.
+      const newArr = prevArr.filter(
+        (item) => item.color == optionObj.color && item.size == optionObj.size
+      );
+
+      // 중복된 오더 상품이 있다면, 에러 메시지, 없으면 state에 저장
+      if (newArr.length > 0) {
+        const errorText = `'${optionObj.color}/${optionObj.size}' 상품은 이미 리스트에 있습니다.`;
+        Swal.fire({ icon: 'error', text: errorText });
+      } else {
+        setBuyItems((prev) => [...prev, optionObj]);
+      }
+    }
+  };
+
   useEffect(() => {
-    console.log('optionData', optionData);
-  }, [optionData]);
+    console.log(buyItems);
+  }, [buyItems]);
 
   return (
     <div>
@@ -223,20 +349,83 @@ const Products = () => {
             {/* 색상 옵션 선택 */}
             <label className="label_title">{'>'} color</label>
             <div className="div_option_section">
-              <select>
+              {/* color 선택 select-option */}
+              <select
+                ref={colorRef}
+                onChange={() => {
+                  // 사이즈 select 초기화하기.
+                  sizeRef.current.value = 'none';
+                }}
+              >
                 <option value="none">{'======= color 선택 ======='}</option>
-                <option value="none">{'--------------------------'}</option>
+                <option value="none" disabled>
+                  {'--------------------------'}
+                </option>
+                {(Item.ITEMS_COLORNAME || '')
+                  .split('^')
+                  .filter((item) => item !== '')
+                  .map((item, idx) => (
+                    <option key={idx}>{item}</option>
+                  ))}
               </select>
             </div>
-            {console.log(optionData)}
             {/* 사이즈 옵션 선택 */}
             <label className="label_title">{'>'} size</label>
             <div className="div_option_section">
-              <select>
+              {/* size 선택 select-option */}
+              <select onChange={setOrderList} ref={sizeRef}>
                 <option value="none">{'======= size 선택 ======='}</option>
-                <option value="none">{'--------------------------'}</option>
+                <option value="none" disabled>
+                  {'--------------------------'}
+                </option>
+                {(Item.ITEMS_SIZE || '')
+                  .split('^')
+                  .filter((item) => item !== '')
+                  .map((item, idx) => (
+                    <option key={idx}>{item}</option>
+                  ))}
               </select>
             </div>
+          </div>
+          <div className="ITEM_BUY_GUIDE_INFO">
+            {console.log(Item)}
+            <label>{`최소 주문수량 ${Item.ITEMS_MIN_AMOUNT} 개 이상, 최대 주문 수량은 ${Item.ITEMS_MAX_AMOUNT} 개까지입니다.`}</label>
+          </div>
+          <div className="ITEM_WILL_BUY_INFO">
+            <OrderSheet>
+              <thead>
+                <tr>
+                  <td width="60%">상품명</td>
+                  <td width="15%">상품수</td>
+                  <td width="25%">가 격</td>
+                </tr>
+              </thead>
+              <tbody>
+                {buyItems.map((item, idx) => (
+                  <tr key={idx}>
+                    <td>
+                      <div className="order-name">
+                        {`${item.color}/${item.size}/교환/반품 불가에 동의`}
+                      </div>
+                    </td>
+                    <td>
+                      <input type="number" className="order-count" />
+                    </td>
+                    <td>{`${item.price}원 (${String(
+                      Math.round(Number(common.uncomma(Item.ITEMS_PRICE)) / 100)
+                    )
+                      .toString()
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}P)`}</td>
+                  </tr>
+                ))}
+                <tr></tr>
+              </tbody>
+            </OrderSheet>
+          </div>
+          <div className="ITEM_COMMIT_INFO">
+            <button className="item_buy">바로구매</button>
+            <button>장바구니</button>
+            <button>관심상품</button>
           </div>
         </ItemDetailContentDiv>
       </ItemDetailContainerDiv>

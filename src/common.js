@@ -72,6 +72,14 @@ export const removeDeli = (deliStr) => {
   return newStr;
 };
 
+/** 구분자 ","를 지워서 배열 형태로 바꿔주는 함수 */
+export const returnOptionArray = (deliStr) => {
+  let newStr = '';
+  const newArr = deliStr.split('^').filter((item) => item !== '');
+
+  console.log(newArr);
+};
+
 /** 천단위에 콤마 찍기 함수 */
 export const addCommas = (num) => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 

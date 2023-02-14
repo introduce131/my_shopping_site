@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -16,7 +16,10 @@ const firebaseConfig = {
 export const firebase = initializeApp(firebaseConfig);
 
 /** fireStore 내보내기 << 다른 곳에서 불러올때 fireStore로 불러와야 함!! */
-export const fireStore = getFirestore(firebase);
+export const fireStore = initializeFirestore(firebase, {
+  useFetchStremas: false,
+  experimentalForceLongPolling: true,
+});
 
 /** storage 내보내기 <<  다른 곳에서 불러올때 storage 불러와야 함!! */
 export const storage = getStorage(firebase);

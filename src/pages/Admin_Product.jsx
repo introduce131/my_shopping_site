@@ -236,10 +236,6 @@ const Admin_Product = () => {
   const secndOptRef = useRef(); // [옵션명2]
   const gridRef = useRef();
 
-  useEffect(() => {
-    //Swal.fire('커스터마이징 alert');
-  }, []);
-
   // 자식 컴포넌트에서 사용하는 ref를 긁어오는 함수
   const addChildRef = (childRef) => {
     setChildRef((prev) => [...prev, childRef]);
