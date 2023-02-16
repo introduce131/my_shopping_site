@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const CustomInputNumber = styled.div`
@@ -61,16 +61,29 @@ const NumberCustom = React.forwardRef((props, ref) => {
         <label
           className="minus"
           onClick={() => {
-            setNumber(number - 1);
+            if (number > 0) setNumber(number - 1);
           }}
         >
           --
         </label>
-        <input ref={ref} type="number" className="order-number" value={number} />
+        <input
+          ref={ref}
+          type="number"
+          className="order-number"
+          value={number}
+          onKeyDown={(e) => {
+            console.log(e.target.value);
+          }}
+          onChange={(e) => {
+            if (e.target.value > 0 && e.target.value < 100) {
+              setNumber(Number(e.target.value));
+            }
+          }}
+        />
         <label
           className="plus"
           onClick={() => {
-            setNumber(number + 1);
+            if (number < 100) setNumber(number + 1);
           }}
         >
           +

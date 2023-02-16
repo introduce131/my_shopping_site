@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Swal from 'sweetalert2';
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { doc, getDoc } from 'firebase/firestore';
 import { useParams } from 'react-router-dom';
 import { fireStore } from '../firebase.js';
 import * as common from '../common.js';
@@ -239,6 +239,7 @@ const Products = () => {
   const sizeRef = useRef();
   const colorRef = useRef();
   const orderCountRef = useRef([]);
+  const newCountRef = useRef([]);
 
   // 첫 렌더링 시에만 서버에서 데이터 불러옴
   useEffect(() => {
@@ -254,7 +255,12 @@ const Products = () => {
 
   const setRef = (ref, idx) => {
     orderCountRef.current[idx] = ref;
+    newCountRef.current.push(ref);
   };
+
+  useEffect(() => {
+    console.log('뭐가 추가됨', newCountRef);
+  }, [newCountRef]);
 
   useEffect(() => {
     console.log('첫 렌더링 때 ref', orderCountRef);
