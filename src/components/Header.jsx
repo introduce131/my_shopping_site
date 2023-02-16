@@ -136,7 +136,6 @@ const Header = () => {
   const [cateList, setCateList] = useState([]); // 카테고리 전부를 저장하는 state
   const [parentCate, setParentCate] = useState([]); // filter로 메인 카테고리를 저장하는 state
   const [childCate, setChildCate] = useState([]); // filter로 서브 카테고리를 저장하는 state
-  const [isSub, setIsSub] = useState();
   const subMenuRef = useRef([]);
 
   // 메인 메뉴의 하위메뉴인 서브메뉴를 설정함

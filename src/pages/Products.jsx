@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import { fireStore } from '../firebase.js';
 import * as common from '../common.js';
 import Header from '../components/Header.jsx';
+import NumberCustom from '../components/NumberCustom.jsx';
 
 const ItemDetailContainerDiv = styled.div`
   display: flex;
@@ -208,12 +209,9 @@ const OrderSheet = styled.table`
         border-radius: 2px;
         color: white;
       }
-      .order-count {
-        width: 50%;
-      }
-      .order-price {
-        width: 90%;
-      }
+    }
+    td.order-count {
+      padding-left: 6px;
     }
   }
 `;
@@ -237,10 +235,10 @@ const ItemsColorBox = (props) => {
 const Products = () => {
   const param = useParams();
   const [Item, setItem] = useState({});
-  const [optionData, setOptionData] = useState([]);
   const [buyItems, setBuyItems] = useState([]);
   const sizeRef = useRef();
   const colorRef = useRef();
+  const orderCountRef = useRef([]);
 
   // 첫 렌더링 시에만 서버에서 데이터 불러옴
   useEffect(() => {
@@ -254,24 +252,13 @@ const Products = () => {
     getOnlyOneItem();
   }, []);
 
-  // 첫 렌더링 시에 받아온 PKID를 기준으로 옵션데이터 (사이즈, 색상 등)를 받아온다.
-  useEffect(() => {
-    const getOption = async () => {
-      const optionCollectionRef = collection(fireStore, 'shopping_option_data');
-      const optionQuery = query(
-        optionCollectionRef,
-        where('ITEMS_PKID', '==', Item.ITEMS_PKID || '')
-      );
-      const optionData = await getDocs(optionQuery);
-      optionData.forEach((doc) => {
-        // "판매중"인 상품만 가져오기
-        let newobj = [doc.data()].filter((data) => data.OPTION_STATUS == 'sale');
-        setOptionData((data) => [...data, { ...newobj }]);
-      });
-    };
+  const setRef = (ref, idx) => {
+    orderCountRef.current[idx] = ref;
+  };
 
-    getOption();
-  }, [Item]);
+  useEffect(() => {
+    console.log('첫 렌더링 때 ref', orderCountRef);
+  }, [orderCountRef.current]);
 
   // state에 orderList를 중복없이 저장하는 함수
   const setOrderList = (e) => {
@@ -298,10 +285,6 @@ const Products = () => {
       }
     }
   };
-
-  useEffect(() => {
-    console.log(buyItems);
-  }, [buyItems]);
 
   return (
     <div>
@@ -408,10 +391,10 @@ const Products = () => {
                         {`${item.color}/${item.size}/교환/반품 불가에 동의`}
                       </div>
                     </td>
-                    <td>
-                      <input type="number" className="order-count" />
+                    <td className="order-count">
+                      <NumberCustom ref={(ref) => setRef(ref, idx)} />
                     </td>
-                    <td>{`${item.price}원 (${String(
+                    <td className="order-price">{`${item.price}원 (${String(
                       Math.round(Number(common.uncomma(Item.ITEMS_PRICE)) / 100)
                     )
                       .toString()
@@ -423,7 +406,16 @@ const Products = () => {
             </OrderSheet>
           </div>
           <div className="ITEM_COMMIT_INFO">
-            <button className="item_buy">바로구매</button>
+            <button
+              className="item_buy"
+              onClick={() => {
+                orderCountRef.current.forEach((item) => {
+                  console.log(item);
+                });
+              }}
+            >
+              바로구매
+            </button>
             <button>장바구니</button>
             <button>관심상품</button>
           </div>
