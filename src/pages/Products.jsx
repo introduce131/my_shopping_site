@@ -135,8 +135,18 @@ const ItemDetailContentDiv = styled.div`
   /* 구매할_상품(상품명, 수량, 가격)_표시_부분 */
   & > .ITEM_WILL_BUY_INFO {
     width: 100%;
-    padding-bottom: 20px;
+    padding-bottom: 10px;
     border-bottom: 1px solid lightgray;
+
+    & > .total-section {
+      padding: 10px 10px 0px 0px;
+      text-align: right;
+      border-top: 1px solid lightgray;
+
+      .total-label {
+        font-size: 1rem;
+      }
+    }
   }
 
   /* 바로구매_장바구니_관싱상품_표시_부분 */
@@ -182,8 +192,8 @@ const ItemDetailContentDiv = styled.div`
 `;
 
 const OrderSheet = styled.table`
-  margin-top: 1px;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0 4px;
   width: 100%;
 
   & > thead {
@@ -196,25 +206,28 @@ const OrderSheet = styled.table`
   }
 
   & > tbody {
-    td {
-      padding-left: 10px;
-      .order-name {
-        display: flex;
-        align-items: center;
-        width: 90%;
-        min-height: 17px;
-        height: auto;
-        padding: 5px 5px 5px 10px;
-        background-color: rgb(170, 170, 170);
-        border-radius: 2px;
-        color: white;
+    tr {
+      height: 30px;
+      td {
+        padding-left: 10px;
+        .order-name {
+          display: flex;
+          align-items: center;
+          width: 90%;
+          min-height: 17px;
+          height: auto;
+          padding: 5px 5px 5px 10px;
+          background-color: rgb(170, 170, 170);
+          border-radius: 2px;
+          color: white;
+        }
       }
-    }
-    td.order-count {
-      padding-left: 6px;
-    }
-    td.order-price {
-      font-size: 0.73rem;
+      td.order-count {
+        padding-left: 6px;
+      }
+      td.order-price {
+        font-size: 0.73rem;
+      }
     }
   }
 `;
@@ -412,9 +425,11 @@ const Products = () => {
                     </td>
                   </tr>
                 ))}
-                <tr></tr>
               </tbody>
             </OrderSheet>
+            <div className="total-section">
+              <label className="total-label">TOTAL : 100,000,000원 (10,000P)</label>
+            </div>
           </div>
           <div className="ITEM_COMMIT_INFO">
             <button
