@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 
 const CustomInputNumber = styled.div`
@@ -53,7 +54,7 @@ const CustomInputNumber = styled.div`
 `;
 
 const NumberCustom = React.forwardRef((props, ref) => {
-  const [number, setNumber] = useState(1);
+  const { orderCount, setOrderCount } = props;
 
   return (
     <CustomInputNumber>
@@ -61,7 +62,9 @@ const NumberCustom = React.forwardRef((props, ref) => {
         <label
           className="minus"
           onClick={() => {
-            if (number > 0) setNumber(number - 1);
+            if (orderCount > 0) {
+              setOrderCount(orderCount - 1);
+            }
           }}
         >
           --
@@ -70,20 +73,22 @@ const NumberCustom = React.forwardRef((props, ref) => {
           ref={ref}
           type="number"
           className="order-number"
-          value={number}
+          value={orderCount}
           onKeyDown={(e) => {
             console.log(e.target.value);
           }}
           onChange={(e) => {
             if (e.target.value > 0 && e.target.value < 100) {
-              setNumber(Number(e.target.value));
+              setOrderCount(Number(e.target.value));
             }
           }}
         />
         <label
           className="plus"
           onClick={() => {
-            if (number < 100) setNumber(number + 1);
+            if (orderCount < 100) {
+              setOrderCount(orderCount + 1);
+            }
           }}
         >
           +
@@ -93,5 +98,10 @@ const NumberCustom = React.forwardRef((props, ref) => {
   );
 });
 NumberCustom.displayName = 'NumberCustom';
+
+NumberCustom.propTypes = {
+  setOrderCount: PropTypes.func.isRequired,
+  orderCount: PropTypes.number.isRequired,
+};
 
 export default NumberCustom;

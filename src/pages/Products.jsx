@@ -233,13 +233,19 @@ const ItemsColorBox = (props) => {
 };
 
 const Products = () => {
-  const param = useParams();
-  const [Item, setItem] = useState({});
-  const [buyItems, setBuyItems] = useState([]);
-  const sizeRef = useRef();
-  const colorRef = useRef();
-  const orderCountRef = useRef([]);
-  const newCountRef = useRef([]);
+  const param = useParams(); // url에 있는 fireStore의 document id 파라미터를 가져오기 위함
+  const [Item, setItem] = useState({}); // 서버에서 불러온 Item의 모든 정보를 저장하는 state
+  const [buyItems, setBuyItems] = useState([]); // 상품명/상품수/가격을 객체 형태로 저장하는 state array
+  const [orderCount, setOrderCount] = useState(1); // 상품수량을 저장하는 state
+  const colorRef = useRef(); // [color] select의 ref
+  const sizeRef = useRef(); // [size] select의 ref
+  const orderCountRef = useRef([]); // [상품수] input number의 ref array
+  const priceRef = useRef([]); // [가 격] label의 ref array
+
+  // 상품 수량이 바뀌면 여기서 처리한다. onchange. onclick의 대신임.
+  useEffect(() => {
+    console.log('price', orderCount);
+  }, [orderCount]);
 
   // 첫 렌더링 시에만 서버에서 데이터 불러옴
   useEffect(() => {
@@ -252,19 +258,6 @@ const Products = () => {
     };
     getOnlyOneItem();
   }, []);
-
-  const setRef = (ref, idx) => {
-    orderCountRef.current[idx] = ref;
-    newCountRef.current.push(ref);
-  };
-
-  useEffect(() => {
-    console.log('뭐가 추가됨', newCountRef);
-  }, [newCountRef]);
-
-  useEffect(() => {
-    console.log('첫 렌더링 때 ref', orderCountRef);
-  }, [orderCountRef.current]);
 
   // state에 orderList를 중복없이 저장하는 함수
   const setOrderList = (e) => {
@@ -398,13 +391,21 @@ const Products = () => {
                       </div>
                     </td>
                     <td className="order-count">
-                      <NumberCustom ref={(ref) => setRef(ref, idx)} />
+                      <NumberCustom
+                        ref={(ref) => (orderCountRef.current[idx] = ref)}
+                        orderCount={orderCount}
+                        setOrderCount={setOrderCount}
+                      />
                     </td>
-                    <td className="order-price">{`${item.price}원 (${String(
-                      Math.round(Number(common.uncomma(Item.ITEMS_PRICE)) / 100)
-                    )
-                      .toString()
-                      .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}P)`}</td>
+                    <td className="order-price">
+                      <label ref={(ref) => (priceRef.current[idx] = ref)}>
+                        {`${item.price}원 (${String(
+                          Math.round(Number(common.uncomma(Item.ITEMS_PRICE)) / 100)
+                        )
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}P)`}
+                      </label>
+                    </td>
                   </tr>
                 ))}
                 <tr></tr>
@@ -415,9 +416,8 @@ const Products = () => {
             <button
               className="item_buy"
               onClick={() => {
-                orderCountRef.current.forEach((item) => {
-                  console.log(item);
-                });
+                orderCountRef.current.forEach((item) => console.log(item));
+                priceRef.current.forEach((item) => console.log(item));
               }}
             >
               바로구매
