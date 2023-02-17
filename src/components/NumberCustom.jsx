@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
+import * as common from '../common.js';
 
 const CustomInputNumber = styled.div`
   width: 70px;
@@ -54,7 +55,19 @@ const CustomInputNumber = styled.div`
 `;
 
 const NumberCustom = React.forwardRef((props, ref) => {
-  const { orderCount, setOrderCount } = props;
+  const [number, setNumber] = useState(1); // 상품 수량의 기본값은 1개다. 금액계산해야지
+
+  // (1)가격 label의 ref, (2)map 함수의 idx, (3) 상품의 기본 판매가
+  const { priceRef, idx, price } = props;
+
+  // 수량이 바뀌면 부모컴포넌트에서 가져온 가격표도 바뀌어야겠지?
+  useEffect(() => {
+    const newPrice = common.comma(common.uncomma(price) * number);
+    const newPoint = `(${String(Math.round(Number(common.uncomma(price)) / 100) * number)
+      .toString()
+      .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}P)`;
+    priceRef.current[idx].textContent = `${newPrice}원 ${newPoint}`;
+  }, [number]);
 
   return (
     <CustomInputNumber>
@@ -62,8 +75,8 @@ const NumberCustom = React.forwardRef((props, ref) => {
         <label
           className="minus"
           onClick={() => {
-            if (orderCount > 0) {
-              setOrderCount(orderCount - 1);
+            if (number > 1) {
+              setNumber(number - 1);
             }
           }}
         >
@@ -73,21 +86,21 @@ const NumberCustom = React.forwardRef((props, ref) => {
           ref={ref}
           type="number"
           className="order-number"
-          value={orderCount}
+          value={number}
           onKeyDown={(e) => {
             console.log(e.target.value);
           }}
           onChange={(e) => {
             if (e.target.value > 0 && e.target.value < 100) {
-              setOrderCount(Number(e.target.value));
+              setNumber(Number(e.target.value));
             }
           }}
         />
         <label
           className="plus"
           onClick={() => {
-            if (orderCount < 100) {
-              setOrderCount(orderCount + 1);
+            if (number < 100) {
+              setNumber(number + 1);
             }
           }}
         >
@@ -100,8 +113,9 @@ const NumberCustom = React.forwardRef((props, ref) => {
 NumberCustom.displayName = 'NumberCustom';
 
 NumberCustom.propTypes = {
-  setOrderCount: PropTypes.func.isRequired,
-  orderCount: PropTypes.number.isRequired,
+  priceRef: PropTypes.object.isRequired,
+  idx: PropTypes.number.isRequired,
+  price: PropTypes.string.isRequired,
 };
 
 export default NumberCustom;
