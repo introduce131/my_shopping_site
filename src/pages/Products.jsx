@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Swal from 'sweetalert2';
@@ -252,16 +252,30 @@ const Products = () => {
   const param = useParams(); // url에 있는 fireStore의 document id 파라미터를 가져오기 위함
   const [Item, setItem] = useState({}); // 서버에서 불러온 Item의 모든 정보를 저장하는 state
   const [buyItems, setBuyItems] = useState([]); // 상품명/상품수/가격을 객체 형태로 저장하는 state array
-  const [orderCount, setOrderCount] = useState([1]); // 상품수량을 저장하는 state
+  const [buyCounts, setBuyCounts] = useState([]); // 자식컴포넌트에 보낼 구매수량 카운트
   const colorRef = useRef(); // [color] select의 ref
   const sizeRef = useRef(); // [size] select의 ref
   const orderCountRef = useRef([]); // [상품수] input number의 ref array
   const priceRef = useRef([]); // [가 격] label의 ref array
+  const totalLabelRef = useRef();
 
-  // 상품 수량이 바뀌면 여기서 처리한다. onchange. onclick의 대신임.
   useEffect(() => {
-    console.log('price', orderCount);
-  }, [orderCount]);
+    let sumCount = 0;
+
+    // 구매할 상품수량을 지역변수 subCount에 저장.
+    buyCounts.forEach((count) => {
+      sumCount += count;
+    });
+
+    // 상품 수 X 원가를 해서 상품금액 합계를 sumPrice에 저장.
+    const sumPrice = common.comma(common.uncomma(Item.ITEMS_PRICE) * sumCount);
+
+    // 1% 만큼 포인트를 구해서 subPoint에 저장
+    const newPoint = String(Math.round(Number(common.uncomma(Item.ITEMS_PRICE)) / 100) * sumCount);
+    const sumPoint = newPoint.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    totalLabelRef.current.textContent = `TOTAL : ${sumPrice}원 [${sumCount}개] (${sumPoint}P)`;
+  }, [buyCounts]);
 
   // 첫 렌더링 시에만 서버에서 데이터 불러옴
   useEffect(() => {
@@ -386,7 +400,6 @@ const Products = () => {
             </div>
           </div>
           <div className="ITEM_BUY_GUIDE_INFO">
-            {console.log(Item)}
             <label>{`최소 주문수량 ${Item.ITEMS_MIN_AMOUNT} 개 이상, 최대 주문 수량은 ${Item.ITEMS_MAX_AMOUNT} 개까지입니다.`}</label>
           </div>
           <div className="ITEM_WILL_BUY_INFO">
@@ -408,10 +421,14 @@ const Products = () => {
                     </td>
                     <td className="order-count">
                       <NumberCustom
-                        ref={(ref) => (orderCountRef.current[idx] = ref)}
+                        ref={(ref) => {
+                          orderCountRef.current[idx] = ref;
+                        }}
                         priceRef={priceRef}
                         idx={idx}
                         price={Item.ITEMS_PRICE}
+                        setBuyCounts={setBuyCounts}
+                        maxBuyCounts={Item.ITEMS_MAX_AMOUNT}
                       />
                     </td>
                     <td className="order-price">
@@ -428,17 +445,11 @@ const Products = () => {
               </tbody>
             </OrderSheet>
             <div className="total-section">
-              <label className="total-label">TOTAL : 100,000,000원 (10,000P)</label>
+              <label className="total-label" ref={totalLabelRef}></label>
             </div>
           </div>
           <div className="ITEM_COMMIT_INFO">
-            <button
-              className="item_buy"
-              onClick={() => {
-                orderCountRef.current.forEach((item) => console.log(item));
-                priceRef.current.forEach((item) => console.log(item));
-              }}
-            >
+            <button className="item_buy" onClick={() => {}}>
               바로구매
             </button>
             <button>장바구니</button>
