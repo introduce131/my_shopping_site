@@ -156,7 +156,7 @@ const ItemDetailContentDiv = styled.div`
     align-items: center;
     flex-flow: row wrap;
     width: 95%;
-    padding: 20px 15px 20px 15px;
+    padding: 10px 15px 20px 15px;
 
     button {
       height: 50px;
@@ -209,21 +209,39 @@ const OrderSheet = styled.table`
     tr {
       height: 30px;
       td {
-        padding-left: 10px;
+        padding-left: 8px;
+
         .order-name {
           display: flex;
-          align-items: center;
-          width: 90%;
-          min-height: 17px;
-          height: auto;
-          padding: 5px 5px 5px 10px;
-          background-color: rgb(170, 170, 170);
-          border-radius: 2px;
-          color: white;
+          gap: 5px;
+          .order-item {
+            display: flex;
+            align-items: center;
+            width: 90%;
+            min-height: 17px;
+            height: auto;
+            padding: 5px 5px 5px 10px;
+            background-color: rgb(170, 170, 170);
+            border-radius: 2px;
+            color: white;
+          }
+          /* 삭제 버튼 */
+          .delete_btn {
+            display: block;
+            margin: auto 0;
+            width: 15px;
+            label {
+              cursor: pointer;
+              padding-bottom: 1px;
+              border: 1px solid black;
+              display: block;
+              height: 12px;
+              width: 12px;
+              font-size: 0.5rem;
+              text-align: center;
+            }
+          }
         }
-      }
-      td.order-count {
-        padding-left: 6px;
       }
       td.order-price {
         font-size: 0.73rem;
@@ -416,7 +434,12 @@ const Products = () => {
                   <tr key={idx}>
                     <td>
                       <div className="order-name">
-                        {`${item.color}/${item.size}/교환/반품 불가에 동의`}
+                        <div className="order-item">
+                          <label>{`${item.color}/${item.size}/(교환/반품 불가에 동의)`}</label>
+                        </div>
+                        <div className="delete_btn">
+                          <label>X</label>
+                        </div>
                       </div>
                     </td>
                     <td className="order-count">
