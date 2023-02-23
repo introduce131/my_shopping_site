@@ -7,4 +7,4 @@ https://introduce131.github.io/my_shopping_site/
 - + zotai, typescript 적용 예정
 - 코드가 느므 드릅드..
 
-<img src="https://media.tenor.com/pGGMMerDTxkAAAAC/laugh-funny.gif"/>
+<img src="https://media.tenor.com/pGGMMerDTxkAAAAC/laugh-funny.gif" autoplay/>
