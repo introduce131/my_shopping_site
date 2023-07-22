@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, initializeFirestore } from 'firebase/firestore';
+import { initializeFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
@@ -11,6 +11,10 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_APP_ID,
   measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
+
+console.log(firebaseConfig);
+
+console.log(process.env.REACT_APP_API_KEY);
 
 /** 위에 config내용으로 firebase 변수에 저장 */
 export const firebase = initializeApp(firebaseConfig);

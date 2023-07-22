@@ -277,8 +277,11 @@ const Products = () => {
   const priceRef = useRef([]); // [가 격] label의 ref array
   const totalLabelRef = useRef();
 
+  // 주문 수량이 바뀌었을 때, buyCounts
   useEffect(() => {
     let sumCount = 0;
+
+    console.log('buycounts', buyCounts);
 
     // 구매할 상품수량을 지역변수 subCount에 저장.
     buyCounts.forEach((count) => {
@@ -437,7 +440,16 @@ const Products = () => {
                         <div className="order-item">
                           <label>{`${item.color}/${item.size}/(교환/반품 불가에 동의)`}</label>
                         </div>
-                        <div className="delete_btn">
+                        <div
+                          className="delete_btn"
+                          onClick={() => {
+                            const newBuyItems = buyItems.filter((_, i) => i !== idx);
+                            const newBuyCounts = buyCounts.filter((_, i) => i !== idx);
+
+                            setBuyItems(newBuyItems);
+                            setBuyCounts(newBuyCounts);
+                          }}
+                        >
                           <label>X</label>
                         </div>
                       </div>
@@ -447,6 +459,7 @@ const Products = () => {
                         ref={(ref) => {
                           orderCountRef.current[idx] = ref;
                         }}
+                        count={buyCounts[idx]}
                         priceRef={priceRef}
                         idx={idx}
                         price={Item.ITEMS_PRICE}
