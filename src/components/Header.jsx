@@ -113,7 +113,7 @@ const SubMenu = styled.div`
 // 헤더가 화면에 꽉차보이기 위해 만든 가짜 div. Z-index는 헤더 컨테이너보다 낮은값
 const FakeContainer = styled.div`
   position: absolute;
-  top: 55%;
+  top: 76.8%;
   width: 100vw;
   min-width: 1100px;
   height: 34px;
@@ -188,7 +188,10 @@ const Header = () => {
 
   return (
     <div style={{ position: 'relative' }}>
-      <div id={styles.logo}>c h a r l o t t e</div> {/*로고*/}
+      <div id={styles.logo}>
+        <img src={process.env.PUBLIC_URL + '/images/logo.png'}></img>
+      </div>{' '}
+      {/*로고*/}
       {/* 글로벌 스타일 body 지정 */}
       <GlobalStyle />
       {/* 상단 상품 카테고리 선택 flex container */}

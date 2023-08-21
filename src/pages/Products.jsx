@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Swal from 'sweetalert2';
@@ -8,6 +8,8 @@ import { fireStore } from '../firebase.js';
 import * as common from '../common.js';
 import Header from '../components/Header.jsx';
 import NumberCustom from '../components/NumberCustom.jsx';
+import CompanyInfo from '../components/CompanyInfo.jsx';
+import Footer from '../components/Footer.jsx';
 
 const ItemDetailContainerDiv = styled.div`
   display: flex;
@@ -493,6 +495,13 @@ const Products = () => {
           </div>
         </ItemDetailContentDiv>
       </ItemDetailContainerDiv>
+      {/* 상품 상세 설명 */}
+      <div
+        style={{ textAlign: 'center' }}
+        dangerouslySetInnerHTML={{ __html: Item.ITEMS_CONTENT }}
+      ></div>
+      <CompanyInfo />
+      <Footer />
     </div>
   );
 };
